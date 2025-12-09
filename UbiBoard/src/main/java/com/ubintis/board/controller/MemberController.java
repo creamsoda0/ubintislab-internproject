@@ -1,5 +1,7 @@
 package com.ubintis.board.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.ubintis.board.service.MemberService;
+import com.ubintis.board.vo.usersvo;
 
 @Controller
 @RequestMapping(value = "/member")
@@ -34,6 +37,18 @@ public class MemberController {
 		mav.setViewName("layout/join-form");
 		
 		return mav;
+	}
+	
+	@RequestMapping("/list")
+	public String userList(Model model) {
+	    // 1. 서비스한테 명단 가져오라고 시킴
+	    List<usersvo> list = memberService.getUserList();
+	    
+	    // 2. 가져온 명단을 'list'라는 이름으로 화면에 던져줌
+	    model.addAttribute("list", list);
+	    
+	    // 3. userList.jsp로 이동
+	    return "userList";
 	}
 	
 	// 아이디 중복 체크

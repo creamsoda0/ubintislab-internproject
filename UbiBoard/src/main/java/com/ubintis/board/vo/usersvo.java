@@ -3,7 +3,7 @@ package com.ubintis.board.vo;
 import java.util.Date;
 
 public class usersvo {
-	private int userId;
+	private String userId;
 	private String password;
 	private String name;
 	private Date birth;
@@ -18,10 +18,10 @@ public class usersvo {
 	private Date joinDate;
 	
 	
-	public int getUserId() {
+	public String getUserId() {
 		return userId;
 	}
-	public void setUserId(int userId) {
+	public void setUserId(String userId) {
 		this.userId = userId;
 	}
 	public String getPassword() {
