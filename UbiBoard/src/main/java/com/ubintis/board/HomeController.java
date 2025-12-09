@@ -39,4 +39,13 @@ public class HomeController {
 		
 		return mav;
 	}
+	
+	@RequestMapping (value = "/member/joinForm") 
+	public ModelAndView joinForm (Model model) {
+		ModelAndView mav = new ModelAndView();
+		
+		mav.setViewName("layout/join-form");
+		
+		return mav;
+	}
 }
