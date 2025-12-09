@@ -3,13 +3,13 @@
 <configuration>
         <typeAliases>
 
-            <typeAlias alias="loginlogvo" type="com.ubintis.board.vo.loginlogvo"/>   
-            <typeAlias alias="mainboardvo" type="com.ubintis.board.vo.mainboardvo"/>   
-            <typeAlias alias="maincommentvo" type="com.ubintis.board.vo.maincommentvo"/>   
-            <typeAlias alias="passwordhintvo" type="com.ubintis.board.vo.passwordhintvo"/>   
-            <typeAlias alias="subcommentvo" type="com.ubintis.board.vo.subcommentvo"/>   
-            <typeAlias alias="uservo" type="com.ubintis.board.vo.uservo"/>   
-            <typeAlias alias="userwithdrawvo" type="com.ubintis.board.vo.userwithdrawvo"/>   
+            <typeAlias alias="LoginLogVO" type="com.ubintis.board.vo.LoginLogVO"/>   
+            <typeAlias alias="MainBoardVO" type="com.ubintis.board.vo.MainBoardVO"/>   
+            <typeAlias alias="MainCommentVO" type="com.ubintis.board.vo.MainCommentVO"/>   
+            <typeAlias alias="PasswordHintVO" type="com.ubintis.board.vo.PasswordHintVO"/>   
+            <typeAlias alias="SubCommentVO" type="com.ubintis.board.vo.SubCommentVO"/>   
+            <typeAlias alias="UserVO" type="com.ubintis.board.vo.UserVO"/>   
+            <typeAlias alias="UserWithDrawVO" type="com.ubintis.board.vo.UserWithDrawVO"/>   
                         
         </typeAliases>
 </configuration>

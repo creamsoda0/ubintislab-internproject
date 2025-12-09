@@ -2,7 +2,7 @@ package com.ubintis.board.vo;
 
 import java.util.Date;
 
-public class userwithdrawvo {
+public class UserWithDrawVO {
 	private int withdrawId;
 	private int userId;
 	private String password;

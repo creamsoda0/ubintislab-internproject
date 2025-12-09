@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ubintis.board.mapper.MemberMapper;
-import com.ubintis.board.vo.usersvo;
+import com.ubintis.board.vo.UserVO;
 
 @Service
 public class MemberServiceImpl implements MemberService {
@@ -20,7 +20,7 @@ public class MemberServiceImpl implements MemberService {
 	}
 	
 	@Override
-	public List<usersvo> getUserList() {
+	public List<UserVO> getUserList() {
 	    return mapper.getUserList();
 	}
 }

@@ -11,7 +11,7 @@
 		WHERE user_id = #{userId}
 	</select>
 
-	<select id="getUserList" resultType="com.ubintis.board.vo.usersvo">
+	<select id="getUserList" resultType="UserVO">
 		SELECT *
 		FROM users
 	</select>

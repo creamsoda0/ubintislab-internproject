@@ -2,31 +2,34 @@ package com.ubintis.board.vo;
 
 import java.util.Date;
 
-public class subcommentvo {
+public class MainBoardVO {
 
-	private int replyId;
-	private int commentId;
+	private int boardId;
 	private int userNo;
+	private String title;
 	private String content;
 	private Date regDate;
 	private Date modDate;
-	public int getReplyId() {
-		return replyId;
+	private int views;
+	private String comment;
+	
+	public int getBoardId() {
+		return boardId;
 	}
-	public void setReplyId(int replyId) {
-		this.replyId = replyId;
-	}
-	public int getCommentId() {
-		return commentId;
-	}
-	public void setCommentId(int commentId) {
-		this.commentId = commentId;
+	public void setBoardId(int boardId) {
+		this.boardId = boardId;
 	}
 	public int getUserNo() {
 		return userNo;
 	}
 	public void setUserNo(int userNo) {
 		this.userNo = userNo;
+	}
+	public String getTitle() {
+		return title;
+	}
+	public void setTitle(String title) {
+		this.title = title;
 	}
 	public String getContent() {
 		return content;
@@ -45,6 +48,18 @@ public class subcommentvo {
 	}
 	public void setModDate(Date modDate) {
 		this.modDate = modDate;
+	}
+	public int getViews() {
+		return views;
+	}
+	public void setViews(int views) {
+		this.views = views;
+	}
+	public String getComment() {
+		return comment;
+	}
+	public void setComment(String comment) {
+		this.comment = comment;
 	}
 	
 	

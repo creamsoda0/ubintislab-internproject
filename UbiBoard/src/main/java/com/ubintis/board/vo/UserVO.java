@@ -2,7 +2,7 @@ package com.ubintis.board.vo;
 
 import java.util.Date;
 
-public class usersvo {
+public class UserVO {
 	private String userId;
 	private String password;
 	private String name;

@@ -8,6 +8,7 @@
                            http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd">
 	<mybatis-spring:scan
 		base-package="com.ubintis.board.mapper" />
+		
 
 	<!-- Root Context: defines shared resources visible to all other web components -->
 	<bean id="hikariConfig" class="com.zaxxer.hikari.HikariConfig">
@@ -32,7 +33,7 @@
 
 		<property name="mapperLocations"
 			value="classpath:com/ubintis/board/mapper/*.xml" />
-
+		<property name="typeAliasesPackage" value="com.ubintis.board.vo" />
 		<property name="configuration">
 			<bean class="org.apache.ibatis.session.Configuration">
 				<property name="mapUnderscoreToCamelCase" value="true" />

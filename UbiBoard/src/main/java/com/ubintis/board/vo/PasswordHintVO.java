@@ -1,6 +1,6 @@
 package com.ubintis.board.vo;
 
-public class passwordhintvo {
+public class PasswordHintVO {
 
 	private int hintId;
 	private String content;

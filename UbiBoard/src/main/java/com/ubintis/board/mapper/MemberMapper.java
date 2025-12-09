@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.ubintis.board.vo.usersvo;
+import com.ubintis.board.vo.UserVO;
 
 @Mapper
 public interface MemberMapper {
@@ -13,6 +13,6 @@ public interface MemberMapper {
 	// 아이디 중복체크
 	public int idCheck(String userId);
 	
-	public List<usersvo> getUserList();
+	public List<UserVO> getUserList();
 	
 }

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.ubintis.board.service.MemberService;
-import com.ubintis.board.vo.usersvo;
+import com.ubintis.board.vo.UserVO;
 
 @Controller
 @RequestMapping(value = "/member")
@@ -42,7 +42,7 @@ public class MemberController {
 	@RequestMapping("/list")
 	public String userList(Model model) {
 	    // 1. 서비스한테 명단 가져오라고 시킴
-	    List<usersvo> list = memberService.getUserList();
+	    List<UserVO> list = memberService.getUserList();
 	    
 	    // 2. 가져온 명단을 'list'라는 이름으로 화면에 던져줌
 	    model.addAttribute("list", list);

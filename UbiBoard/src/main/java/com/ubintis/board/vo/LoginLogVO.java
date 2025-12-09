@@ -1,6 +1,6 @@
 package com.ubintis.board.vo;
 
-public class loginlogvo {
+public class LoginLogVO {
 	private int LogId;
 	private int userNo;
 	private String regLog;
