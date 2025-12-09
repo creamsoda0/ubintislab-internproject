@@ -7,8 +7,7 @@
                            http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd
                            http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd">
 	<mybatis-spring:scan
-		base-package="com.ubintis.board.controller.mapper" />
-
+		base-package="com.ubintis.board.mapper" />
 
 	<!-- Root Context: defines shared resources visible to all other web components -->
 	<bean id="hikariConfig" class="com.zaxxer.hikari.HikariConfig">
@@ -41,8 +40,7 @@
 		</property>
 	</bean>
 
-	<mybatis-spring:scan
-		base-package="com.ubintis.board.controller.mapper" />
+
 
 
 </beans>

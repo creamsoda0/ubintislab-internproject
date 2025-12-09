@@ -7,9 +7,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 
 @Controller
-public class HomeController {
+public class MainController {
 	
-	@RequestMapping(value = "/default"/* , method = RequestMethod.GET */)
+	@RequestMapping(value = "/default")
 	public ModelAndView home(Model model) {
 		
 		ModelAndView mav = new ModelAndView();
@@ -25,21 +25,5 @@ public class HomeController {
 		return mav;
 	}
 	
-	@RequestMapping(value = "/member/join")
-	public ModelAndView memberJoin (Model model) {
-		ModelAndView mav = new ModelAndView();
-		
-		mav.setViewName("layout/terms-agree");
-		
-		return mav;
-	}
-	
-	@RequestMapping (value = "/member/joinForm") 
-	public ModelAndView joinForm (Model model) {
-		ModelAndView mav = new ModelAndView();
-		
-		mav.setViewName("layout/join-form");
-		
-		return mav;
-	}
+
 }

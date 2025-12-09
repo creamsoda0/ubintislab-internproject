@@ -58,15 +58,48 @@
         f.submit();
     }
 
-    // 아이디 중복 체크 (껍데기)
+  //전역 변수: 아이디 중복 확인을 했는지 여부를 저장
+    var isIdChecked = false;
+
+    // 아이디 입력창 값이 바뀌면 중복확인 다시 하도록 초기화
+    $(document).ready(function(){
+        $("#userId").on("input", function(){
+            isIdChecked = false;
+        });
+    });
+
+    // 아이디 중복 체크 함수
     function checkId() {
         var userId = $("#userId").val();
+
+        // 1. 입력값 검사
         if(userId == "") {
-            alert("아이디를 입력 후 중복체크 해주세요.");
+            alert("아이디를 입력해주세요.");
+            $("#userId").focus();
             return;
         }
-        alert("사용 가능한 아이디입니다. (임시 메시지)");
-        // 실제로는 ajax로 서버에 중복 확인 요청을 보내야 함
+
+        // 2. AJAX 통신
+        $.ajax({
+            url: "${contextPath}/member/idCheck", // Controller 주소
+            type: "post",
+            data: { "userId" : userId }, // 보낼 데이터 (키:값)
+            dataType: 'json',
+            success: function(result) {
+                // Controller가 리턴한 cnt 값이 result로 들어옴
+                if(result == 1) {
+                    alert("이미 사용 중인 아이디입니다.");
+                    $("#userId").val("").focus(); // 입력창 비우고 포커스
+                    isIdChecked = false;
+                } else {
+                    alert("사용 가능한 아이디입니다.");
+                    isIdChecked = true; // 사용 가능하므로 체크 완료 표시
+                }
+            },
+            error: function() {
+                alert("서버 요청 실패! 관리자에게 문의하세요.");
+            }
+        });
     }
 
     // 우편번호 찾기 (껍데기 - 다음 API 연동 위치)
