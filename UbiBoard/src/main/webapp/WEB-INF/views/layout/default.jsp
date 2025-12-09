@@ -12,9 +12,9 @@
     <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
 
     <%-- CSS 절대 경로 설정 --%>
-    <link rel="stylesheet" href="${contextPath}/css/base.css" type="text/css" />
-    <link rel="stylesheet" href="${contextPath}/css/font.css" type="text/css" />
-    <link rel="stylesheet" href="${contextPath}/css/layout.css" type="text/css" />
+    <link rel="stylesheet" href="${contextPath}/main/css/base.css" type="text/css" />
+    <link rel="stylesheet" href="${contextPath}/main/css/font.css" type="text/css" />
+    <link rel="stylesheet" href="${contextPath}/main/css/layout.css" type="text/css" />
     
     <%-- jQuery --%>
     <script src="${contextPath}/js/jquery-1.11.3.min.js"></script>
@@ -38,6 +38,6 @@
     <jsp:include page="../fragments/footer.jsp" flush="true"/>
 
     <div id="dimmed"></div>
-    <script src="${contextPath}/js/common.js"></script>
+    <script src="${contextPath}/main/js/common.js"></script>
 </body>
 </html>

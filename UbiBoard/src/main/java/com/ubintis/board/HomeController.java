@@ -16,7 +16,7 @@ public class HomeController {
 	private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
 	
 	@RequestMapping(value = "/default"/* , method = RequestMethod.GET */)
-	public ModelAndView home(Locale locale, Model model) {
+	public ModelAndView home(Model model) {
 		
 		ModelAndView mav = new ModelAndView();
 		
@@ -31,4 +31,12 @@ public class HomeController {
 		return mav;
 	}
 	
+	@RequestMapping(value = "/member/join")
+	public ModelAndView memberJoin (Model model) {
+		ModelAndView mav = new ModelAndView();
+		
+		mav.setViewName("layout/terms-agree");
+		
+		return mav;
+	}
 }

@@ -32,10 +32,10 @@
 	<resources mapping="/js/**" location="/resources/static/js/" />
 	<resources mapping="/images/**"
 		location="/resources/static/images/" />
-
 	<resources mapping="/fonts/**"
 		location="/resources/static/fonts/" />
-
+	<resources mapping="/img/**"
+		location="/resources/static/img/" />
 	<context:component-scan
 		base-package="com.ubintis.board" />
 
