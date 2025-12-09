@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+ <!-- mapper interface란 java의 DAO인터페이스를 말함
+ 해당 인터페이스(Java의 DAO 인터페이스를 말함
+ xml 매퍼 파일의 namespace가 일치해야 mybatis가 자동으로 매핑 가능 -->
+ 
+ 
+ <!-- 맵핑될 DAO 인터페이스의 Full Name을 줌. (mapper interface) -->
+ <!-- <mapper namespace="com.empmanage.sawon.service.dao.SawonDAO" >
+ 
+ 그리고 자바 interface에 선언된 ArrayList <SawonVO> getAllSawon();
+                 의 getAllsawon()을 아래 id에 써야함
+                 
+                 <select id="getAllSawon" resultType="sawonVO">
+                         resultType이나 parameterType으로 결과가 자동으로 매핑
+                 SELECT id, name, tel
+                 FROM TELTABLE55
+                 where id=3 where id=#{id}
+                 
+                 </select>
+ 
+ </mapper> -->

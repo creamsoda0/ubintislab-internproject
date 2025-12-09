@@ -29,7 +29,7 @@
 	<!-- 아래 리소스 파일 경로 추가 -->
 <resources mapping="/static/**" location="/resources/static/" />
 	<context:component-scan
-		base-package="com.ubintis.board" />
+		base-package="com.ubintis.board.controller" />
 
 
 

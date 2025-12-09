@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" " http://mybatis.org/dtd/mybatis-3-config.dtd" >
+<configuration>
+        <typeAliases>
+
+            <typeAlias alias="loginlogvo" type="com.ubintis.board.vo.loginlogvo"/>   
+            <typeAlias alias="mainboardvo" type="com.ubintis.board.vo.mainboardvo"/>   
+            <typeAlias alias="maincommentvo" type="com.ubintis.board.vo.maincommentvo"/>   
+            <typeAlias alias="passwordhintvo" type="com.ubintis.board.vo.passwordhintvo"/>   
+            <typeAlias alias="subcommentvo" type="com.ubintis.board.vo.subcommentvo"/>   
+            <typeAlias alias="uservo" type="com.ubintis.board.vo.uservo"/>   
+            <typeAlias alias="userwithdrawvo" type="com.ubintis.board.vo.userwithdrawvo"/>   
+                        
+        </typeAliases>
+</configuration>
+
+<!-- 이클립스 + spring mybatipse -->
