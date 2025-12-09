@@ -1,7 +1,5 @@
 package com.ubintis.board;
 
-import java.text.DateFormat;
-import java.util.Date;
 import java.util.Locale;
 
 import org.slf4j.Logger;
@@ -9,20 +7,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-/**
- * Handles requests for the application home page.
- */
+
 @Controller
 public class HomeController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
 	
-	/**
-	 * Simply selects the home view to render by returning its name.
-	 */
 	@RequestMapping(value = "/index"/* , method = RequestMethod.GET */)
 	public ModelAndView home(Locale locale, Model model) {
 		
@@ -30,7 +22,15 @@ public class HomeController {
 		
 		//예시
 		/* mav.addObject("userName", "creamsoda"); */
-		mav.setViewName("index");
+		
+		model.addAttribute("pageTitle", "권한 신청 목록");
+        model.addAttribute("lnbTitle", "시스템 접근 권한");
+        model.addAttribute("menu2", "on"); // LNB 2차 메뉴 활성화
+        model.addAttribute("subMenu2_1", "on"); // LNB 3차 메뉴 2-1 활성화
+        
+        model.addAttribute("content", "board/applyList :: applyListContent");
+		
+		mav.setViewName("layout/default");
 		
 		return mav;
 	}
