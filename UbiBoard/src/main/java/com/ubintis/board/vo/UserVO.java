@@ -2,11 +2,14 @@ package com.ubintis.board.vo;
 
 import java.util.Date;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 public class UserVO {
 	private String userId;
 	private String password;
 	private String name;
-	private Date birth;
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date birth;
 	private String phone;
 	private String address;
 	private String email;
@@ -16,6 +19,17 @@ public class UserVO {
 	private String hintAnswer;
 	private String refreshToken;
 	private Date joinDate;
+	
+	
+	// 아래는 프론트에만 있는 값
+	
+	private String zipCode;
+	private String addr1;
+	private String addr2;
+	private String emailId;
+	private String emailDomain;
+	
+	
 	
 	
 	public String getUserId() {
@@ -95,6 +109,36 @@ public class UserVO {
 	}
 	public void setJoinDate(Date joinDate) {
 		this.joinDate = joinDate;
+	}
+	public String getZipCode() {
+		return zipCode;
+	}
+	public void setZipCode(String zipCode) {
+		this.zipCode = zipCode;
+	}
+	public String getAddr1() {
+		return addr1;
+	}
+	public void setAddr1(String addr1) {
+		this.addr1 = addr1;
+	}
+	public String getAddr2() {
+		return addr2;
+	}
+	public void setAddr2(String addr2) {
+		this.addr2 = addr2;
+	}
+	public String getEmailId() {
+		return emailId;
+	}
+	public void setEmailId(String emailId) {
+		this.emailId = emailId;
+	}
+	public String getEmailDomain() {
+		return emailDomain;
+	}
+	public void setEmailDomain(String emailDomain) {
+		this.emailDomain = emailDomain;
 	}
 	
 	

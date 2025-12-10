@@ -23,7 +23,7 @@
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 
 <script>
-    // 회원가입 폼 전송 전 유효성 검사
+    // 회원가입 폼 전송 전 유효성 검사, 아이디, 비밀번호 등 필수 값 입력했는지 여부
     function checkForm() {
         var f = document.joinForm;
 
@@ -35,22 +35,22 @@
         }
         
         // 비밀번호 검사
-        if(f.userPw.value == "") {
+        if(f.password.value == "") {
             alert("비밀번호를 입력해주세요.");
-            f.userPw.focus();
+            f.password.focus();
             return false;
         }
         
-        if(f.userPw.value != f.userPwConfirm.value) {
+        if(f.password.value != f.passwordConfirm.value) {
             alert("비밀번호 확인이 일치하지 않습니다.");
-            f.userPwConfirm.focus();
+            f.passwordConfirm.focus();
             return false;
         }
 
         // 이름 검사
-        if(f.userName.value == "") {
+        if(f.name.value == "") {
             alert("이름을 입력해주세요.");
-            f.userName.focus();
+            f.name.focus();
             return false;
         }
         
@@ -216,7 +216,7 @@
 					<tr>
 						<th><span class="txt_red">*</span> 비밀번호</th>
 						<td>
-                            <input type="password" name="userPw" id="userPw" style="width:280px;" placeholder="비밀번호 입력"><br />
+                            <input type="password" name="password" id="password" style="width:280px;" placeholder="비밀번호 입력"><br />
 							<span class="mt3">비밀번호는 9자 이상, 20자 이하.<br />
 							비밀번호에 동일문자는 3회 이상 사용불가.&nbsp; 예&#41; aaa, 111<br />
 							비밀번호에 연속문자는 3회 이상 사용불가.&nbsp; 예&#41; abc, 123<br />
@@ -225,7 +225,7 @@
 					</tr>
 					<tr>
 						<th><span class="txt_red">*</span> 비밀번호 확인</th>
-						<td><input type="password" name="userPwConfirm" id="userPwConfirm" style="width:280px;" placeholder="비밀번호 재입력"></td>
+						<td><input type="password" name="passwordConfirm" id="passwordConfirm" style="width:280px;" placeholder="비밀번호 재입력"></td>
 					</tr>
 				</table>
 				<h3 class="mt50">개인 정보</h3>
@@ -236,7 +236,7 @@
 					</colgroup>
 					<tr>
 						<th><span class="txt_red">*</span> 이름</th>
-						<td><input type="text" name="userName" style="width:280px;" value="홍길동"></td>
+						<td><input type="text" name="name" style="width:280px;" value="홍길동"></td>
 					</tr>
 					<tr>
 						<th><span class="txt_red">*</span> 생년월일</th>
@@ -246,7 +246,7 @@
 						<th><span class="txt_red">*</span> 휴대전화</th>
 						<td><input type="text" name="phone" style="width:280px;" value="010-1234-5678"></td>
 					</tr>
-					<tr>
+<!-- 					<tr>
 						<th>일반전화</th>
 						<td>
                             <select name="tel1" style="width:100px;">
@@ -258,7 +258,7 @@
 							<input type="text" name="tel2" style="width:90px;"> -
 							<input type="text" name="tel3" style="width:90px;">
                         </td>
-					</tr>
+					</tr> -->
 					<tr>
 						<th><span class="txt_red">*</span> 주소</th>
 						<td>
@@ -291,21 +291,21 @@
 					<tr>
 						<th><span class="txt_red">*</span> 메일 수신 여부</th>
 						<td>
-                            <input type="radio" name="emailAgreed" value="Y" checked> 수신
-						    <input type="radio" name="emailAgreed" value="N" class="ml20"> 비수신
+                            <input type="radio" name="emailAgreed" value=1 checked> 수신
+						    <input type="radio" name="emailAgreed" value=0 class="ml20"> 비수신
                         </td>
 					</tr>
 					<tr>
 						<th><span class="txt_red">*</span> <span class="f14">SMS(카카오알림톡) 수신여부</span></th>
 						<td>
-                            <input type="radio" name="smsAgreed" value="Y" checked> 수신
-						    <input type="radio" name="smsAgreed" value="N" class="ml20"> 비수신
+                            <input type="radio" name="smsAgreed" value=1 checked> 수신
+						    <input type="radio" name="smsAgreed" value=0 class="ml20"> 비수신
                         </td>
 					</tr>
 					<tr>
 						<th><span class="txt_red">*</span> 비밀번호 힌트 질문</th>
 						<td>
-                            <select name="pwHint" style="width:300px;">
+                            <select name="hintId" style="width:300px;">
 								<option value="">비밀번호 힌트 선택</option>
                                 <option value="1">가장 기억에 남는 장소는?</option>
                                 <option value="2">나의 보물 1호는?</option>
@@ -315,7 +315,7 @@
 					</tr>
 					<tr>
 						<th><span class="txt_red">*</span> 비밀번호 힌트 답</th>
-						<td><input type="text" name="pwHintAnswer" style="width:300px;"></td>
+						<td><input type="text" name="hintAnswer" style="width:300px;"></td>
 					</tr>
 				</table>
 				<div class="btn mt50 t_center">

@@ -3,6 +3,7 @@ package com.ubintis.board.mapper;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import com.ubintis.board.vo.UserVO;
 
@@ -14,5 +15,7 @@ public interface MemberMapper {
 	public int idCheck(String userId);
 	
 	public List<UserVO> getUserList();
+
+	public void insertMember(UserVO userVO);
 	
 }

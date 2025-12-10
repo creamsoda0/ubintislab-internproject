@@ -5,9 +5,8 @@
 
 <mapper namespace="com.ubintis.board.mapper.MemberMapper">
 
-	<select id="idCheck" resultType="int">
-		SELECT COUNT(*) 
-		FROM users 
+	<select id="idCheck" parameterType="String" resultType="int">
+		SELECT COUNT(*) FROM users 
 		WHERE user_id = #{userId}
 	</select>
 
@@ -16,4 +15,24 @@
 		FROM users
 	</select>
 	
+<insert id="insertMember" parameterType="UserVO">
+    INSERT INTO users (
+        user_id,
+        password,       name,           birth,
+        phone,
+        address,
+        email,
+        email_agreed,
+        sms_agreed,
+        hint_id,        hint_answer,    join_date
+    ) VALUES (
+        #{userId},
+        #{password},    #{name},        #{birth},
+        #{phone},
+        #{address},
+        #{email},
+        #{emailAgreed},
+        #{smsAgreed},
+        #{hintId},      #{hintAnswer},  #{joinDate}     )
+</insert>
 </mapper>

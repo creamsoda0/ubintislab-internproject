@@ -9,4 +9,6 @@ public interface MemberService {
 	public int idCheck(String userId);
 
 	public List<UserVO> getUserList();
+
+	public void insertMember(UserVO userVO);
 }
