@@ -137,5 +137,75 @@ public class MemberController {
 	    session.invalidate();
 	    return mav; // 메인으로 이동
 	}
-
+	
+	// 회원정보 수정 페이지 이동
+	@RequestMapping("/memberUpdate")
+	public ModelAndView memberUpdate(HttpSession session) {		
+		ModelAndView mav = new ModelAndView();
+		
+		UserVO loginUser = (UserVO) session.getAttribute("loginUser");
+		UserVO userInfo = memberService.getMember(loginUser.getUserId());
+		
+		//주소 분리해서 넣기
+		String dbAddress = userInfo.getAddress();
+		
+		String zip ="";
+		String addr = "";
+		
+		if (dbAddress != null && dbAddress.contains("(") && dbAddress.contains(")")) {
+			int start = dbAddress.indexOf("(");
+			int end = dbAddress.indexOf(")");
+			
+			// 우편번호 추출; 괄호 사이의 값
+			zip = dbAddress.substring(start + 1, end);
+			// 주소 추출
+			addr = dbAddress.substring(end + 1).trim();
+		}
+		// 분리한 값을 jsp로 전달
+		mav.addObject("zip",zip);
+		mav.addObject("addr", addr);
+		
+		
+		mav.addObject("user", userInfo);
+		mav.setViewName("/layout/member-update");
+		
+		return mav;
+	}
+	
+	// 회원정보 수정 쿼리 password, id 변경은 다른 곳에서 처리할 것임
+	// birth는 수정이 안됨
+	@RequestMapping ("/updateProcess")
+	public ModelAndView updateProcess (UserVO userVO, HttpSession session) {
+		ModelAndView mav = new ModelAndView();
+		
+		if (userVO.getEmailId() != null && !userVO.getEmailId().isEmpty() &&
+		        userVO.getEmailDomain() != null && !userVO.getEmailDomain().isEmpty()) {
+		        
+		        String fullEmail = userVO.getEmailId() + "@" + userVO.getEmailDomain();
+		        userVO.setEmail(fullEmail); // 합친 값을 VO의 email 변수에 저장
+		    }
+		
+	    String fullAddress = "";
+	    
+	    // 우편번호가 있는 경우에만 괄호와 함께 추가
+	    if (userVO.getZipCode() != null && !userVO.getZipCode().isEmpty()) {
+	        fullAddress += "(" + userVO.getZipCode() + ") ";
+	    }
+	    
+	    if (userVO.getAddr1() != null) {
+	        fullAddress += userVO.getAddr1();
+	    }
+	    
+	    if (userVO.getAddr2() != null && !userVO.getAddr2().isEmpty()) {
+	        fullAddress += " " + userVO.getAddr2();
+	    }
+	    
+	    userVO.setAddress(fullAddress);
+		memberService.updateMember(userVO);
+		
+		mav.setViewName("/layout/member-updatesuccess");
+		
+		return mav;
+	}
+	
 }

@@ -42,4 +42,18 @@
     FROM users
     WHERE user_id = #{userId}
 	</select>
+	
+	<update id="updateMember" parameterType="UserVO">
+		UPDATE users
+		SET
+			phone = #{phone},
+			address = #{address},
+			email = #{email},
+			email_agreed = #{emailAgreed},
+			sms_agreed = #{smsAgreed},
+			hint_id = #{hintId},
+			hint_answer = #{hintAnswer}
+		WHERE user_id = #{userId}
+	</update>
+	
 </mapper>

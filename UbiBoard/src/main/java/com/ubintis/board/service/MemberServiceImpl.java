@@ -45,4 +45,17 @@ public class MemberServiceImpl implements MemberService {
 	    }
 	    return null; // 실패 시 null 리턴
 	}
+
+	@Override
+	public UserVO getMember(String userId) {
+		
+		return mapper.getMemberById(userId);
+	}
+
+	@Override
+	public void updateMember(UserVO userVO) {
+		mapper.updateMember(userVO);
+	}
+
+
 }

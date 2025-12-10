@@ -33,6 +33,7 @@
                         <strong>${sessionScope.loginUser.name} (${sessionScope.loginUser.userId})</strong> 님 반갑습니다.
                     </li>
                     <li><a href="${contextPath}/member/logout">로그아웃</a></li>
+                    <li><a href="${contextPath}/member/memberUpdate">정보수정</a></li>
                 </c:otherwise>
             </c:choose>
         </ul>

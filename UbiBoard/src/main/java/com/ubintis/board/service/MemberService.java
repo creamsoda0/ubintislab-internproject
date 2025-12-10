@@ -13,4 +13,8 @@ public interface MemberService {
 	public void insertMember(UserVO userVO);
 
 	public UserVO login(UserVO userVO);
+
+	public UserVO getMember(String userId);
+
+	public void updateMember(UserVO userVO);
 }
