@@ -30,4 +30,19 @@ public class MemberServiceImpl implements MemberService {
 		mapper.insertMember(userVO);
 		
 	}
+
+	@Override
+	public UserVO login(UserVO userVO) {
+		// 아이디로 회원 정보 꺼내오기
+	    UserVO dbUser = mapper.getMemberById(userVO.getUserId());
+	    
+	    // 일치하는 아이디가 있는지, 그리고 비밀번호가 맞는지 확인
+	    if (dbUser != null) {
+	        // 비밀번호 비교 
+	        if (dbUser.getPassword().equals(userVO.getPassword())) {
+	            return dbUser; // 로그인 성공 시 회원 정보 리턴
+	        }
+	    }
+	    return null; // 실패 시 null 리턴
+	}
 }

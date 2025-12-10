@@ -17,5 +17,7 @@ public interface MemberMapper {
 	public List<UserVO> getUserList();
 
 	public void insertMember(UserVO userVO);
+
+	public UserVO getMemberById(String userId);
 	
 }

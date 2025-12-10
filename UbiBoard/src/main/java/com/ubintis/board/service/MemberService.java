@@ -11,4 +11,6 @@ public interface MemberService {
 	public List<UserVO> getUserList();
 
 	public void insertMember(UserVO userVO);
+
+	public UserVO login(UserVO userVO);
 }

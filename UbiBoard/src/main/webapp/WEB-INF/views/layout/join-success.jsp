@@ -20,7 +20,7 @@
 		<h1><img src="${contextPath}/static/member/img/logo.png" alt="서산시 통합회원 상단로고" /></h1>
 		<div>
 			<ul>
-				<li><a href="${contextPath}/member/login">통합로그인</a></li>
+				<li><a href="${contextPath}/member/goLoginPage">통합로그인</a></li>
 				<li><a href="${contextPath}/member/join">통합회원가입</a></li>
 				<li><a href="${contextPath}/member/findId">아이디찾기</a></li>
 				<li><a href="${contextPath}/member/findPw">비밀번호찾기</a></li>

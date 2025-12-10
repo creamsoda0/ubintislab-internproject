@@ -15,7 +15,7 @@
             <c:choose>
                 <%-- 1. 로그인을 하지 않은 경우 (loginUser가 비어있음) --%>
                 <c:when test="${empty sessionScope.loginUser}">
-                    <li><a href="${contextPath}/member/login">로그인</a></li>
+                    <li><a href="${contextPath}/member/goLoginPage">로그인</a></li>
                     <li><a href="${contextPath}/member/join">회원가입</a></li>
                 </c:when>
 

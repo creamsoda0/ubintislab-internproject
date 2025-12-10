@@ -3,6 +3,8 @@ package com.ubintis.board.controller;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -103,8 +105,36 @@ public class MemberController {
 	@RequestMapping(value = "/goLoginPage") 
 	public ModelAndView goLoginPage () {
 		ModelAndView mav = new ModelAndView();
-		mav.setViewName("login-page");
+		mav.setViewName("/layout/login-page");
 		
 		return mav;
 	}
+	
+	@RequestMapping(value = "/loginProcess") 
+	public ModelAndView loginProcess (UserVO userVO, HttpSession session) {
+		ModelAndView mav = new ModelAndView();
+		
+		// 서비스에서 로그인 체크 (UserVO 리턴 혹은 null)
+		UserVO loginUser = memberService.login(userVO);
+		
+		if (loginUser != null) {
+			session.setAttribute("loginUser", loginUser);
+			mav.setViewName("/layout/defaults"); //메인페이지로 이동
+		} else {
+			mav.addObject("msg", "아이디 또는 비밀번호가 일치하지 않습니다.");
+		}
+		
+		return mav;
+	}
+	
+	// 로그아웃 (세션 삭제)
+	@RequestMapping("/logout")
+	public ModelAndView logout(HttpSession session) {
+	    // 세션에 저장된 모든 정보 삭제 (로그아웃 처리)
+		ModelAndView mav = new ModelAndView();
+		mav.setViewName("/layout/defaults");
+	    session.invalidate();
+	    return mav; // 메인으로 이동
+	}
+
 }
