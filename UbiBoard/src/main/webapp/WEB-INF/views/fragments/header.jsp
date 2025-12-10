@@ -30,7 +30,7 @@
                     <%-- 사용자 이름 출력 (DB에서 가져온 정보) --%>
                     <%-- loginUser 객체 안에 name, userId 필드가 있다고 가정 --%>
                     <li>
-                        <strong>${sessionScope.loginUser.name} (${sessionScope.loginUser.user_id})</strong> 님 반갑습니다.
+                        <strong>${sessionScope.loginUser.name} (${sessionScope.loginUser.userId})</strong> 님 반갑습니다.
                     </li>
                     <li><a href="${contextPath}/member/logout">로그아웃</a></li>
                 </c:otherwise>

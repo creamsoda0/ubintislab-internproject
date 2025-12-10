@@ -119,9 +119,10 @@ public class MemberController {
 		
 		if (loginUser != null) {
 			session.setAttribute("loginUser", loginUser);
-			mav.setViewName("/layout/defaults"); //메인페이지로 이동
+			mav.setViewName("redirect:/default"); //메인페이지로 이동
 		} else {
 			mav.addObject("msg", "아이디 또는 비밀번호가 일치하지 않습니다.");
+			mav.setViewName("/layout/login-page");
 		}
 		
 		return mav;
@@ -132,7 +133,7 @@ public class MemberController {
 	public ModelAndView logout(HttpSession session) {
 	    // 세션에 저장된 모든 정보 삭제 (로그아웃 처리)
 		ModelAndView mav = new ModelAndView();
-		mav.setViewName("/layout/defaults");
+		mav.setViewName("redirect:/default");
 	    session.invalidate();
 	    return mav; // 메인으로 이동
 	}
