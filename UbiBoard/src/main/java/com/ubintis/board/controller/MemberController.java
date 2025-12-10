@@ -208,4 +208,13 @@ public class MemberController {
 		return mav;
 	}
 	
+	//아이디 찾기 구현
+	@RequestMapping ("goFindId")
+	public ModelAndView goFindId() {
+		ModelAndView mav = new ModelAndView();
+		mav.setViewName("/layout/find-id");
+		return mav;
+	}
+	
+	
 }

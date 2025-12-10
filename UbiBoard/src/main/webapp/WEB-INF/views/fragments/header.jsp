@@ -6,7 +6,6 @@
 
 <header class='top_bg'>
     <div class="header_wrap">
-        <h1><a href="${contextPath}/">대한적십자</a></h1>
         <a class="menu" href="#none">menu</a>
         
         <ul class="utility">
@@ -16,7 +15,12 @@
                 <%-- 1. 로그인을 하지 않은 경우 (loginUser가 비어있음) --%>
                 <c:when test="${empty sessionScope.loginUser}">
                     <li><a href="${contextPath}/member/goLoginPage">로그인</a></li>
+                    <li> | </li>
                     <li><a href="${contextPath}/member/join">회원가입</a></li>
+                    <li> | </li>
+                    <li><a href="${contextPath}/member/goFindId">아이디 찾기</a></li>
+                    <li> | </li>
+                    <li><a href="${contextPath}/member/goFindPw">패스워드 찾기</a></li>
                 </c:when>
 
                 <%-- 2. 로그인을 한 경우 --%>

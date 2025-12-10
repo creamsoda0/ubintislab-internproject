@@ -12,7 +12,28 @@
 
 <link rel="stylesheet" type="text/css" href="${contextPath}/static/member/css/import.css"/>
 
-<title>서산시청 회원정보수정 완료</title>
+<title>서산시청 통합로그인 - 아이디 찾기</title>
+
+<script>
+	function findIdCheck() {
+		var name = document.getElementById("name");
+		var email = document.getElementById("email");
+
+		if(name.value == "") {
+			alert("이름을 입력해주세요.");
+			name.focus();
+			return;
+		}
+		if(email.value == "") {
+			alert("이메일을 입력해주세요.");
+			email.focus();
+			return;
+		}
+
+		// 폼 전송
+		document.findIdForm.submit();
+	}
+</script>
 </head>
 <body>
 		
@@ -22,8 +43,8 @@
 			<ul>
 				<li><a href="${contextPath}/member/login">통합로그인</a></li>
 				<li><a href="${contextPath}/member/join">통합회원가입</a></li>
-				<li><a href="#">아이디찾기</a></li>
-				<li><a href="#">비밀번호찾기</a></li>
+				<li><a href="${contextPath}/member/findId">아이디찾기</a></li>
+				<li><a href="${contextPath}/member/findPw">비밀번호찾기</a></li>
 				<li><a href="${contextPath}/member/myPage">회원정보수정</a></li>
 				<li><a href="#">비밀번호변경</a></li>
 				<li><a href="${contextPath}/member/delete">통합회원탈퇴</a></li>
@@ -33,7 +54,7 @@
 	<div id="content">
 		
 		<div class="top_img">			
-			<p>회원정보수정</p>
+			<p>아이디찾기</p>
 		</div>
 		<div class="wrap">
 			
@@ -44,24 +65,41 @@
 						<col width="*">
 					</colgroup>
 					<tr>
-						<td>회원정보수정</td>
-						<td class="step_select">회원정보수정 완료</td>
+						<td class="step_select">본인인증</td>
+						<td>통합회원 아이디찾기 완료</td>
 					</tr>
 				</table>
 			</div>
-			<div class="mt50 text">
-				<h3>회원정보수정 완료</h3>
+				<div class="mt50 text">
+				<h3>아이디 찾기</h3>
+				<p class="bullet01 mt20">회원가입 시 등록한 <b>이름</b>과 <b>이메일</b>을 입력해 주세요.</p>
 				
-				<div class="ok mt30" style="height:468px;">
-					<img src="${contextPath}/static/member/img/reg_ok.png" alt="회원정보수정 완료" class="mb25">
-					<p>통합 회원정보수정이 완료되었습니다.</p>
-					<div class="btn mt36 t_center">
-						<button class="btn_blue" onclick="location.href='${contextPath}/default'">메인으로</button>
+				<form action="${contextPath}/member/findIdProcess" method="post" name="findIdForm">
+					<table cellpadding="0" cellspacing="0" class="mt30">
+						<colgroup>
+							<col width="20%">
+							<col width="*">
+						</colgroup>
+						<tr>
+							<th>이름</th>
+							<td>
+								<input type="text" name="name" id="name" style="width:250px;" placeholder="가입하신 이름을 입력하세요">
+							</td>
+						</tr>
+						<tr>
+							<th>이메일</th>
+							<td>
+								<input type="text" name="email" id="email" style="width:250px;" placeholder="가입하신 이메일을 입력하세요">
+							</td>
+						</tr>
+					</table>
+
+					<div class="btn mt30 t_center">
+						<button type="button" class="btn_blue" onclick="findIdCheck()">아이디 찾기</button>
+						<button type="button" class="btn_gray ml10" onclick="history.back()">취소</button>
 					</div>
+				</form>
 				</div>
-				
-			</div>
-			</div>
 		
 	</div>
 	<footer>
