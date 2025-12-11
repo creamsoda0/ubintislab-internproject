@@ -256,7 +256,7 @@ public class MemberController {
         }
     }
 
-	@RequestMapping("/findIdProcess") // @ResponseBody 없음 (페이지 이동)
+	@RequestMapping("/findIdProcess") 
     public ModelAndView findIdProcess(@RequestParam("email") String email, 
                                       @RequestParam("name") String name) {
         
@@ -267,13 +267,21 @@ public class MemberController {
         
         if (resultUser != null) {
             mv.addObject("resultUser", resultUser);
-            mv.setViewName("member/findIdResult"); // 결과 JSP로 이동
+            mv.setViewName("/layout/find-idResult"); // 결과 JSP로 이동
         } else {
             mv.addObject("msg", "일치하는 회원 정보가 없습니다.");
-            mv.setViewName("member/findId"); // 다시 입력창으로
+            mv.setViewName("redirect:/member/goFindId"); // 다시 입력창으로
         }
         
         return mv;
     }
+	
+	//비밀번호 찾기 시작
+	@RequestMapping("/goFindPw")
+	public ModelAndView FindIdProcess () {
+		ModelAndView mav = new ModelAndView();
+		mav.setViewName(null)
+		return mav;
+	}
 	
 }

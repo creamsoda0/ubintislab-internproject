@@ -63,6 +63,6 @@
 	
 	<select id="findId" parameterType="String" resultType="UserVO">
 	SELECT * FROM users
-	WHERE name = #{name} AND email = #{email]
+	WHERE name = #{name} AND email = #{email}
 	</select>
 </mapper>
