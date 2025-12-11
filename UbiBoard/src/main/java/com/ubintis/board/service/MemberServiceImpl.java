@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.ubintis.board.mapper.MemberMapper;
@@ -19,6 +20,11 @@ public class MemberServiceImpl implements MemberService {
 
 	@Autowired
     private MemberMapper mapper;
+	
+	// 패스워드 암호화 관련 의존성 주입
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+
 	
 	@Override
 	public int idCheck(@Param("userId") String userId) {
@@ -32,8 +38,14 @@ public class MemberServiceImpl implements MemberService {
 
 	@Override
 	public void insertMember(UserVO userVO) {
-		mapper.insertMember(userVO);
-		
+        // 사용자가 입력한 있는 그대로의 비밀번호
+        String rawPw = userVO.getPassword();
+        // 암호화된 비밀번호
+        String encodePw = passwordEncoder.encode(rawPw);       
+        // 암호화된 비번을 다시 VO에 담아서 DB로 보냄
+        userVO.setPassword(encodePw);
+
+		mapper.insertMember(userVO);		
 	}
 
 	@Override
@@ -44,7 +56,7 @@ public class MemberServiceImpl implements MemberService {
 	    // 일치하는 아이디가 있는지, 그리고 비밀번호가 맞는지 확인
 	    if (dbUser != null) {
 	        // 비밀번호 비교 
-	        if (dbUser.getPassword().equals(userVO.getPassword())) {
+	        if (passwordEncoder.matches(userVO.getPassword(), dbUser.getPassword())) {
 	            return dbUser; // 로그인 성공 시 회원 정보 리턴
 	        }
 	    }
@@ -117,6 +129,11 @@ public class MemberServiceImpl implements MemberService {
 
 	@Override
 	public int updateUserPw(String userId, String password) {
+		//암호화 추가
+		String encodePw = passwordEncoder.encode(password);
+		
+		password = encodePw;
+		
 		return mapper.updateUserPw(userId, password);
 	}
 

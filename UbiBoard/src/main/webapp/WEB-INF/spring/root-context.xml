@@ -59,7 +59,9 @@
 		</property>
 	</bean>
 
-
+	<!-- 패스워드 암호화 관련 -->
+	<bean id="passwordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
+	
 
 
 </beans>

@@ -60,7 +60,7 @@
 					<span class="tel">문의 : 한국산업기술진흥원 담당자 041-000-0000</span>
 				</div>
 				<div class="btn mt40 t_center">
-					<button class="btn_blue" onclick="location.href='${contextPath}/member/login'">통합로그인</button>
+					<button class="btn_blue" onclick="location.href='${contextPath}/member/goLoginPage'">통합로그인</button>
 				</div>
 				
 			</div>
