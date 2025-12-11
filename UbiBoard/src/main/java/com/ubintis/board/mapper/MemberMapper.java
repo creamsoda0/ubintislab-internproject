@@ -25,5 +25,7 @@ public interface MemberMapper {
 	public UserVO findUserByEmail(String email);
 
 	public UserVO findId(@Param("name") String name, @Param("email") String email);
+
+	public UserVO findUserByIdEmail(@Param("userId") String userId,@Param("email") String email);
 	
 }

@@ -65,4 +65,9 @@
 	SELECT * FROM users
 	WHERE name = #{name} AND email = #{email}
 	</select>
+	
+	<select id="findUserByIdEmail" parameterType="String" resultType="UserVO">
+	SELECT * FROM users
+	WHERE user_id = #{userId} AND email = #{email}
+	</select>
 </mapper>

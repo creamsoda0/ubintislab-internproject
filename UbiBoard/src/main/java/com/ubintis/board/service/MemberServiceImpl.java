@@ -79,7 +79,7 @@ public class MemberServiceImpl implements MemberService {
 	    String authCode = String.valueOf(checkNum);
 
 	    // 이메일 내용 설정
-	    String subject = "서산시청 아이디 찾기 인증번호입니다.";
+	    String subject = "유비앤티스랩 인턴 프로젝트 아이디 찾기 인증번호입니다.";
 	    String content = "인증번호는 [" + authCode + "] 입니다.";
 	    String from = "dbs0877@gmail.com";
 
@@ -107,6 +107,12 @@ public class MemberServiceImpl implements MemberService {
 	public UserVO findId(String name, String email) {
 		// TODO Auto-generated method stub
 		return mapper.findId(name, email);
+	}
+
+	@Override
+	public UserVO findUserByIdEmail(String userId, String email) {
+		// TODO Auto-generated method stub
+		return mapper.findUserByIdEmail(userId, email);
 	}
 
 

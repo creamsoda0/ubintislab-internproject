@@ -21,6 +21,7 @@
                     <li><a href="${contextPath}/member/goFindId">아이디 찾기</a></li>
                     <li> | </li>
                     <li><a href="${contextPath}/member/goFindPw">패스워드 찾기</a></li>
+                    <li> | </li>
                 </c:when>
 
                 <%-- 2. 로그인을 한 경우 --%>

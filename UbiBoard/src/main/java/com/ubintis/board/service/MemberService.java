@@ -23,4 +23,6 @@ public interface MemberService {
 	public String sendAuthCode(String email);
 
 	public UserVO findId(String name, String email);
+
+	public UserVO findUserByIdEmail(String userId, String email);
 }

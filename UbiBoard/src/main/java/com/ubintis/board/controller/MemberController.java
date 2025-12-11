@@ -64,8 +64,9 @@ public class MemberController {
 
 		return cnt; // 0이면 사용 가능, 1이면 중복
 	}
-
-	// 회원 가입시 회원정보 DB 전송 컨트롤러
+	
+	// 회원가입 컨트롤러입니다.예외처리 작업 아직 안함. 
+	// 회원가입시 회원정보 DB 전송 컨트롤러
 	@RequestMapping(value = "/joinProcess", method = RequestMethod.POST)
 	public ModelAndView joinProcess (UserVO userVO) {
 		ModelAndView mav = new ModelAndView();
@@ -280,8 +281,41 @@ public class MemberController {
 	@RequestMapping("/goFindPw")
 	public ModelAndView FindIdProcess () {
 		ModelAndView mav = new ModelAndView();
-		mav.setViewName(null)
+		mav.setViewName("/layout/find-pw");
 		return mav;
 	}
+	// 인증번호 확인은 아이디 찾기랑 똑같은 api를 활용함
+	// 인증번호 확인은 /checkAuthCode를 확인
+	@ResponseBody
+	@RequestMapping("/sendAuthCodeForPw")
+	public String sendAuthCodeForPw(@RequestParam("userId") String userId, 
+									@RequestParam("email") String email, 
+									@RequestParam("name") String name, 
+									HttpSession session) {
+	    
+		// 어차피 이름 이메일 둘다 있으니까 이름과 이메일 둘 다 검색으로 넣어도 될듯
+	    // (선택) 먼저 해당 이메일로 가입된 회원이 있는지 DB 체크 로직 추가 가능
+	    UserVO user = memberService.findUserByIdEmail(userId, email);
+	    if(user == null) {
+	        return "fail_no_user"; // 회원이 아님
+	    }
+
+	    // 메일 발송하고 인증코드 받아옴
+	    String authCode = memberService.sendAuthCode(email);
+	    
+	    if(authCode != null) {
+	        // 세션에 인증코드를 저장해둠 (나중에 비교용)
+	        session.setAttribute("authCode", authCode);
+	        // 세션 유효시간 설정 (예: 3분 = 180초)
+	        session.setMaxInactiveInterval(180); 
+	        
+	        return "success";
+	    } else {
+	        return "fail_send";
+	    }
+	}
 	
+	/*
+	 * @RequestMapping("/resetPwPage") public ModelAndView resetPwPage ()
+	 */
 }
