@@ -215,6 +215,68 @@ public class MemberController {
 		mav.setViewName("/layout/find-id");
 		return mav;
 	}
+	@RequestMapping ("findIdProcess")
+	public ModelAndView findIdProcess() {
+		ModelAndView mav = new ModelAndView();
+		mav.setViewName("redirect:/default");
+		
+		
+		return mav;
+	}
 	
+	@ResponseBody
+	@RequestMapping("/sendAuthCode")
+	public String sendAuthCode(@RequestParam("email") String email, HttpSession session) {
+	    
+		// 어차피 이름 이메일 둘다 있으니까 이름과 이메일 둘 다 검색으로 넣어도 될듯
+	    // (선택) 먼저 해당 이메일로 가입된 회원이 있는지 DB 체크 로직 추가 가능
+	    UserVO user = memberService.findUserByEmail(email);
+	    if(user == null) {
+	        return "fail_no_user"; // 회원이 아님
+	    }
+
+	    // 메일 발송하고 인증코드 받아옴
+	    String authCode = memberService.sendAuthCode(email);
+	    
+	    if(authCode != null) {
+	        // 세션에 인증코드를 저장해둠 (나중에 비교용)
+	        session.setAttribute("authCode", authCode);
+	        // 세션 유효시간 설정 (예: 3분 = 180초)
+	        session.setMaxInactiveInterval(180); 
+	        
+	        return "success";
+	    } else {
+	        return "fail_send";
+	    }
+	}
+	
+	@RequestMapping("/findIdAuthProcess")
+	public ModelAndView findIdAuthProcess(@RequestParam("email") String email, 
+	                                      @RequestParam("inputCode") String inputCode,
+	                                      HttpSession session) {
+	    ModelAndView mv = new ModelAndView();
+	    
+	    // 세션에 저장된 진짜 인증코드 가져오기
+	    String realCode = (String) session.getAttribute("authCode");
+	    
+	    // 코드 일치 여부 확인
+	    if (realCode != null && realCode.equals(inputCode)) {
+	        // 일치하면 DB에서 아이디 조회해서 결과 페이지로
+	        UserVO resultUser = memberService.findUserByEmail(email);
+	        mv.addObject("resultUser", resultUser);
+	        mv.setViewName("member/findIdResult");
+	        
+	        // 인증 성공했으니 세션의 코드는 삭제
+	        session.removeAttribute("authCode");
+	    } else {
+	        // 불일치
+	        mv.addObject("msg", "인증번호가 일치하지 않거나 만료되었습니다.");
+	        mv.setViewName("member/findId");
+	    }
+	    
+	    return mv;
+	}
+
+
 	
 }

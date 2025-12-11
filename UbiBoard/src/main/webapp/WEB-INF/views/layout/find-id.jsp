@@ -12,27 +12,101 @@
 
 <link rel="stylesheet" type="text/css" href="${contextPath}/static/member/css/import.css"/>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <title>서산시청 통합로그인 - 아이디 찾기</title>
 
 <script>
-	function findIdCheck() {
-		var name = document.getElementById("name");
-		var email = document.getElementById("email");
+    // 인증 완료 여부를 저장할 변수
+    var isCertified = false;
 
-		if(name.value == "") {
-			alert("이름을 입력해주세요.");
-			name.focus();
-			return;
-		}
-		if(email.value == "") {
-			alert("이메일을 입력해주세요.");
-			email.focus();
-			return;
-		}
+    // 1. 인증번호 발송 함수
+    function sendAuthNum() {
+        var name = $("#name").val();
+        var email = $("#email").val();
 
-		// 폼 전송
-		document.findIdForm.submit();
-	}
+        if(name == "") {
+            alert("이름을 입력해주세요.");
+            $("#name").focus();
+            return;
+        }
+        if(email == "") {
+            alert("이메일을 입력해주세요.");
+            $("#email").focus();
+            return;
+        }
+
+        // AJAX로 서버에 인증번호 발송 요청
+        $.ajax({
+            url: "${contextPath}/member/sendAuthCode", // 컨트롤러 주소
+            type: "POST",
+            data: {
+                name: name,
+                email: email
+            },
+            success: function(result) {
+                if(result === "success") {
+                    alert("인증번호가 이메일로 발송되었습니다.");
+                    // 인증번호 입력란 활성화 등의 처리 가능
+                } else if(result === "fail_no_user") {
+                    alert("일치하는 회원 정보가 없습니다.");
+                } else {
+                    alert("메일 발송 중 오류가 발생했습니다.");
+                }
+            },
+            error: function() {
+                alert("서버 통신 오류입니다.");
+            }
+        });
+    }
+
+    // 2. 인증번호 확인 함수
+    function checkAuthNum() {
+        var inputCode = $("#authnumber").val();
+        var email = $("#email").val();
+
+        if(inputCode == "") {
+            alert("인증번호를 입력해주세요.");
+            return;
+        }
+
+        $.ajax({
+            url: "${contextPath}/member/checkAuthCode", // 컨트롤러 주소
+            type: "POST",
+            data: {
+                email: email, // 세션 키 구분을 위해 이메일도 같이 보냄
+                inputCode: inputCode
+            },
+            success: function(result) {
+                if(result === "success") {
+                    alert("인증에 성공하였습니다.");
+                    isCertified = true; // 인증 성공 플래그 true
+                    
+                    // 인증 완료 후 입력창 막기 (선택사항)
+                    $("#authnumber").prop("readonly", true);
+                    $("#email").prop("readonly", true);
+                    $("#name").prop("readonly", true);
+                } else {
+                    alert("인증번호가 일치하지 않습니다.");
+                    isCertified = false;
+                }
+            },
+            error: function() {
+                alert("서버 통신 오류입니다.");
+            }
+        });
+    }
+
+    // 3. 최종 아이디 찾기 요청
+    function findIdCheck() {
+        if(!isCertified) {
+            alert("이메일 인증을 먼저 완료해주세요.");
+            return;
+        }
+        
+        // 인증이 완료되었으므로 폼 전송
+        document.findIdForm.submit();
+    }
 </script>
 </head>
 <body>
@@ -90,6 +164,14 @@
 							<th>이메일</th>
 							<td>
 								<input type="text" name="email" id="email" style="width:250px;" placeholder="가입하신 이메일을 입력하세요">
+                                <button type="button" class="btn_gray ml10" style="height:30px; line-height:30px; padding:0 10px;" onclick="sendAuthNum()">인증번호 발송</button>
+							</td>
+						</tr>
+						<tr>
+							<th>인증번호</th>
+							<td>
+								<input type="text" name="authnumber" id="authnumber" style="width:250px;" placeholder="인증 번호를 입력하세요">
+                                <button type="button" class="btn_blue ml10" style="height:30px; line-height:30px; padding:0 10px;" onclick="checkAuthNum()">인증확인</button>
 							</td>
 						</tr>
 					</table>

@@ -8,7 +8,7 @@
                            http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd">
 	<mybatis-spring:scan
 		base-package="com.ubintis.board.mapper" />
-		
+
 
 	<!-- Root Context: defines shared resources visible to all other web components -->
 	<bean id="hikariConfig" class="com.zaxxer.hikari.HikariConfig">
@@ -33,11 +33,29 @@
 
 		<property name="mapperLocations"
 			value="classpath:com/ubintis/board/mapper/*.xml" />
-		<property name="typeAliasesPackage" value="com.ubintis.board.vo" />
+		<property name="typeAliasesPackage"
+			value="com.ubintis.board.vo" />
 		<property name="configuration">
 			<bean class="org.apache.ibatis.session.Configuration">
 				<property name="mapUnderscoreToCamelCase" value="true" />
 			</bean>
+		</property>
+	</bean>
+
+	<!-- 이메일 인증관련 -->
+	<bean id="mailSender"
+		class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host" value="smtp.gmail.com" />
+		<property name="port" value="587" />
+		<property name="username" value="dbs0877@gmail.com" />
+		<property name="password" value="ghdz ayis imgn lebd" />
+		<property name="javaMailProperties">
+			<props>
+				<prop key="mail.transport.protocol">smtp</prop>
+				<prop key="mail.smtp.auth">true</prop>
+				<prop key="mail.smtp.starttls.enable">true</prop>
+				<prop key="mail.debug">true</prop>
+			</props>
 		</property>
 	</bean>
 
