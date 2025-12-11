@@ -60,4 +60,9 @@
 	SELECT * FROM users
 	WHERE email = #{email}
 	</select>
+	
+	<select id="findId" parameterType="String" resultType="UserVO">
+	SELECT * FROM users
+	WHERE name = #{name} AND email = #{email]
+	</select>
 </mapper>

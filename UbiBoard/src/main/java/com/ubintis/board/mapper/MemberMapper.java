@@ -23,5 +23,7 @@ public interface MemberMapper {
 	public void updateMember(UserVO userVO);
 
 	public UserVO findUserByEmail(String email);
+
+	public UserVO findId(String name, String email);
 	
 }

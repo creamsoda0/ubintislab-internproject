@@ -61,28 +61,27 @@
     }
 
     // 2. 인증번호 확인 함수
+	// 인증확인 버튼을 눌렀을 때 실행되는 함수
     function checkAuthNum() {
         var inputCode = $("#authnumber").val();
-        var email = $("#email").val();
-
+        
         if(inputCode == "") {
             alert("인증번호를 입력해주세요.");
             return;
         }
 
         $.ajax({
-            url: "${contextPath}/member/checkAuthCode", // 컨트롤러 주소
+            url: "${contextPath}/member/checkAuthCode", // [수정] AJAX 전용 컨트롤러 주소
             type: "POST",
             data: {
-                email: email, // 세션 키 구분을 위해 이메일도 같이 보냄
                 inputCode: inputCode
             },
             success: function(result) {
                 if(result === "success") {
                     alert("인증에 성공하였습니다.");
-                    isCertified = true; // 인증 성공 플래그 true
+                    isCertified = true; // 인증 완료 플래그 세팅
                     
-                    // 인증 완료 후 입력창 막기 (선택사항)
+                    // 입력창 막기
                     $("#authnumber").prop("readonly", true);
                     $("#email").prop("readonly", true);
                     $("#name").prop("readonly", true);
@@ -97,14 +96,14 @@
         });
     }
 
-    // 3. 최종 아이디 찾기 요청
+    // 맨 아래 [아이디 찾기] 버튼을 눌렀을 때 실행되는 함수
     function findIdCheck() {
         if(!isCertified) {
             alert("이메일 인증을 먼저 완료해주세요.");
             return;
         }
         
-        // 인증이 완료되었으므로 폼 전송
+        // 인증이 끝났으므로 폼을 전송 -> /findIdProcess (페이지 이동)
         document.findIdForm.submit();
     }
 </script>

@@ -103,6 +103,12 @@ public class MemberServiceImpl implements MemberService {
 	    }
 	}
 
+	@Override
+	public UserVO findId(String name, String email) {
+		// TODO Auto-generated method stub
+		return mapper.findId(name, email);
+	}
+
 
 
 }

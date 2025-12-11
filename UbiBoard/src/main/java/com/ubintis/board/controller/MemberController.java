@@ -215,14 +215,7 @@ public class MemberController {
 		mav.setViewName("/layout/find-id");
 		return mav;
 	}
-	@RequestMapping ("findIdProcess")
-	public ModelAndView findIdProcess() {
-		ModelAndView mav = new ModelAndView();
-		mav.setViewName("redirect:/default");
-		
-		
-		return mav;
-	}
+
 	
 	@ResponseBody
 	@RequestMapping("/sendAuthCode")
@@ -250,33 +243,37 @@ public class MemberController {
 	    }
 	}
 	
-	@RequestMapping("/findIdAuthProcess")
-	public ModelAndView findIdAuthProcess(@RequestParam("email") String email, 
-	                                      @RequestParam("inputCode") String inputCode,
-	                                      HttpSession session) {
-	    ModelAndView mv = new ModelAndView();
-	    
-	    // 세션에 저장된 진짜 인증코드 가져오기
-	    String realCode = (String) session.getAttribute("authCode");
-	    
-	    // 코드 일치 여부 확인
-	    if (realCode != null && realCode.equals(inputCode)) {
-	        // 일치하면 DB에서 아이디 조회해서 결과 페이지로
-	        UserVO resultUser = memberService.findUserByEmail(email);
-	        mv.addObject("resultUser", resultUser);
-	        mv.setViewName("member/findIdResult");
-	        
-	        // 인증 성공했으니 세션의 코드는 삭제
-	        session.removeAttribute("authCode");
-	    } else {
-	        // 불일치
-	        mv.addObject("msg", "인증번호가 일치하지 않거나 만료되었습니다.");
-	        mv.setViewName("member/findId");
-	    }
-	    
-	    return mv;
-	}
+	@ResponseBody // 문자열만 반환
+    @RequestMapping("/checkAuthCode") 
+    public String checkAuthCode(@RequestParam("inputCode") String inputCode, HttpSession session) {
+        
+        String realCode = (String) session.getAttribute("authCode");
+        
+        if (realCode != null && realCode.equals(inputCode)) {
+            return "success"; // 일치함
+        } else {
+            return "fail";    // 불일치
+        }
+    }
 
-
+	@RequestMapping("/findIdProcess") // @ResponseBody 없음 (페이지 이동)
+    public ModelAndView findIdProcess(@RequestParam("email") String email, 
+                                      @RequestParam("name") String name) {
+        
+        ModelAndView mv = new ModelAndView();
+        
+        // 이름과 이메일로 DB 조회
+        UserVO resultUser = memberService.findId(name, email); // Service에 이 메서드 필요 (이전 답변 참조)
+        
+        if (resultUser != null) {
+            mv.addObject("resultUser", resultUser);
+            mv.setViewName("member/findIdResult"); // 결과 JSP로 이동
+        } else {
+            mv.addObject("msg", "일치하는 회원 정보가 없습니다.");
+            mv.setViewName("member/findId"); // 다시 입력창으로
+        }
+        
+        return mv;
+    }
 	
 }
