@@ -315,7 +315,37 @@ public class MemberController {
 	    }
 	}
 	
-	/*
-	 * @RequestMapping("/resetPwPage") public ModelAndView resetPwPage ()
-	 */
+	// 비밀번호 재설정 페이지로 이동
+	 @RequestMapping("/resetPwPage") 
+	 public ModelAndView resetPwPage(@RequestParam("userId") String userId) {
+		 ModelAndView mav = new ModelAndView();
+		 mav.setViewName("/layout/reset-pw");
+		 mav.addObject("userId", userId);
+		 return mav;
+	 }
+	 // 비밀번호 재설정로직입니다.
+	 // 예외처리 필요함 데이터를 넣는 경우
+	 @RequestMapping("/resetPwProcess")
+	 public ModelAndView resetPwProcess (@RequestParam("userPw") String password, @RequestParam("userId") String userId) {
+		 ModelAndView mav = new ModelAndView();
+		 
+		 int result = memberService.updateUserPw(userId, password);
+		 if (result > 0) {
+		        // 성공 (1개 이상의 행이 업데이트됨)
+		        System.out.println("비밀번호 변경 성공!");
+		        mav.setViewName("/layout/reset-pwsuccess");
+		        
+		    } else {
+		        // 실패 (업데이트된 행이 없음 -> 아이디가 잘못되었거나 DB 오류)
+		        System.out.println("비밀번호 변경 실패");
+		        
+		        // 실패 메시지를 담아서 다시 비밀번호 변경 페이지(또는 에러페이지)로 보냄
+		        mav.addObject("msg", "비밀번호 변경에 실패했습니다. 다시 시도해주세요.");
+		        
+		        // 다시 입력 페이지로 돌아가려면 userId가 필요하므로 다시 담아줌
+		        mav.addObject("userId", userId); 
+		        mav.setViewName("redirect:/resetPwPage");
+		    } 
+		 return mav;
+	 }
 }

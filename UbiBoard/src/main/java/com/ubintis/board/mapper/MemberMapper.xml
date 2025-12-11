@@ -70,4 +70,10 @@
 	SELECT * FROM users
 	WHERE user_id = #{userId} AND email = #{email}
 	</select>
+	
+	<update id="updateUserPw">
+	UPDATE users 
+	SET password = #{password}
+	WHERE user_id = #{userId}
+	</update>
 </mapper>

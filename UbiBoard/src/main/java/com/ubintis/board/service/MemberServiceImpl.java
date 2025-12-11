@@ -105,14 +105,19 @@ public class MemberServiceImpl implements MemberService {
 
 	@Override
 	public UserVO findId(String name, String email) {
-		// TODO Auto-generated method stub
+		
 		return mapper.findId(name, email);
 	}
 
 	@Override
 	public UserVO findUserByIdEmail(String userId, String email) {
-		// TODO Auto-generated method stub
+		
 		return mapper.findUserByIdEmail(userId, email);
+	}
+
+	@Override
+	public int updateUserPw(String userId, String password) {
+		return mapper.updateUserPw(userId, password);
 	}
 
 

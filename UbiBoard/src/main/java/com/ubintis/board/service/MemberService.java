@@ -25,4 +25,6 @@ public interface MemberService {
 	public UserVO findId(String name, String email);
 
 	public UserVO findUserByIdEmail(String userId, String email);
+
+	public int updateUserPw(String userId, String password);
 }
