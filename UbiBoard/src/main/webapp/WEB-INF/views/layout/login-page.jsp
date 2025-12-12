@@ -3,106 +3,224 @@
 
 <c:set var="contextPath" value="${pageContext.request.contextPath}" />
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta http-equiv="content-type" content="text/html;charset=utf-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no"/>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <title>로그인 | 유비앤티스랩</title>
 
-<link rel="stylesheet" type="text/css" href="${contextPath}/static/member/css/import_login.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
 
-<title>서산시청 통합로그인</title>
+    <style>
+        /* =========================================
+           로그인 페이지 전용 스타일 (UBNTIS Style)
+           ========================================= */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f4f6f9; /* 차분한 배경색 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #333;
+        }
 
-<script>
-	function loginCheck() {
-		var id = document.getElementById("userId");
-		var pw = document.getElementById("password");
+        /* 로그인 컨테이너 (카드) */
+        .login-wrapper {
+            width: 100%;
+            max-width: 420px;
+            padding: 20px;
+        }
 
-		if (id.value == "") {
-			alert("아이디를 입력해주세요.");
-			id.focus();
-			return false;
-		}
-		if (pw.value == "") {
-			alert("비밀번호를 입력해주세요.");
-			pw.focus();
-			return false;
-		}
-		
-		// 폼 전송
-		document.getElementById("loginForm").submit();
-	}
-</script>
+        .login-card {
+            background: #fff;
+            padding: 50px 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05); /* 부드러운 그림자 */
+            text-align: center;
+        }
+
+        /* 로고 영역 */
+        .logo-area { margin-bottom: 40px; }
+        .logo-area h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2c3e50; /* 다크 네이비 */
+            letter-spacing: -0.5px;
+        }
+        .logo-area p {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #888;
+        }
+        /* 로고 이미지가 있을 경우 아래 주석 해제하여 사용 */
+        /* .logo-img { max-width: 180px; height: auto; } */
+
+        /* 폼 영역 */
+        .login-form .input-group { margin-bottom: 15px; text-align: left; }
+        .login-form label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #555;
+        }
+        .login-form input[type="text"],
+        .login-form input[type="password"] {
+            width: 100%;
+            height: 48px;
+            padding: 0 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 15px;
+            transition: all 0.2s;
+            background-color: #fafafa;
+        }
+        .login-form input:focus {
+            border-color: #2c3e50;
+            background-color: #fff;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+        }
+
+        /* 에러 메시지 */
+        .error-msg {
+            background-color: #ffebee;
+            color: #d32f2f;
+            font-size: 13px;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        /* 로그인 버튼 */
+        .btn-login {
+            width: 100%;
+            height: 50px;
+            margin-top: 10px;
+            background-color: #2c3e50; /* 회사 테마 컬러 (Navy) */
+            color: #fff;
+            font-size: 16px;
+            font-weight: 700;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .btn-login:hover { background-color: #1a252f; }
+
+        /* 하단 링크 (회원가입/찾기) */
+        .login-links {
+            margin-top: 25px;
+            display: flex;
+            justify-content: center;
+            gap: 15px; /* 간격 */
+            font-size: 13px;
+            color: #888;
+        }
+        .login-links a {
+            text-decoration: none;
+            color: #666;
+            transition: color 0.2s;
+        }
+        .login-links a:hover { color: #2c3e50; text-decoration: underline; }
+        .login-links span { color: #ddd; } /* 구분선 */
+
+        /* 하단 카피라이트 */
+        .footer-copy {
+            margin-top: 40px;
+            font-size: 12px;
+            color: #aaa;
+            text-align: center;
+        }
+    </style>
+
+    <script>
+        function loginCheck() {
+            var id = document.getElementById("userId");
+            var pw = document.getElementById("password");
+
+            if (id.value.trim() == "") {
+                alert("아이디를 입력해주세요.");
+                id.focus();
+                return false;
+            }
+            if (pw.value.trim() == "") {
+                alert("비밀번호를 입력해주세요.");
+                pw.focus();
+                return false;
+            }
+            
+            // 폼 전송
+            document.getElementById("loginForm").submit();
+        }
+
+        // 엔터키 입력 시 로그인 실행
+        document.addEventListener("DOMContentLoaded", function() {
+            var inputPw = document.getElementById("password");
+            inputPw.addEventListener("keypress", function(event) {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    loginCheck();
+                }
+            });
+        });
+    </script>
 </head>
 <body>
-<div id="header">
-	<h1><img src="${contextPath}/static/member/img/logo.png" alt="서산시 상단로고" /></h1>
-	<nav>
-		<ul>
-			<li><a href="${contextPath}/member/join" class="member">통합회원가입</a></li>
-			<li><a href="${contextPath}/member/findId" class="id">아이디찾기</a></li>
-			<li><a href="${contextPath}/member/findPw" class="pw">비밀번호재발급</a></li>
-		</ul>
-	</nav>
-</div>
-<div id="content">
-	<div class="bg_color">
-		<div class="wrap">
-			<div class="txt">
-				<h3>"소통,참여 도시, 서산에 오신 것을 환영합니다."</h3>
-				<p>서산시 홈페이지에서는 보다 많은 사용자들의 원활한 서비스 이용과 온라인상에서의 익명사용으로 인한 피해 등을 방지하기 위해 회원님에 대한 본인확인을 시행하고 있습니다.</p>
-			</div>
-			
-			<div class="login_box">
-				<form id="loginForm" name="loginForm" action="${contextPath}/member/loginProcess" method="post">
-					
-					<c:if test="${not empty msg}">
-						<p style="color:red; font-weight:bold; text-align:center; margin-bottom:10px;">${msg}</p>
-					</c:if>
 
-					<ul>
-						<li class="fl">
-							<ul>
-								<li>
-									<label for="userId">아이디</label>
-									<input type="text" id="userId" name="userId" placeholder="아이디를 입력해주세요." style="width:100%;" />
-								</li>
-								<li class="mt14">
-									<label for="password">비밀번호</label>
-									<input type="password" id="password" name="password" placeholder="비밀번호를 입력해주세요." style="width:100%;" />
-								</li>
-							</ul>					
-						</li>					
-						<li><button type="button" class="btn_login" onclick="loginCheck()">로그인</button></li>
-					</ul>
-					<p>※ 비밀번호 입력 5회 오류시 비밀번호를 재발급해야 이용할 수 있습니다.</p>
-				</form>
-			</div>
-		</div>
-	</div>
-</div>
-<footer>
-	<div id="footer">
-		<div class="foot_bottom">
-			<div class="foot_inner">
-				<h2><img src="${contextPath}/img/foot_logo.png" alt="서산시 하단로고" /></h2>
-				<div class="foot_info">
-					<h3 class="hid" style="display:none">하단 메뉴</h3>
-					<ul class="foot_menu">
-						<li><a href="http://www.seosan.go.kr//www/sub.do?key=2469" target="_blank" title="새창열림">개인정보처리방침</a></li>
-						<li><a href="http://www.seosan.go.kr//www/sub.do?key=1251" target="_blank" title="새창열림">이메일무단수집거부</a></li>
-						<li><a href="http://www.seosan.go.kr//www/sub.do?key=1350" target="_blank" title="새창열림">홈페이지 개선의견</a></li>
-						<li><a href="http://www.seosan.go.kr//www/sub.do?key=1253" target="_blank" title="새창열림">RSS 서비스</a></li>
-						<li><a href="http://www.seosan.go.kr//www/sub.do?key=2237" target="_blank" title="새창열림">뷰어다운로드</a></li>
-						<li><a href="http://www.seosan.go.kr//www/sub.do?key=1383" target="_blank" title="새창열림">오시는길</a></li>
-					</ul>
-					<p class="copy notranslate">[31974] 충남 서산시 관아문길 1 (읍내동)  / TEL:041-660-2114 / FAX:041-660-2357
-						<br /> COPYRIGHT 2016(C) THE CITY OF SEOSAN. ALL RIGHTS RESERVED.</p>
-				</div>
-			</div>
-		</div>
-	</div>
-</footer>
+    <div class="login-wrapper">
+        <div class="login-card">
+            
+            <div class="logo-area">
+                <%-- <img src="${contextPath}/static/member/img/logo_ubntis.png" alt="UBNTIS LAB" class="logo-img"> --%>
+                
+                <h1>UBNTIS LAB</h1>
+                <p>유비앤티스랩 서비스 이용을 환영합니다.</p>
+            </div>
+
+            <form id="loginForm" name="loginForm" action="${contextPath}/member/loginProcess" method="post" class="login-form">
+                
+                <c:if test="${not empty msg}">
+                    <div class="error-msg">
+                        ⚠️ ${msg}
+                    </div>
+                </c:if>
+
+                <div class="input-group">
+                    <label for="userId">아이디</label>
+                    <input type="text" id="userId" name="userId" placeholder="아이디를 입력하세요" autocomplete="off" />
+                </div>
+
+                <div class="input-group">
+                    <label for="password">비밀번호</label>
+                    <input type="password" id="password" name="password" placeholder="비밀번호를 입력하세요" />
+                </div>
+
+                <button type="button" class="btn-login" onclick="loginCheck()">로그인</button>
+            </form>
+
+            <div class="login-links">
+                <a href="${contextPath}/member/join">회원가입</a>
+                <span>|</span>
+                <a href="${contextPath}/member/findId">아이디 찾기</a>
+                <span>|</span>
+                <a href="${contextPath}/member/findPw">비밀번호 재발급</a>
+            </div>
+
+        </div>
+
+        <div class="footer-copy">
+            &copy; UBNTIS LAB Corp. All Rights Reserved.
+        </div>
+    </div>
+
 </body>
 </html>

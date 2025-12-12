@@ -1,0 +1,134 @@
+@charset "UTF-8";
+
+/* =========================================
+   헤더 전용 스타일 (Modern Red Cross Theme)
+   ========================================= */
+
+/* 초기화 */
+.rc-header ul, .rc-header li { list-style: none; margin: 0; padding: 0; }
+.rc-header a { text-decoration: none; color: inherit; }
+
+.rc-header {
+    width: 100%;
+    background-color: #fff;
+    border-bottom: 1px solid #ddd;
+    font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+    position: relative;
+    z-index: 1000;
+}
+
+/* 1. 상단 유틸리티 바 (로그인/회원가입 등) */
+.utility-bar {
+    background-color: #f8f9fa; /* 아주 연한 회색 배경 */
+    border-bottom: 1px solid #eee;
+    height: 40px;
+    display: flex;
+    align-items: center;
+}
+
+.utility-inner {
+    width: 100%;
+    max-width: 1200px; /* 게시판 max-width와 통일 */
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: flex-end; /* 오른쪽 정렬 */
+}
+
+.utility-menu {
+    display: flex;
+    align-items: center;
+    gap: 20px; /* 항목 간 간격 */
+    font-size: 13px;
+    color: #666;
+}
+
+.utility-menu li { display: flex; align-items: center; position: relative; }
+
+/* 구분선 (Pipe) 처리 - HTML | 문자 대신 CSS로 처리하여 깔끔하게 */
+.utility-menu li:not(:last-child)::after {
+    content: "";
+    display: block;
+    width: 1px;
+    height: 10px;
+    background: #ccc;
+    position: absolute;
+    right: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+/* 마지막 항목이나, 텍스트가 아닌 그룹 등에는 구분선 제외가 필요할 수 있음 */
+.utility-menu .no-line::after { display: none; }
+
+.utility-menu a:hover { color: #d32f2f; font-weight: 500; } /* 호버 시 적십자 레드 */
+
+/* 2. 로그인 사용자 정보 & 타이머 */
+.user-info { font-weight: 600; color: #333; }
+.user-id { color: #888; font-weight: 400; font-size: 12px; margin-left: 2px; }
+
+/* 타이머 디자인 */
+.timer-wrap {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border: 1px solid #d32f2f;
+    border-radius: 12px;
+    padding: 2px 10px;
+    margin-right: 10px;
+}
+.timer-text { color: #d32f2f; font-size: 12px; font-weight: bold; margin-right: 5px; }
+.btn-extend {
+    background: #d32f2f;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 11px;
+    padding: 1px 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.btn-extend:hover { background: #b71c1c; }
+
+/* 3. 하단 메인 바 (로고 + 모바일 메뉴) */
+.main-bar {
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* 로고 (텍스트 혹은 이미지 대체 가능) */
+.logo a {
+    font-size: 24px;
+    font-weight: 800;
+    color: #d32f2f; /* 적십자 레드 */
+    letter-spacing: -0.5px;
+}
+
+/* 모바일 햄버거 메뉴 버튼 */
+.btn-hamburger {
+    display: none; /* PC에서는 숨김 */
+    width: 30px; height: 30px;
+    background: url('${contextPath}/static/main/images/btn_menu.png') no-repeat center; /* 이미지 필요 시 */
+    /* 이미지가 없다면 CSS로 3단 선 구현 가능 */
+    position: relative;
+    cursor: pointer;
+}
+/* CSS로 햄버거 아이콘 그리기 (이미지 없을 때 대비) */
+.btn-hamburger span {
+    display: block; width: 24px; height: 2px; background: #333; position: absolute; left: 3px;
+}
+.btn-hamburger span:nth-child(1) { top: 6px; }
+.btn-hamburger span:nth-child(2) { top: 14px; }
+.btn-hamburger span:nth-child(3) { top: 22px; }
+
+
+/* 반응형 */
+@media screen and (max-width: 768px) {
+    .utility-bar { display: none; } /* 모바일에서는 상단 유틸리티 숨기거나 메뉴 안으로 이동 */
+    .btn-hamburger { display: block; } /* 햄버거 버튼 노출 */
+    .main-bar { height: 60px; }
+}
