@@ -27,4 +27,10 @@ public interface MemberService {
 	public UserVO findUserByIdEmail(String userId, String email);
 
 	public int updateUserPw(String userId, String password);
+
+	public int deleteMember(String userId);
+
+	public int migrateMember(UserVO userVO, String reason);
+
+	
 }

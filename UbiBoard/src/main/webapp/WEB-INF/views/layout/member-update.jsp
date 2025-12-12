@@ -280,7 +280,7 @@
         <h1><a href="${contextPath}/main">UBNTIS LAB</a></h1>
         <div class="header-util">
             <a href="${contextPath}/member/logout">로그아웃</a>
-            <a href="${contextPath}/member/delete">회원탈퇴</a>
+            <a href="${contextPath}/member/goMemberDelete">회원탈퇴</a>
         </div>
     </header>
 

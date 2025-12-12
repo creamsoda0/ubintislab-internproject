@@ -71,9 +71,11 @@ public class MemberController {
 	public ModelAndView joinProcess (UserVO userVO) {
 		ModelAndView mav = new ModelAndView();
 		mav.setViewName("layout/join-success");
+		
+		
+		//email 나눠진거 합치는 로직
 		if (userVO.getEmailId() != null && !userVO.getEmailId().isEmpty() &&
 		        userVO.getEmailDomain() != null && !userVO.getEmailDomain().isEmpty()) {
-		        
 		        String fullEmail = userVO.getEmailId() + "@" + userVO.getEmailDomain();
 		        userVO.setEmail(fullEmail); // 합친 값을 VO의 email 변수에 저장
 		    }
@@ -84,15 +86,12 @@ public class MemberController {
 	    if (userVO.getZipCode() != null && !userVO.getZipCode().isEmpty()) {
 	        fullAddress += "(" + userVO.getZipCode() + ") ";
 	    }
-	    
 	    if (userVO.getAddr1() != null) {
 	        fullAddress += userVO.getAddr1();
 	    }
-	    
 	    if (userVO.getAddr2() != null && !userVO.getAddr2().isEmpty()) {
 	        fullAddress += " " + userVO.getAddr2();
 	    }
-	    
 	    // 합친 주소를 VO의 address 변수에 저장
 	    userVO.setAddress(fullAddress);
 	    // 현재 시간 반영
@@ -366,5 +365,57 @@ public class MemberController {
 		        mav.setViewName("redirect:/resetPwPage");
 		    } 
 		 return mav;
+	 }
+	 
+	 @RequestMapping("/goMemberDelete")
+	 public ModelAndView goMemberDelete (HttpSession session) {
+		 ModelAndView mav = new ModelAndView();
+		 mav.setViewName("/layout/member-delete");
+		 return mav;
+	 }
+	 
+	 @RequestMapping("/memberDeleteProcess")
+	 public ModelAndView memberDeleteProcess(HttpSession session, UserVO userVO, 
+	                                         @RequestParam("reason") String reason) {
+	     ModelAndView mav = new ModelAndView();
+	     UserVO loginCheck = memberService.login(userVO);
+
+	     // 비밀번호 불일치 (로그인 실패)
+	     if (loginCheck == null) {
+	         mav.addObject("msg", "비밀번호가 일치하지 않습니다.");
+	         mav.setViewName("member/goMemberDelete");
+	         return mav; // 여기서 바로 종료
+	     }
+
+	     // 회원 데이터 백업 (탈퇴 테이블로 이관)
+	     // 중요: userVO가 아니라 DB에서 조회한 loginCheck(전체 정보)를 넘겨야 함
+	     int migrateResult = memberService.migrateMember(loginCheck, reason);
+
+	     // 이관 실패
+	     if (migrateResult <= 0) {
+	         mav.addObject("msg", "탈퇴 데이터 백업 중 오류가 발생했습니다. 관리자에게 문의하세요.");
+	         mav.setViewName("member/goMemberDelete");
+	         return mav;
+	     }
+
+	     // 원본 회원 데이터 삭제
+	     int deleteResult = memberService.deleteMember(userVO.getUserId());
+
+	     // 삭제 실패
+	     if (deleteResult <= 0) {
+	         // 이미 백업은 되었는데 삭제가 안 된 상황 (Transaction 처리가 안 되어 있다면 데이터가 꼬일 수 있음)
+	         mav.addObject("msg", "회원 삭제 처리에 실패했습니다. 다시 시도해주세요.");
+	         mav.setViewName("member/goMemberDelete");
+	         return mav;
+	     }
+
+	     // 모든 과정 성공
+	     session.invalidate(); // 세션 만료 (로그아웃)
+	     
+	     mav.addObject("msg", "회원탈퇴가 정상적으로 처리되었습니다. 그동안 이용해주셔서 감사합니다.");
+	     mav.addObject("url", "/main"); 
+	     mav.setViewName("common/alert"); 
+
+	     return mav;
 	 }
 }

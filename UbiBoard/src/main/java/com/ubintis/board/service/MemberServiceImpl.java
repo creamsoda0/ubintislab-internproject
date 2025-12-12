@@ -137,6 +137,17 @@ public class MemberServiceImpl implements MemberService {
 		return mapper.updateUserPw(userId, password);
 	}
 
+	@Override
+	public int deleteMember(String userId) {
+		return mapper.deleteMember(userId);
+	}
+
+	@Override
+	public int migrateMember(UserVO userVO, String reason) {
+		// TODO Auto-generated method stub
+		return mapper.migrateMember(userVO, reason);
+	}
+
 
 
 }

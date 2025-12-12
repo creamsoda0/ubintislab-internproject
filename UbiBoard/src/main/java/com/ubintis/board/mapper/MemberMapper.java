@@ -29,5 +29,10 @@ public interface MemberMapper {
 	public UserVO findUserByIdEmail(@Param("userId") String userId,@Param("email") String email);
 
 	public int updateUserPw(@Param("userId") String userId,@Param("password") String password);
+
+	// 이거 수정봐야함
+	public int deleteMember(String userId);
+
+	public int migrateMember(@Param("vo") UserVO userVO, @Param("reason") String reason);
 	
 }

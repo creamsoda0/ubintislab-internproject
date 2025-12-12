@@ -17,6 +17,10 @@ public class UserWithDrawVO {
 	private String hintAnswer;
 	private String refreshToken;
 	private Date withdrawDate;
+	private Date joinDate;
+	private String reason;
+	
+	
 	// joindate 추가해야할 수도 있음.
 	public int getWithdrawId() {
 		return withdrawId;
@@ -101,6 +105,18 @@ public class UserWithDrawVO {
 	}
 	public void setWithdrawDate(Date withdrawDate) {
 		this.withdrawDate = withdrawDate;
+	}
+	public Date getJoinDate() {
+		return joinDate;
+	}
+	public void setJoinDate(Date joinDate) {
+		this.joinDate = joinDate;
+	}
+	public String getReason() {
+		return reason;
+	}
+	public void setReason(String reason) {
+		this.reason = reason;
 	}
 	
 	
