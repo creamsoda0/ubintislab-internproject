@@ -29,6 +29,8 @@ public class UserVO {
 	private String emailId;
 	private String emailDomain;
 	
+	// È¸¿ø Å»Åð Ã³¸®½Ã ÇÊ¿ä
+	private String reason;
 	
 	
 	
@@ -139,6 +141,12 @@ public class UserVO {
 	}
 	public void setEmailDomain(String emailDomain) {
 		this.emailDomain = emailDomain;
+	}
+	public String getReason() {
+		return reason;
+	}
+	public void setReason(String reason) {
+		this.reason = reason;
 	}
 	
 	

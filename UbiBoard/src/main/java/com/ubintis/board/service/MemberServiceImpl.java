@@ -11,6 +11,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ubintis.board.mapper.MemberMapper;
 import com.ubintis.board.vo.UserVO;
@@ -137,15 +138,23 @@ public class MemberServiceImpl implements MemberService {
 		return mapper.updateUserPw(userId, password);
 	}
 
-	@Override
-	public int deleteMember(String userId) {
-		return mapper.deleteMember(userId);
-	}
+	@Transactional(rollbackFor = Exception.class) // 하나라도 실패하면 자동 롤백
+	public boolean withdrawProcess(UserVO userVO, String reason) throws Exception {
+	    // 정보 조회 및 검증
+	    UserVO fullInfo = this.login(userVO);
+	    if (fullInfo == null) return false; // 비번 틀림
 
-	@Override
-	public int migrateMember(UserVO userVO, String reason) {
-		// TODO Auto-generated method stub
-		return mapper.migrateMember(userVO, reason);
+	    // 이관
+	    // (Service 내부에서 DAO 호출 시 fullInfo와 reason을 적절히 매핑해서 넘김)
+	    fullInfo.setReason(reason); // VO에 reason 필드가 있다고 가정
+	    int migrateResult = mapper.migrateMember(fullInfo); 
+	    if (migrateResult == 0) throw new Exception("Migration Failed");
+
+	    // 삭제
+	    int dResult = mapper.deleteMember(userVO.getUserId());
+	    if (dResult == 0) throw new Exception("Delete Failed");
+
+	    return true; // 성공
 	}
 
 

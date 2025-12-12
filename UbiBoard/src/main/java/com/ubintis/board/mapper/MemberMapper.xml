@@ -82,7 +82,6 @@
 
 	<insert id="migrateMember" parameterType="UserVO">
 		INSERT INTO user_withdraw (
-		user_no,
 		user_id,
 		password,
 		name,
@@ -97,20 +96,36 @@
 		reason,
 		withdraw_date
 		) VALUES (
-		#{vo.userNo},
-		#{vo.userId},
-		#{vo.password},
-		#{vo.name},
-		#{vo.birth},
-		#{vo.phone},
-		#{vo.address},
-		#{vo.email},
-		#{vo.emailAgreed},
-		#{vo.smsAgreed},
-		#{vo.hintAnswer},
-		#{vo.refreshToken},
+		#{userId},
+		#{password},
+		#{name},
+		#{birth},
+		#{phone},
+		#{address},
+		#{email},
+		#{emailAgreed},
+		#{smsAgreed},
+		#{hintAnswer},
+		#{refreshToken},
 		#{reason}, 
 		NOW()
 		)
 	</insert>
+	
+	<update id="deleteMember" parameterType="String">
+    UPDATE users
+    SET 
+        password = NULL,
+        name = NULL,
+        birth = NULL,
+        phone = NULL,
+        address = NULL,
+        email = NULL,
+        email_agreed = NULL, 
+        sms_agreed = NULL,
+        hint_answer = NULL,
+        refresh_token = NULL,
+        join_date = NOW()  
+    WHERE user_id = #{userId}
+	</update>
 </mapper>

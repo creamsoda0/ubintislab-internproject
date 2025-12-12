@@ -28,9 +28,7 @@ public interface MemberService {
 
 	public int updateUserPw(String userId, String password);
 
-	public int deleteMember(String userId);
-
-	public int migrateMember(UserVO userVO, String reason);
+	public boolean withdrawProcess(UserVO userVO, String reason) throws Exception;
 
 	
 }

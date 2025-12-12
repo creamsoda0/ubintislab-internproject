@@ -374,48 +374,30 @@ public class MemberController {
 		 return mav;
 	 }
 	 
+	 //회원탈퇴 프로세스
+	 // 직접적인 트랜잭션 구현은 impl에 구현했음
 	 @RequestMapping("/memberDeleteProcess")
-	 public ModelAndView memberDeleteProcess(HttpSession session, UserVO userVO, 
-	                                         @RequestParam("reason") String reason) {
+	 public ModelAndView memberDeleteProcess(HttpSession session, UserVO userVO, @RequestParam("reason") String reason) {
 	     ModelAndView mav = new ModelAndView();
-	     UserVO loginCheck = memberService.login(userVO);
 
-	     // 비밀번호 불일치 (로그인 실패)
-	     if (loginCheck == null) {
-	         mav.addObject("msg", "비밀번호가 일치하지 않습니다.");
-	         mav.setViewName("member/goMemberDelete");
-	         return mav; // 여기서 바로 종료
+	     try {
+	         boolean isSuccess = memberService.withdrawProcess(userVO, reason);
+	         
+	         if (isSuccess) {
+	             session.invalidate();
+	             mav.addObject("msg", "탈퇴되었습니다.");
+	             mav.addObject("url", "/main");
+	             mav.setViewName("/layout/member-deletesuccess");
+	         } else {
+	             mav.addObject("msg", "비밀번호가 일치하지 않습니다.");
+	             mav.setViewName("redirect:/member/goMemberDelete");
+	         }
+	     } catch (Exception e) {
+	         e.printStackTrace();
+	         mav.addObject("msg", "시스템 오류로 탈퇴에 실패했습니다.");
+	         mav.setViewName("redirect:/member/goMemberDelete");
 	     }
-
-	     // 회원 데이터 백업 (탈퇴 테이블로 이관)
-	     // 중요: userVO가 아니라 DB에서 조회한 loginCheck(전체 정보)를 넘겨야 함
-	     int migrateResult = memberService.migrateMember(loginCheck, reason);
-
-	     // 이관 실패
-	     if (migrateResult <= 0) {
-	         mav.addObject("msg", "탈퇴 데이터 백업 중 오류가 발생했습니다. 관리자에게 문의하세요.");
-	         mav.setViewName("member/goMemberDelete");
-	         return mav;
-	     }
-
-	     // 원본 회원 데이터 삭제
-	     int deleteResult = memberService.deleteMember(userVO.getUserId());
-
-	     // 삭제 실패
-	     if (deleteResult <= 0) {
-	         // 이미 백업은 되었는데 삭제가 안 된 상황 (Transaction 처리가 안 되어 있다면 데이터가 꼬일 수 있음)
-	         mav.addObject("msg", "회원 삭제 처리에 실패했습니다. 다시 시도해주세요.");
-	         mav.setViewName("member/goMemberDelete");
-	         return mav;
-	     }
-
-	     // 모든 과정 성공
-	     session.invalidate(); // 세션 만료 (로그아웃)
-	     
-	     mav.addObject("msg", "회원탈퇴가 정상적으로 처리되었습니다. 그동안 이용해주셔서 감사합니다.");
-	     mav.addObject("url", "/main"); 
-	     mav.setViewName("common/alert"); 
-
 	     return mav;
 	 }
+	
 }

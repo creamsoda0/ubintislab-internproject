@@ -33,6 +33,6 @@ public interface MemberMapper {
 	// 이거 수정봐야함
 	public int deleteMember(String userId);
 
-	public int migrateMember(@Param("vo") UserVO userVO, @Param("reason") String reason);
+	public int migrateMember(UserVO vo);
 	
 }
