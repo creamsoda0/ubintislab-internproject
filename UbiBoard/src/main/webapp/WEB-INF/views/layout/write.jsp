@@ -50,7 +50,7 @@
                                        readonly>
                                        
                                 <%-- 필요시 ID도 hidden으로 전송 --%>
-                                <%-- <input type="hidden" name="writerId" value="${sessionScope.loginUser.userId}"> --%>
+                                <input type="hidden" name="writerId" value="${sessionScope.loginUser.userId}"> 
                             </td>
                         </tr>
                         
@@ -107,6 +107,36 @@
             }
             
             return true;
+        }
+        function submitWrite() {
+
+            //  폼 데이터 객체 생성 (파일 포함 시 필수)
+            var form = $("form[name='writeForm']")[0]; // 폼 엘리먼트 선택
+            var formData = new FormData(form);
+
+            //  AJAX 전송
+            $.ajax({
+                url: "${contextPath}/clip/write", // Controller 매핑 주소
+                type: "POST",
+                enctype: 'multipart/form-data',   // 필수
+                data: formData,                   // FormData 객체 전송
+                processData: false,               // 필수: 데이터를 쿼리스트링으로 변환 금지
+                contentType: false,               // 필수: 헤더 자동 설정
+                cache: false,
+                success: function(response) {
+                    // Controller에서 리턴한 메시지(msg)를 받음
+                    alert(response); 
+                    
+                    // 성공 시 리스트로 이동 (메시지에 '성공'이나 '저장'이 포함된 경우)
+                    if(response.indexOf("저장되었습니다") > -1) {
+                        location.href = "${contextPath}/clip/list";
+                    }
+                },
+                error: function(xhr, status, error) {
+                    alert("에러가 발생했습니다: " + error);
+                    console.log(xhr.responseText);
+                }
+            });
         }
     </script>
 </body>

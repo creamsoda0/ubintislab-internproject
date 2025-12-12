@@ -12,6 +12,7 @@ public class MainBoardVO {
 	private Date modDate;
 	private int views;
 	private String comment;
+	private String filePath;
 	
 	public int getBoardId() {
 		return boardId;
@@ -60,6 +61,12 @@ public class MainBoardVO {
 	}
 	public void setComment(String comment) {
 		this.comment = comment;
+	}
+	public String getFilePath() {
+		return filePath;
+	}
+	public void setFilePath(String filePath) {
+		this.filePath = filePath;
 	}
 	
 	

@@ -109,7 +109,7 @@
             </div>
             
             <div class="btn-area">
-                <a href="${contextPath}/clip/write" class="btn-write">글쓰기</a>
+                <a href="${contextPath}/clip/goWrite" class="btn-write">글쓰기</a>
             </div>
         </div>
 
