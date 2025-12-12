@@ -134,9 +134,9 @@
 <div class="container">
     
     <header class="header">
-        <h1><a href="${contextPath}/main">UBNTIS LAB</a></h1>
+        <h1><a href="${contextPath}/default">UBNTIS LAB</a></h1>
         <div class="header-util">
-            <a href="${contextPath}/main">홈으로</a>
+            <a href="${contextPath}/default">홈으로</a>
         </div>
     </header>
 
@@ -151,7 +151,7 @@
             다시 만나 뵙기를 기대하겠습니다.
         </p>
 
-        <a href="${contextPath}/main" class="btn-home">메인페이지로 이동</a>
+        <a href="${contextPath}/default" class="btn-home">메인페이지로 이동</a>
     </div>
 
     <footer class="footer">
