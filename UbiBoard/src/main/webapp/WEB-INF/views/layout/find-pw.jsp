@@ -3,220 +3,373 @@
 
 <c:set var="contextPath" value="${pageContext.request.contextPath}" />
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta http-equiv="content-type" content="text/html;charset=utf-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no"/>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <title>비밀번호 찾기 | 유비앤티스랩</title>
 
-<link rel="stylesheet" type="text/css" href="${contextPath}/static/member/css/import.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<title>서산시청 통합로그인 - 비밀번호 찾기</title>
-
-<script>
-    var isCertified = false; // 인증 성공 여부
-
-    // 1. 인증번호 발송 (비밀번호 찾기용)
-    function sendAuthNum() {
-        var userId = $("#userId").val();
-        var name = $("#name").val();
-        var email = $("#email").val();
-
-        if(userId == "") {
-            alert("아이디를 입력해주세요.");
-            $("#userId").focus();
-            return;
-        }
-        if(name == "") {
-            alert("이름을 입력해주세요.");
-            $("#name").focus();
-            return;
-        }
-        if(email == "") {
-            alert("이메일을 입력해주세요.");
-            $("#email").focus();
-            return;
+    <style>
+        /* =========================================
+           비밀번호 찾기 페이지 스타일 (UBNTIS Style)
+           ========================================= */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+            line-height: 1.5;
         }
 
-        $.ajax({
-            url: "${contextPath}/member/sendAuthCodeForPw", // 비밀번호 찾기 전용 발송 URL 권장
-            type: "POST",
-            data: {
-                userId: userId,
-                name: name,
-                email: email
-            },
-            success: function(result) {
-                if(result === "success") {
-                    alert("인증번호가 이메일로 발송되었습니다.");
-                } else if(result === "fail_no_user") {
-                    alert("일치하는 회원 정보가 없습니다.\n(아이디, 이름, 이메일을 확인해주세요)");
-                } else {
-                    alert("메일 발송 중 오류가 발생했습니다.");
-                }
-            },
-            error: function() {
-                alert("서버 통신 오류입니다.");
-            }
-        });
-    }
-
-    // 2. 인증번호 확인
-    function checkAuthNum() {
-        var inputCode = $("#authnumber").val();
-        var email = $("#email").val(); // 세션 키 구분용
-
-        if(inputCode == "") {
-            alert("인증번호를 입력해주세요.");
-            return;
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
         }
 
-        $.ajax({
-            url: "${contextPath}/member/checkAuthCode", // 기존 인증확인 URL 재사용 가능
-            type: "POST",
-            data: {
-                inputCode: inputCode
-            },
-            success: function(result) {
-                if(result === "success") {
-                    alert("인증에 성공하였습니다.");
-                    isCertified = true;
-                    
-                    $("#authnumber").prop("readonly", true);
-                    $("#userId").prop("readonly", true);
-                    $("#name").prop("readonly", true);
-                    $("#email").prop("readonly", true);
-                } else {
-                    alert("인증번호가 일치하지 않습니다.");
-                    isCertified = false;
-                }
-            },
-            error: function() {
-                alert("서버 통신 오류입니다.");
-            }
-        });
-    }
+        /* 헤더 */
+        .header {
+            padding: 30px 40px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        .header h1 a { text-decoration: none; color: inherit; }
 
-    // 3. 다음 단계(비밀번호 재설정)로 이동
-    function findPwCheck() {
-        if(!isCertified) {
-            alert("이메일 인증을 먼저 완료해주세요.");
-            return;
+        .header-links a {
+            font-size: 13px;
+            color: #888;
+            text-decoration: none;
+            margin-left: 15px;
+        }
+        .header-links a:hover { color: #2c3e50; font-weight: 500; }
+
+        /* 단계 표시 (Step) - 3단계 */
+        .step-wrap {
+            padding: 40px 0 20px;
+            text-align: center;
+        }
+        .step-list {
+            display: inline-flex;
+            gap: 10px;
+            list-style: none;
+            color: #ccc;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        .step-list li { display: flex; align-items: center; }
+        .step-list li::after {
+            content: ">";
+            margin-left: 10px;
+            font-size: 12px;
+            color: #ddd;
+        }
+        .step-list li:last-child::after { display: none; }
+        
+        /* 활성화된 단계 (Step 1) */
+        .step-list li.active { color: #2c3e50; font-weight: 700; }
+        .step-list li.active span {
+            display: inline-block;
+            width: 24px; height: 24px;
+            background: #2c3e50;
+            color: #fff;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 24px;
+            margin-right: 6px;
+            font-size: 12px;
+        }
+
+        /* 컨텐츠 영역 */
+        .content { 
+            padding: 40px; 
+            flex: 1; 
         }
         
-        // 인증 완료 시 폼 전송 -> 비밀번호 변경 페이지로 이동
-        document.findPwForm.submit();
-    }
-</script>
+        .page-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #111;
+            text-align: center;
+        }
+        .page-desc {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        /* 폼 박스 스타일 */
+        .form-box {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        .input-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .input-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            height: 44px;
+            padding: 0 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+        input:focus { border-color: #2c3e50; outline: none; }
+        input[readonly] { background-color: #f5f5f5; cursor: default; }
+
+        /* 소형 버튼 (인증번호 발송 등) */
+        .btn-small {
+            min-width: 100px;
+            height: 44px;
+            background-color: #555;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-small:hover { background-color: #333; }
+        .btn-small.blue { background-color: #2c3e50; }
+        .btn-small.blue:hover { background-color: #1a252f; }
+
+        /* 하단 메인 버튼 영역 */
+        .btn-area {
+            margin-top: 40px;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        .btn-main {
+            min-width: 140px;
+            height: 50px;
+            font-size: 16px;
+            font-weight: 700;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .btn-submit { background-color: #2c3e50; color: #fff; }
+        .btn-submit:hover { background-color: #1a252f; }
+        .btn-cancel { background-color: #f1f3f5; color: #555; }
+        .btn-cancel:hover { background-color: #e9ecef; }
+
+        /* 푸터 */
+        .footer {
+            padding: 30px;
+            border-top: 1px solid #eee;
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+        }
+
+        /* 반응형 */
+        @media screen and (max-width: 768px) {
+            .content { padding: 20px; }
+            .input-row { flex-direction: column; }
+            .btn-small { width: 100%; }
+            .btn-area { flex-direction: column-reverse; }
+            .btn-main { width: 100%; }
+        }
+    </style>
+
+    <script>
+        var isCertified = false; // 인증 성공 여부
+
+        // 1. 인증번호 발송 (비밀번호 찾기용)
+        function sendAuthNum() {
+            var userId = $("#userId").val();
+            var name = $("#name").val();
+            var email = $("#email").val();
+
+            if(userId.trim() == "") {
+                alert("아이디를 입력해주세요.");
+                $("#userId").focus();
+                return;
+            }
+            if(name.trim() == "") {
+                alert("이름을 입력해주세요.");
+                $("#name").focus();
+                return;
+            }
+            if(email.trim() == "") {
+                alert("이메일을 입력해주세요.");
+                $("#email").focus();
+                return;
+            }
+
+            // AJAX 요청
+            $.ajax({
+                url: "${contextPath}/member/sendAuthCodeForPw",
+                type: "POST",
+                data: { userId: userId, name: name, email: email },
+                success: function(result) {
+                    if(result === "success") {
+                        alert("인증번호가 이메일로 발송되었습니다.\n메일함을 확인해주세요.");
+                        $("#authnumber").focus();
+                    } else if(result === "fail_no_user") {
+                        alert("입력하신 정보와 일치하는 회원이 없습니다.");
+                    } else {
+                        alert("메일 발송 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+                    }
+                },
+                error: function() {
+                    alert("서버 통신 오류입니다.");
+                }
+            });
+        }
+
+        // 2. 인증번호 확인
+        function checkAuthNum() {
+            var inputCode = $("#authnumber").val();
+
+            if(inputCode.trim() == "") {
+                alert("인증번호를 입력해주세요.");
+                $("#authnumber").focus();
+                return;
+            }
+
+            $.ajax({
+                url: "${contextPath}/member/checkAuthCode",
+                type: "POST",
+                data: { inputCode: inputCode },
+                success: function(result) {
+                    if(result === "success") {
+                        alert("인증에 성공하였습니다.");
+                        isCertified = true;
+                        
+                        // 입력창 잠금 (UX 개선)
+                        $("#authnumber").prop("readonly", true).css("background-color", "#e8f5e9");
+                        $("#userId").prop("readonly", true);
+                        $("#name").prop("readonly", true);
+                        $("#email").prop("readonly", true);
+                        
+                        // 버튼 비활성화
+                        $(".btn-small").prop("disabled", true).css("opacity", "0.6");
+                        
+                    } else {
+                        alert("인증번호가 일치하지 않습니다.");
+                        isCertified = false;
+                    }
+                },
+                error: function() {
+                    alert("서버 통신 오류입니다.");
+                }
+            });
+        }
+
+        // 3. 비밀번호 재설정 페이지로 이동
+        function findPwCheck() {
+            if(!isCertified) {
+                alert("이메일 인증을 먼저 완료해주세요.");
+                return;
+            }
+            document.findPwForm.submit();
+        }
+    </script>
 </head>
 <body>
-		
-	<div id="header">
-		<h1><img src="${contextPath}/static/member/img/logo.png" alt="서산시 통합회원 상단로고" /></h1>
-		<div>
-			<ul>
-				<li><a href="${contextPath}/member/login">통합로그인</a></li>
-				<li><a href="${contextPath}/member/join">통합회원가입</a></li>
-				<li><a href="${contextPath}/member/findId">아이디찾기</a></li>
-				<li><a href="${contextPath}/member/findPw">비밀번호찾기</a></li>
-				<li><a href="${contextPath}/member/myPage">회원정보수정</a></li>
-				<li><a href="#">비밀번호변경</a></li>
-				<li><a href="${contextPath}/member/delete">통합회원탈퇴</a></li>
-			</ul>
-		</div>
-	</div>
-	<div id="content">
-		
-		<div class="top_img">			
-			<p>비밀번호찾기</p>
-		</div>
-		<div class="wrap">
-			
-			<div class="step">
-				<table cellpadding="0" cellspacing="0">
-					<colgroup>
-						<col width="33%">
-						<col width="33%">
-						<col width="*">
-					</colgroup>
-					<tr>
-						<td class="step_select">본인인증</td>
-						<td>비밀번호 입력</td> <td>비밀번호 변경 완료</td>
-					</tr>
-				</table>
-			</div>
-			<div class="mt50 text">
-				<h3>비밀번호 찾기</h3>
-				<p class="bullet01 mt20">가입 시 등록한 <b>아이디, 이름, 이메일</b>을 입력해 주세요.</p>
-				
-                <form action="${contextPath}/member/resetPwPage" method="post" name="findPwForm">
-					<table cellpadding="0" cellspacing="0" class="mt30">
-						<colgroup>
-							<col width="20%">
-							<col width="*">
-						</colgroup>
-                        <tr>
-							<th>아이디</th>
-							<td>
-								<input type="text" name="userId" id="userId" style="width:250px;" placeholder="아이디를 입력하세요">
-							</td>
-						</tr>
-						<tr>
-							<th>이름</th>
-							<td>
-								<input type="text" name="name" id="name" style="width:250px;" placeholder="이름을 입력하세요">
-							</td>
-						</tr>
-						<tr>
-							<th>이메일</th>
-							<td>
-								<input type="text" name="email" id="email" style="width:250px;" placeholder="이메일을 입력하세요">
-								<button type="button" class="btn_gray ml10" style="height:30px; line-height:30px; padding:0 10px;" onclick="sendAuthNum()">인증번호 발송</button>
-							</td>
-						</tr>
-                        <tr>
-							<th>인증번호</th>
-							<td>
-								<input type="text" name="authnumber" id="authnumber" style="width:250px;" placeholder="인증 번호를 입력하세요">
-								<button type="button" class="btn_blue ml10" style="height:30px; line-height:30px; padding:0 10px;" onclick="checkAuthNum()">인증확인</button>
-							</td>
-						</tr>
-					</table>
 
-					<div class="btn mt30 t_center">
-						<button type="button" class="btn_blue" onclick="findPwCheck()">확인</button>
-						<button type="button" class="btn_gray ml10" onclick="history.back()">취소</button>
-					</div>
-				</form>
-				
-			</div>
-			</div>
-		
-	</div>
-	<footer>
-		<div id="footer">
-			<div class="foot_bottom">
-				<div class="foot_inner">
-					<h2><img src="${contextPath}/static/member/img/foot_logo.png" alt="서산시 하단로고" /></h2>
-					<div class="foot_info">
-						<h3 class="hid" style="display:none">하단 메뉴</h3>
-						<ul class="foot_menu">
-							<li><a href="http://www.seosan.go.kr//www/sub.do?key=2469" target="_blank" title="새창열림">개인정보처리방침</a></li>
-							<li><a href="http://www.seosan.go.kr//www/sub.do?key=1251" target="_blank" title="새창열림">이메일무단수집거부</a></li>
-							<li><a href="http://www.seosan.go.kr//www/sub.do?key=1350" target="_blank" title="새창열림">홈페이지 개선의견</a></li>
-							<li><a href="http://www.seosan.go.kr//www/sub.do?key=1253" target="_blank" title="새창열림">RSS 서비스</a></li>
-							<li><a href="http://www.seosan.go.kr//www/sub.do?key=2237" target="_blank" title="새창열림">뷰어다운로드</a></li>
-							<li><a href="http://www.seosan.go.kr//www/sub.do?key=1383" target="_blank" title="새창열림">오시는길</a></li>
-						</ul>
-						<p class="copy notranslate">[31974] 충남 서산시 관아문길 1 (읍내동)  / TEL:041-660-2114 / FAX:041-660-2357
-							<br /> COPYRIGHT 2016(C) THE CITY OF SEOSAN. ALL RIGHTS RESERVED.</p>
-					</div>
-				</div>
-			</div>
-		</div>
-	</footer>
-	</body>
+<div class="container">
+    
+    <header class="header">
+        <h1><a href="${contextPath}/member/login">UBNTIS LAB</a></h1>
+        <div class="header-links">
+            <a href="${contextPath}/member/login">로그인</a>
+            <a href="${contextPath}/member/join">회원가입</a>
+        </div>
+    </header>
+
+    <div class="step-wrap">
+        <ul class="step-list">
+            <li class="active"><span>1</span>본인인증</li>
+            <li><span>2</span>비밀번호 재설정</li>
+            <li><span>3</span>완료</li>
+        </ul>
+    </div>
+
+    <div class="content">
+        <h2 class="page-title">비밀번호 찾기</h2>
+        <p class="page-desc">
+            가입 시 등록한 <b>아이디, 이름, 이메일</b>을 입력하여 본인인증을 진행해주세요.
+        </p>
+
+        <form action="${contextPath}/member/resetPwPage" method="post" name="findPwForm" class="form-box">
+            
+            <div class="input-group">
+                <label for="userId">아이디</label>
+                <input type="text" name="userId" id="userId" placeholder="아이디를 입력하세요">
+            </div>
+
+            <div class="input-group">
+                <label for="name">이름</label>
+                <input type="text" name="name" id="name" placeholder="이름을 입력하세요">
+            </div>
+
+            <div class="input-group">
+                <label for="email">이메일</label>
+                <div class="input-row">
+                    <input type="text" name="email" id="email" placeholder="example@email.com">
+                    <button type="button" class="btn-small" onclick="sendAuthNum()">인증번호 발송</button>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="authnumber">인증번호</label>
+                <div class="input-row">
+                    <input type="text" name="authnumber" id="authnumber" placeholder="인증번호 6자리">
+                    <button type="button" class="btn-small blue" onclick="checkAuthNum()">인증확인</button>
+                </div>
+            </div>
+
+            <div class="btn-area">
+                <button type="button" class="btn-main btn-cancel" onclick="history.back()">취소</button>
+                <button type="button" class="btn-main btn-submit" onclick="findPwCheck()">다음</button>
+            </div>
+
+        </form>
+    </div>
+
+    <footer class="footer">
+        &copy; UBNTIS LAB Corp. All Rights Reserved.
+    </footer>
+
+</div>
+
+</body>
 </html>

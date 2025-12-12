@@ -49,7 +49,7 @@
 
     <div class="main-bar">
         <h1 class="logo">
-            <a href="${contextPath}/default">유비앤티스랩</a>
+            <a href="${contextPath}/default">UBINTISLAB</a>
             <%-- 로고 이미지가 있다면 아래 주석 해제 후 사용 --%>
             <%-- <a href="${contextPath}/main"><img src="${contextPath}/static/images/logo.png" alt="유비앤티스랩"></a> --%>
         </h1>
