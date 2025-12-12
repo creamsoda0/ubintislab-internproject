@@ -29,16 +29,10 @@ public class ClipController {
 	private BoardService boardservice;
 	
 	//글쓰는 페이지로 가는 API 
-	// 비회원은 출입이 안되기 때문에 이를 막아놓는 로직을 입력해놓았습니다.
 	@RequestMapping ("/goWrite")
 	public ModelAndView goWriteClip (HttpSession session) {
 		ModelAndView mav = new ModelAndView();
 		UserVO loginUser = (UserVO) session.getAttribute("loginUser");
-		//이전 로그인 api에서 session에 저장해놓은 회원정보를 바탕으로 회원로직을 구현했습니다.
-		if (loginUser==null) {
-			mav.setViewName("redirect:/member/goLoginPage");
-			return mav;
-		}
 		UserVO userInfo = memberservice.getMember(loginUser.getUserId());
 		mav.addObject("userInfo", userInfo);
 		mav.setViewName("/layout/write");

@@ -120,7 +120,7 @@ public class MemberController {
 		
 		if (loginUser != null) {
 			session.setAttribute("loginUser", loginUser);
-			mav.setViewName("redirect:/default"); //메인페이지로 이동
+			mav.setViewName("/layout/default"); //메인페이지로 이동
 		} else {
 			mav.addObject("msg", "아이디 또는 비밀번호가 일치하지 않습니다.");
 			mav.setViewName("/layout/login-page");
@@ -220,27 +220,46 @@ public class MemberController {
 	
 	@ResponseBody
 	@RequestMapping("/sendAuthCode")
-	public String sendAuthCode(@RequestParam("email") String email, HttpSession session) {
+	public String sendAuthCode(@RequestParam("name") String name, 
+	                           @RequestParam("email") String email, 
+	                           HttpSession session) {
 	    
-		// 어차피 이름 이메일 둘다 있으니까 이름과 이메일 둘 다 검색으로 넣어도 될듯
-	    // (선택) 먼저 해당 이메일로 가입된 회원이 있는지 DB 체크 로직 추가 가능
-	    UserVO user = memberService.findUserByEmail(email);
-	    if(user == null) {
-	        return "fail_no_user"; // 회원이 아님
+	    // 1. [유효성 검사] 입력값 누락 체크 (서버단 더블 체크)
+	    if (name == null || name.trim().isEmpty() || email == null || email.trim().isEmpty()) {
+	        return "fail_input"; 
 	    }
 
-	    // 메일 발송하고 인증코드 받아옴
-	    String authCode = memberService.sendAuthCode(email);
-	    
-	    if(authCode != null) {
-	        // 세션에 인증코드를 저장해둠 (나중에 비교용)
-	        session.setAttribute("authCode", authCode);
-	        // 세션 유효시간 설정 (예: 3분 = 180초)
-	        session.setMaxInactiveInterval(180); 
+	    try {
+	        // 2. [회원 조회] 이메일로 회원 정보 찾기
+	        UserVO user = memberService.findUserByEmail(email);
 	        
-	        return "success";
-	    } else {
-	        return "fail_send";
+	        // 3. [회원 검증] 회원이 없거나, 입력한 '이름'과 DB의 '이름'이 다르면 실패 처리
+	        // (기존 코드는 이메일만 있으면 이름을 아무거나 넣어도 통과되는 문제가 있었음)
+	        if (user == null || !user.getName().equals(name)) {
+	            return "fail_no_user"; 
+	        }
+
+	        // 4. [메일 발송] 인증코드 생성 및 발송
+	        String authCode = memberService.sendAuthCode(email);
+	        
+	        if(authCode != null) {
+	            // 5. [세션 저장]
+	            session.setAttribute("authCode", authCode);
+	            
+	            // [주의] setMaxInactiveInterval은 세션 전체의 수명(로그인 유지 시간 등)을 바꿔버립니다.
+	            // 단순히 인증번호 유효시간 체크용이라면, 차라리 '발송시간'을 세션에 같이 저장하는 것이 안전합니다.
+	            // 여기서는 일단 기존 로직을 유지하되, 주석으로 남깁니다.
+	            session.setMaxInactiveInterval(180); // 3분
+	            
+	            return "success";
+	        } else {
+	            return "fail_send";
+	        }
+	        
+	    } catch (Exception e) {
+	        // 메일 발송 중 SMTP 서버 에러 등이 발생했을 때 멈추지 않고 실패 메시지 리턴
+	        e.printStackTrace();
+	        return "error"; 
 	    }
 	}
 	

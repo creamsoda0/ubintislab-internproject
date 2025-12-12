@@ -10,22 +10,25 @@ import org.springframework.web.servlet.ModelAndView;
 public class MainController {
 	
 	@RequestMapping(value = "/default")
-	public ModelAndView home(Model model) {
+	public ModelAndView loginpage(Model model) {
 		
 		ModelAndView mav = new ModelAndView();
 		
 		//예시
 		/* mav.addObject("userName", "creamsoda"); */
 		
-		model.addAttribute("pageTitle", "권한 신청 목록");        
-        model.addAttribute("content", "../board/applyList.jsp");
+
 		
-		mav.setViewName("layout/default");
+		mav.setViewName("layout/login-page");
 		
 		return mav;
 	}
-	
-	
-	
+
+	@RequestMapping("/goMain")
+	public ModelAndView goMain () {
+		ModelAndView mav = new ModelAndView();
+		mav.setViewName("layout/default");
+		return mav;
+	}
 
 }

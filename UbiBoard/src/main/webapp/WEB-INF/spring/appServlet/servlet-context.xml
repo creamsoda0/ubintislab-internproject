@@ -1,36 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans:beans
-	xmlns="http://www.springframework.org/schema/mvc"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:beans="http://www.springframework.org/schema/beans"
-	xmlns:context="http://www.springframework.org/schema/context"
-	xsi:schemaLocation="http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd
-		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
-		http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+                           https://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/mvc 
+                           https://www.springframework.org/schema/mvc/spring-mvc.xsd
+                           http://www.springframework.org/schema/context 
+                           https://www.springframework.org/schema/context/spring-context.xsd">
 
-	<!-- DispatcherServlet Context: defines this servlet's request-processing 
-		infrastructure -->
+    <mvc:annotation-driven />
 
-	<!-- Enables the Spring MVC @Controller programming model -->
-	<annotation-driven />
+    <mvc:resources mapping="/resources/**" location="/resources/" />
+    <mvc:resources mapping="/static/**" location="/resources/static/" />
 
-	<!-- Handles HTTP GET requests for /resources/** by efficiently serving 
-		up static resources in the ${webappRoot}/resources directory -->
-	<resources mapping="/resources/**" location="/resources/" />
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/views/" />
+        <property name="suffix" value=".jsp" />
+    </bean>
 
-	<!-- Resolves views selected for rendering by @Controllers to .jsp resources 
-		in the /WEB-INF/views directory -->
-	<beans:bean
-		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-		<beans:property name="prefix" value="/WEB-INF/views/" />
-		<beans:property name="suffix" value=".jsp" />
-	</beans:bean>
-
-	<!-- 아래 리소스 파일 경로 추가 -->
-<resources mapping="/static/**" location="/resources/static/" />
-	<context:component-scan
-		base-package="com.ubintis.board" />
+    <context:component-scan base-package="com.ubintis.board" />
 
 
+		<!-- 로그인 interceptor 부분 -->
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/**" />
 
-</beans:beans>
+            <mvc:exclude-mapping path="/member/goLoginPage" />
+            <mvc:exclude-mapping path="/member/loginProcess" />
+            <mvc:exclude-mapping path="/member/join" />
+            <mvc:exclude-mapping path="/member/joinForm" />
+            <mvc:exclude-mapping path="/member/joinProcess" />
+            <mvc:exclude-mapping path="/member/idCheck" />
+            <mvc:exclude-mapping path="/member/goFindId" />
+            <mvc:exclude-mapping path="/member/findIdProcess" />
+            <mvc:exclude-mapping path="/member/goFindPw" />
+            <mvc:exclude-mapping path="/member/sendAuthCode" />
+            <mvc:exclude-mapping path="/member/checkAuthCode" />
+            <mvc:exclude-mapping path="/member/resetPwProcess" />
+            <mvc:exclude-mapping path="/member/resetPwPage" />
+            <mvc:exclude-mapping path="/member/sendAuthCodeForPw" />
+            
+            <mvc:exclude-mapping path="/static/**" />
+            <mvc:exclude-mapping path="/resources/**" />
+
+            <bean class="com.ubintis.board.interceptor.LoginInterceptor" />
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+</beans>

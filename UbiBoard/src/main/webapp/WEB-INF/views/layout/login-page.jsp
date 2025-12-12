@@ -210,9 +210,9 @@
             <div class="login-links">
                 <a href="${contextPath}/member/join">회원가입</a>
                 <span>|</span>
-                <a href="${contextPath}/member/findId">아이디 찾기</a>
+                <a href="${contextPath}/member/goFindId">아이디 찾기</a>
                 <span>|</span>
-                <a href="${contextPath}/member/findPw">비밀번호 재발급</a>
+                <a href="${contextPath}/member/goFindPw">비밀번호 재발급</a>
             </div>
 
         </div>
