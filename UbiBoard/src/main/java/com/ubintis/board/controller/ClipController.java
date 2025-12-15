@@ -195,6 +195,7 @@ public class ClipController {
 		subcommentVO.setUserId(loginUser.getUserId());
 		
 		boardservice.writeSubComment(subcommentVO);
+		// 댓글이 잘달렸는지 볼려는 리다이렉트
 		mav.setViewName("redirect:/clip/read?boardId=" + boardId);
 		
 		return mav;
