@@ -67,5 +67,11 @@ public class BoardServiceImpl implements BoardService {
 		mapper.deleteBoard(boardId);
 	}
 
+	@Override
+	public void updateClipById(MainBoardVO mainVO) {
+		mapper.updateClipById(mainVO);
+		
+	}
+
 
 }

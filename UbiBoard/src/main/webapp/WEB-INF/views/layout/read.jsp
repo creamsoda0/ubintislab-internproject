@@ -220,7 +220,7 @@
             <div class="right">
                 <%-- 작성자 본인일 때만 표시 --%>
                 <c:if test="${sessionScope.loginUser.userId == board.userId}">
-                    <a href="${contextPath}/clip/modify?id=${board.boardId}" class="btn-common btn-modify">수정</a>
+                    <a href="${contextPath}/clip/goModify?boardId=${board.boardId}" class="btn-common btn-modify">수정</a>
                     <button type="button" onclick="deleteClip(${board.boardId});" class="btn-common btn-delete">삭제</button>
                 </c:if>
             </div>

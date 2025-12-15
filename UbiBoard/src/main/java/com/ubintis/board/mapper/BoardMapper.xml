@@ -65,13 +65,15 @@
 	</select>
 
 	<delete id="deleteSubCommentsByBoardId" parameterType="int">
-		DELETE s FROM sub_comment s
+		DELETE s
+		FROM sub_comment s
 		JOIN main_comment m ON s.comment_id = m.comment_id
 		WHERE m.board_id = #{boardId}
 	</delete>
 
 	<delete id="deleteCommentsByBoardId" parameterType="int">
-		DELETE FROM main_comment
+		DELETE FROM
+		main_comment
 		WHERE board_id = #{boardId}
 	</delete>
 
@@ -79,6 +81,21 @@
 		DELETE FROM mainboard
 		WHERE board_id = #{boardId}
 	</delete>
+
+	<update id="updateClipById"
+		parameterType="com.ubintis.board.vo.MainBoardVO">
+		UPDATE mainboard
+		SET
+		title = #{title},
+		content = #{content},
+		mod_date = NOW()
+
+		<if test="filePath != null and filePath != ''">
+			, file_path = #{filePath}
+		</if>
+
+		WHERE board_id = #{boardId}
+	</update>
 
 
 </mapper>

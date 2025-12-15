@@ -23,4 +23,6 @@ public interface BoardService {
 
 	void deleteClipById(int boardId);
 
+	void updateClipById(MainBoardVO mainVO);
+
 }

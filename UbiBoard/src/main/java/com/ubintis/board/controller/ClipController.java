@@ -109,7 +109,7 @@ public class ClipController {
 	    // 대댓글(자식 댓글) 리스트 가져오기
 	    List<SubCommentVO> subCommentList = boardservice.getAllSubCommentListById(boardId);
 	    
-	    // 4. 화면에 데이터 전달
+	    // 화면에 데이터 전달
 	    mav.addObject("board", mainVO);           // 게시글 정보
 	    mav.addObject("commentList", mainCommentList); // 부모 댓글 리스트
 	    mav.addObject("subCommentList", subCommentList); // 대댓글 리스트
@@ -118,7 +118,7 @@ public class ClipController {
 	    
 	    return mav;
 	}
-	
+	// 게시글 삭제 로직
 	@RequestMapping("/deleteClip")
 	public ModelAndView deleteClip (@RequestParam("boardId") int boardId) {
 		ModelAndView mav = new ModelAndView();
@@ -128,5 +128,26 @@ public class ClipController {
 		
 		return mav;
 	}
+	// 게시글 수정 페이지로 가는 로직
+	@RequestMapping("/goModify")
+	public ModelAndView goModify (@RequestParam("boardId") int boardId) {
+		ModelAndView mav = new ModelAndView();
+		MainBoardVO mainboardVO = boardservice.getClipById(boardId);
+		mav.addObject("board", mainboardVO);
+		mav.setViewName("/layout/modify");
+		return mav;
+	}
+	
+	// 게시글 DB 수정
+	@RequestMapping ("/updateClip")
+	public ModelAndView updateClip (MainBoardVO mainVO) {
+		ModelAndView mav = new ModelAndView();
+		boardservice.updateClipById(mainVO);
+		
+		mav.setViewName("redirect:/clip/read?boardId=" + mainVO.getBoardId());
+		
+		return mav;
+	}
+	
 	
 }

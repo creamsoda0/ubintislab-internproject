@@ -30,6 +30,8 @@ public interface BoardMapper {
 
 	void deleteBoard(int boardId);
 
+	void updateClipById(MainBoardVO mainVO);
+
 	
 
 }
