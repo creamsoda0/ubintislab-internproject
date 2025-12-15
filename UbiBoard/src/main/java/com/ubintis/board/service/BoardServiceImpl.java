@@ -73,5 +73,11 @@ public class BoardServiceImpl implements BoardService {
 		
 	}
 
+	@Override
+	public void insertMainComment(MainCommentVO maincommentVO) {
+		// TODO Auto-generated method stub
+		mapper.insertMainComment(maincommentVO);
+	}
+
 
 }

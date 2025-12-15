@@ -32,6 +32,8 @@ public interface BoardMapper {
 
 	void updateClipById(MainBoardVO mainVO);
 
+	void insertMainComment(MainCommentVO maincommentVO);
+
 	
 
 }

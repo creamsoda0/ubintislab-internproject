@@ -25,4 +25,6 @@ public interface BoardService {
 
 	void updateClipById(MainBoardVO mainVO);
 
+	void insertMainComment(MainCommentVO maincommentVO);
+
 }

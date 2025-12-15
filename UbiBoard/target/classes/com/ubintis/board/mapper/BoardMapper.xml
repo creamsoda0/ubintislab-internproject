@@ -88,7 +88,8 @@
 		SET
 		title = #{title},
 		content = #{content},
-		mod_date = NOW()
+		mod_date =
+		NOW()
 
 		<if test="filePath != null and filePath != ''">
 			, file_path = #{filePath}
@@ -97,5 +98,17 @@
 		WHERE board_id = #{boardId}
 	</update>
 
+	<insert id="insertMainComment" parameterType="MainCommentVO">
+		INSERT INTO main_comment (
+		board_id,
+		user_id,
+		content,
+		reg_date
+		) VALUES (
+		#{boardId},
+		#{userId},
+		#{content},
+		NOW() )
+	</insert>
 
 </mapper>

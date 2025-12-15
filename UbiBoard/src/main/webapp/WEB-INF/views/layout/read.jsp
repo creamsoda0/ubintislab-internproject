@@ -191,21 +191,20 @@
             <div class="view-content">${board.content}</div>
         </div>
 
-        <%-- ★ 댓글 및 대댓글 영역 시작 ★ --%>
+        <%--  댓글 및 대댓글 영역 시작  --%>
         <div class="comment-wrap">
             <div class="comment-count">
                 댓글 <strong>${commentList.size() + subCommentList.size()}</strong>개
             </div>
 
-            <%-- 1. 메인 댓글 작성 폼 --%>
-            <form action="${contextPath}/comment/write" method="post" class="comment-form">
-                <input type="hidden" name="boardId" value="${board.boardId}">
-                <%-- 로그인한 경우만 작성 가능하도록 (필요시 readonly 처리) --%>
-                <textarea name="content" class="comment-input" placeholder="댓글을 입력해주세요." required></textarea>
+            <%-- 메인 댓글 작성 폼 --%>
+            <form action="${contextPath}/clip/writeComment" method="post" class="comment-form">
+                <input type="hidden" name="boardId" id= "boardId" value="${board.boardId}">
+                <textarea name="content" class="comment-input" id="content" placeholder="댓글을 입력해주세요." required></textarea>
                 <button type="submit" class="btn-comment-save">등록</button>
             </form>
 
-            <%-- 2. 댓글 리스트 출력 --%>
+            <%-- 댓글 리스트 출력 --%>
             <ul class="comment-list">
                 <c:forEach var="comment" items="${commentList}">
                     <li class="comment-item">
@@ -229,7 +228,7 @@
                             <div class="comment-text">${comment.content}</div>
                         </div>
 
-                        <%-- 3. 대댓글(답글) 작성 폼 (기본 숨김) --%>
+                        <%-- 대댓글(답글) 작성 폼 (기본 숨김) --%>
                         <div id="replyForm_${comment.commentId}" class="reply-form-wrap">
                             <form action="${contextPath}/comment/reply" method="post" style="display:flex; gap:10px;">
                                 <input type="hidden" name="boardId" value="${board.boardId}">
@@ -239,7 +238,7 @@
                             </form>
                         </div>
 
-                        <%-- 4. 대댓글(답글) 리스트 출력 --%>
+                        <%-- 대댓글(답글) 리스트 출력 --%>
                         <c:forEach var="sub" items="${subCommentList}">
                             <%-- 부모 ID가 일치하는 것만 출력 --%>
                             <c:if test="${sub.commentId == comment.commentId}">
@@ -269,7 +268,7 @@
                 </c:if>
             </ul>
         </div>
-        <%-- ★ 댓글 영역 끝 ★ --%>
+        <%--  댓글 영역 끝  --%>
 
 
         <%-- 하단 버튼 영역 --%>

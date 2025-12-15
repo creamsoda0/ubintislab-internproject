@@ -8,6 +8,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -118,10 +119,7 @@ public class ClipController {
 	    
 	    return mav;
 	}
-	
-	//댓글 대댓글 로직
-	
-	
+
 	// 게시글 삭제 로직
 	@RequestMapping("/deleteClip")
 	public ModelAndView deleteClip (@RequestParam("boardId") int boardId, HttpSession session) {
@@ -170,6 +168,22 @@ public class ClipController {
 		mav.setViewName("redirect:/clip/read?boardId=" + mainVO.getBoardId());
 		return mav;
 	}
+	
+	//댓글작성 로직
+	@RequestMapping ("/writeComment")
+	public ModelAndView writeComment(MainCommentVO maincommentVO, HttpSession session) {
+		ModelAndView mav = new ModelAndView();
+		
+		// userId 를 가져옴.
+		UserVO loginUser = (UserVO) session.getAttribute("loginUser");
+		maincommentVO.setUserId(loginUser.getUserId());
+		
+		boardservice.insertMainComment(maincommentVO);
+		
+		mav.setViewName("redirect:/clip/read?boardId=" + maincommentVO.getBoardId());
+		return mav;
+	}
+	
 	
 	
 }

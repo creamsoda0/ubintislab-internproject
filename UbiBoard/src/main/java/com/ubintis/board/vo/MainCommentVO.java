@@ -6,7 +6,7 @@ public class MainCommentVO {
 
 	private int commentId;
 	private int boardId;
-	private int userNo;
+	private String userId;
 	private String content;
 	private Date regDate;
 	private Date modDate;
@@ -22,11 +22,11 @@ public class MainCommentVO {
 	public void setBoardId(int boardId) {
 		this.boardId = boardId;
 	}
-	public int getUserNo() {
-		return userNo;
+	public String getUserId() {
+		return userId;
 	}
-	public void setUserNo(int userNo) {
-		this.userNo = userNo;
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 	public String getContent() {
 		return content;
