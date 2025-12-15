@@ -22,5 +22,11 @@
             NOW()        
             )
     </insert>
+    
+    <select id="getClipList" resultType="MainBoardVO">
+    SELECT *
+    FROM mainboard
+    ORDER BY board_id DESC        
+    </select>
 
 </mapper>

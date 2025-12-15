@@ -61,38 +61,31 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <c:choose>
-                        <c:when test="${empty boardList}">
-                            <tr>
-                                <td colspan="6" class="no-data">등록된 게시글이 없습니다.</td>
-                            </tr>
-                        </c:when>
-                        <c:otherwise>
-                            <c:forEach var="item" items="${boardList}">
-                                <tr>
-                                    <td class="mobile-hide">${item.id}</td>
-                                    <td class="td-subject">
-                                        <a href="${contextPath}/board/view?id=${item.id}">
-                                            ${item.title}
-                                            <c:if test="${item.isNew}">
-                                                <span class="ico-new">N</span>
-                                            </c:if>
-                                        </a>
-                                    </td>
-                                    <td class="mobile-hide">
-                                        <c:if test="${item.hasFile}">
-                                            <span class="ico-file">📎</span> 
-                                            <%-- 이미지 경로가 있다면 아래 사용 --%>
-                                            <%-- <img src="${contextPath}/static/images/icon_file.png" alt="첨부" class="ico-file"> --%>
-                                        </c:if>
-                                    </td>
-                                    <td>${item.writer}</td>
-                                    <td class="mobile-hide"><fmt:formatDate value="${item.regDate}" pattern="yyyy.MM.dd"/></td>
-                                    <td class="mobile-hide">${item.hit}</td>
-                                </tr>
-                            </c:forEach>
-                        </c:otherwise>
-                    </c:choose>
+<c:choose>
+            <c:when test="${empty clipList}">
+                <tr>
+                    <td colspan="5" style="text-align:center;">등록된 게시글이 없습니다.</td>
+                </tr>
+            </c:when>
+            
+            <c:otherwise>
+                <c:forEach var="vo" items="${clipList}">
+                    <tr>
+                        <td>${vo.boardId}</td>
+                        <td style="text-align:left;">
+                            <a href="${contextPath}/clip/read?id=${vo.boardId}">
+                                ${vo.title}
+                            </a>
+                        </td>
+                        <td>${vo.userId}</td>
+                        <td>
+                            <fmt:formatDate value="${vo.regDate}" pattern="yyyy-MM-dd"/>
+                        </td>
+                        <td>${vo.views}</td>
+                    </tr>
+                </c:forEach>
+            </c:otherwise>
+        </c:choose>
                 </tbody>
             </table>
         </div>
