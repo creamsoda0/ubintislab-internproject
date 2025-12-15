@@ -234,7 +234,7 @@
         function deleteClip(boardId) {
             if(confirm("정말로 이 게시글을 삭제하시겠습니까?\n삭제 후에는 복구할 수 없습니다.")) {
                 // 삭제 컨트롤러로 이동
-                location.href = "${contextPath}/clip/delete?id=" + boardId;
+                location.href = "${contextPath}/clip/deleteClip?boardId=" + boardId;
             }
         }
     </script>

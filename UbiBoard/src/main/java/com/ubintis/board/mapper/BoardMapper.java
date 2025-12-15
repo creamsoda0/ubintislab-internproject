@@ -24,4 +24,12 @@ public interface BoardMapper {
 
 	List<SubCommentVO> getAllSubCommentListById(int boardId);
 
+	void deleteSubCommentsByBoardId(int boardId);
+
+	void deleteCommentsByBoardId(int boardId);
+
+	void deleteBoard(int boardId);
+
+	
+
 }

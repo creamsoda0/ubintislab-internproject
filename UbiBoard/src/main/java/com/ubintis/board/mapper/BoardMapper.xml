@@ -63,4 +63,22 @@
 		ORDER BY
 		s.sub_id ASC
 	</select>
+
+	<delete id="deleteSubCommentsByBoardId" parameterType="int">
+		DELETE s FROM sub_comment s
+		JOIN main_comment m ON s.comment_id = m.comment_id
+		WHERE m.board_id = #{boardId}
+	</delete>
+
+	<delete id="deleteCommentsByBoardId" parameterType="int">
+		DELETE FROM main_comment
+		WHERE board_id = #{boardId}
+	</delete>
+
+	<delete id="deleteBoard" parameterType="int">
+		DELETE FROM mainboard
+		WHERE board_id = #{boardId}
+	</delete>
+
+
 </mapper>

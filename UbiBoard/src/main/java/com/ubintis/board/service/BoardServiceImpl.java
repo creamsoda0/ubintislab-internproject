@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ubintis.board.mapper.BoardMapper;
 import com.ubintis.board.vo.MainBoardVO;
@@ -52,5 +53,19 @@ public class BoardServiceImpl implements BoardService {
 		// TODO Auto-generated method stub
 		return mapper.getAllSubCommentListById(boardId);
 	}
+
+	@Transactional //  중간에 실패하면 전부 취소
+	@Override
+	public void deleteClipById(int boardId) {
+	    // 1. 대댓글 먼저 삭제 
+		mapper.deleteSubCommentsByBoardId(boardId);
+	    
+	    // 2. 그 다음 댓글 삭제
+		mapper.deleteCommentsByBoardId(boardId);
+	    
+	    // 3. 마지막으로 게시글 삭제
+		mapper.deleteBoard(boardId);
+	}
+
 
 }

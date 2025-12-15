@@ -119,4 +119,14 @@ public class ClipController {
 	    return mav;
 	}
 	
+	@RequestMapping("/deleteClip")
+	public ModelAndView deleteClip (@RequestParam("boardId") int boardId) {
+		ModelAndView mav = new ModelAndView();
+		
+		boardservice.deleteClipById(boardId);
+		mav.setViewName("redirect:/goMain");
+		
+		return mav;
+	}
+	
 }

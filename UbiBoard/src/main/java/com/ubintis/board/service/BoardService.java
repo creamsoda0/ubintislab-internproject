@@ -21,4 +21,6 @@ public interface BoardService {
 
 	List<SubCommentVO> getAllSubCommentListById(int boardId);
 
+	void deleteClipById(int boardId);
+
 }
