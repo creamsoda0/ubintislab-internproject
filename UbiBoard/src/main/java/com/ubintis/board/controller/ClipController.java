@@ -120,8 +120,18 @@ public class ClipController {
 	}
 	// 게시글 삭제 로직
 	@RequestMapping("/deleteClip")
-	public ModelAndView deleteClip (@RequestParam("boardId") int boardId) {
+	public ModelAndView deleteClip (@RequestParam("boardId") int boardId, HttpSession session) {
 		ModelAndView mav = new ModelAndView();
+		
+		UserVO loginUser = (UserVO) session.getAttribute("loginUser");
+		MainBoardVO board = boardservice.getClipById(boardId);
+		
+		// 로그인을 한 번 더 확인하여 취약점 방지
+		if (!loginUser.getUserId().equals(board.getUserId())) {
+	        mav.addObject("msg", "본인의 글만 삭제할 수 있습니다.");
+	        mav.setViewName("redirect:/goMain");
+	        return mav; 
+	    }
 		
 		boardservice.deleteClipById(boardId);
 		mav.setViewName("redirect:/goMain");
@@ -140,12 +150,20 @@ public class ClipController {
 	
 	// 게시글 DB 수정
 	@RequestMapping ("/updateClip")
-	public ModelAndView updateClip (MainBoardVO mainVO) {
+	public ModelAndView updateClip (MainBoardVO mainVO, HttpSession session) {
 		ModelAndView mav = new ModelAndView();
 		boardservice.updateClipById(mainVO);
 		
-		mav.setViewName("redirect:/clip/read?boardId=" + mainVO.getBoardId());
+		// 로그인 한 번 더 확인으로 취약점 보완
+		MainBoardVO board = boardservice.getClipById(mainVO.getBoardId());
+		UserVO loginUser = (UserVO) session.getAttribute("loginUser");
+		if (!loginUser.getUserId().equals(board.getUserId())) {
+	        mav.addObject("msg", "본인의 글만 수정할 수 있습니다.");
+	        mav.setViewName("redirect:/goMain");
+	        return mav; 
+	    }
 		
+		mav.setViewName("redirect:/clip/read?boardId=" + mainVO.getBoardId());
 		return mav;
 	}
 	
