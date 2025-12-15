@@ -40,7 +40,7 @@ public class ClipController {
 	}
 	
 	@ResponseBody
-	@RequestMapping("/write") 
+	@RequestMapping(value="/write", produces = "text/plain;charset=UTF-8") 
 	public String writeClip(HttpSession session, 
 	                        MainBoardVO vo, 
 	                        @RequestParam(value="uploadFile", required=false) MultipartFile uploadFile) {               
@@ -54,7 +54,14 @@ public class ClipController {
 	            if (!dir.exists()) {
 	                dir.mkdirs(); // 폴더가 없으면 생성
 	            }
-
+	            // 로그인 유저를 세션에서 불러옴
+	            UserVO loginUser = (UserVO) session.getAttribute("loginUser");
+	            if (loginUser != null) { 
+	                vo.setUserId(loginUser.getUserId()); 
+	                System.out.println("작성자 ID 주입 완료: " + vo.getUserId()); // 로그 확인용
+	            } else {
+	                return "로그인이 필요합니다."; // 로그인이 안 되어있으면 돌려보냄
+	            }
 	            // 파일명 중복 방지를 위한 UUID 적용
 	            String originalFileName = uploadFile.getOriginalFilename();
 	            String uuid = UUID.randomUUID().toString();

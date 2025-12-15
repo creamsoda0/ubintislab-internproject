@@ -26,7 +26,7 @@
             <p>새로운 소식을 등록해주세요.</p>
         </header>
 
-        <form name="writeForm" action="${contextPath}/clip/write" method="post" enctype="multipart/form-data" onsubmit="return validateForm();">
+        <form name="writeForm" action="${contextPath}/clip/write" method="post" enctype="multipart/form-data" onsubmit="event.preventDefault(); validateForm();">
             
             <div class="board-write-wrap">
                 <table class="write-table">
@@ -50,7 +50,7 @@
                                        readonly>
                                        
                                 <%-- 필요시 ID도 hidden으로 전송 --%>
-                                <input type="hidden" name="userId" value="${sessionScope.loginUser.userId}"> 
+                                <input type="hidden" name="userId" id="userId" value="${sessionScope.loginUser.userId}"> 
                             </td>
                         </tr>
                         
@@ -106,7 +106,7 @@
                 return false;
             }
             
-            return true;
+            submitWrite();
         }
         function submitWrite() {
 
@@ -129,7 +129,7 @@
                     
                     // 성공 시 리스트로 이동 (메시지에 '성공'이나 '저장'이 포함된 경우)
                     if(response.indexOf("저장되었습니다") > -1) {
-                        location.href = "${contextPath}/default";
+                        location.href = "${contextPath}/goMain";
                     }
                 },
                 error: function(xhr, status, error) {

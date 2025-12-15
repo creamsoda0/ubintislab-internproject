@@ -20,10 +20,10 @@ public class MainBoardVO {
 	public void setBoardId(int boardId) {
 		this.boardId = boardId;
 	}
-	public String getUserNo() {
+	public String getUserId() {
 		return userId;
 	}
-	public void setUserNo(String userNo) {
+	public void setUserId(String userId) {
 		this.userId = userId;
 	}
 	public String getTitle() {
