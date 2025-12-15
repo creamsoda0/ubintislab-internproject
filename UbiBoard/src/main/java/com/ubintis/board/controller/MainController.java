@@ -10,6 +10,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.ubintis.board.service.BoardService;
 import com.ubintis.board.vo.MainBoardVO;
+import com.ubintis.board.vo.PageVO;
+import com.ubintis.board.vo.PagingVO;
 
 
 @Controller
@@ -34,11 +36,15 @@ public class MainController {
 	}
 
 	@RequestMapping("/goMain")
-	public ModelAndView goMain (MainBoardVO vo) {
-		ModelAndView mav = new ModelAndView();
-		List<MainBoardVO> list = boardservice.getClipList();
+	public ModelAndView goMain (MainBoardVO vo, PagingVO paging) {
+		ModelAndView mav = new ModelAndView();				
+		int total = boardservice.getTotalCount(paging);
+				
+		List<MainBoardVO> list = boardservice.getClipList(paging);
 		
 		mav.addObject("clipList", list);
+	    mav.addObject("pageMaker", new PageVO(paging, total)); // 페이징 정보 전달
+	    mav.addObject("totalCount", total); // 총 게시물 수 전달
 		
 		mav.setViewName("layout/default");
 		return mav;

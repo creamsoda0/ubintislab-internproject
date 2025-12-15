@@ -23,10 +23,15 @@
             )
     </insert>
     
-    <select id="getClipList" resultType="MainBoardVO">
+    <select id="getClipList" parameterType="PagingVO" resultType="MainBoardVO">
     SELECT *
     FROM mainboard
-    ORDER BY board_id DESC        
+    ORDER BY board_id DESC  
+    LIMIT #{skip}, #{amount}      
     </select>
+    
+    <select id="getTotalCount" parameterType="PagingVO" resultType="int">
+    SELECT count(*) FROM mainboard
+	</select>
 
 </mapper>

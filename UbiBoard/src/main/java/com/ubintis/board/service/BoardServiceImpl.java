@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.ubintis.board.mapper.BoardMapper;
 import com.ubintis.board.vo.MainBoardVO;
+import com.ubintis.board.vo.PagingVO;
 
 @Service
 public class BoardServiceImpl implements BoardService {
@@ -16,14 +17,20 @@ public class BoardServiceImpl implements BoardService {
 	
 	@Override
 	public int insertClip(MainBoardVO vo) {
-		// TODO Auto-generated method stub
+		
 		return mapper.insertClip(vo);
 	}
 
 	@Override
-	public List<MainBoardVO> getClipList() {
-		// TODO Auto-generated method stub
-		return mapper.getClipList();
+	public List<MainBoardVO> getClipList(PagingVO paging) {
+		
+		return mapper.getClipList(paging);
+	}
+
+	@Override
+	public int getTotalCount(PagingVO paging) {
+		
+		return mapper.getTotalCount(paging);
 	}
 
 }

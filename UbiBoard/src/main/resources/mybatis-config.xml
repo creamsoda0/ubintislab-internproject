@@ -10,7 +10,8 @@
             <typeAlias alias="SubCommentVO" type="com.ubintis.board.vo.SubCommentVO"/>   
             <typeAlias alias="UserVO" type="com.ubintis.board.vo.UserVO"/>   
             <typeAlias alias="UserWithDrawVO" type="com.ubintis.board.vo.UserWithDrawVO"/>   
-                        
+            <typeAlias alias="PageVO" type="com.ubintis.board.vo.PageVO"/>   
+            <typeAlias alias="PagingVO" type="com.ubintis.board.vo.PagingVO"/>               
         </typeAliases>
 </configuration>
 

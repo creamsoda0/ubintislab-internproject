@@ -33,9 +33,9 @@
 
         <div class="board-toolbar">
             <div class="board-total">
-                총 <strong>${totalCount}</strong>건의 게시물이 있습니다.
-            </div>
-            <form action="${contextPath}/board/list" method="get" class="search-form">
+			    총 <strong>${totalCount}</strong>건의 게시물이 있습니다.
+			</div>
+            <form action="${contextPath}/goMain" method="get" class="search-form">
                 <select name="searchType" class="search-select">
                     <option value="title">제목</option>
                     <option value="content">내용</option>
@@ -90,22 +90,33 @@
             </table>
         </div>
 
-        <div class="board-footer">
-            <div class="pagination">
-                <a href="#" class="page-link">&lt;</a>
-                <a href="#" class="page-link active">1</a>
-                <a href="#" class="page-link">2</a>
-                <a href="#" class="page-link">3</a>
-                <a href="#" class="page-link">4</a>
-                <a href="#" class="page-link">5</a>
-                <a href="#" class="page-link">&gt;</a>
-            </div>
-            
-            <div class="btn-area">
-                <a href="${contextPath}/clip/goWrite" class="btn-write">글쓰기</a>
-            </div>
-        </div>
+<div class="board-footer">
+    <div class="pagination">
+        
+        <%-- 이전 버튼 --%>
+        <c:if test="${pageMaker.prev}">
+            <a href="${contextPath}/goMain?pageNum=${pageMaker.startPage - 1}&amount=${pageMaker.paging.amount}" class="page-link">&lt;</a>
+        </c:if>
 
+        <%-- 페이지 번호 반복 --%>
+        <c:forEach var="num" begin="${pageMaker.startPage}" end="${pageMaker.endPage}">
+            <a href="${contextPath}/goMain?pageNum=${num}&amount=${pageMaker.paging.amount}" 
+               class="page-link ${pageMaker.paging.pageNum == num ? 'active' : ''}">
+               ${num}
+            </a>
+        </c:forEach>
+
+        <%-- 다음 버튼 --%>
+        <c:if test="${pageMaker.next}">
+            <a href="${contextPath}/goMain?pageNum=${pageMaker.endPage + 1}&amount=${pageMaker.paging.amount}" class="page-link">&gt;</a>
+        </c:if>
+
+    </div>
+    
+    <div class="btn-area">
+        <a href="${contextPath}/clip/goWrite" class="btn-write">글쓰기</a>
+    </div>
+</div>
     </div>
     
     <jsp:include page="../fragments/footer.jsp" flush="true"/>
