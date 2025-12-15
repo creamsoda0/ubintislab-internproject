@@ -21,6 +21,12 @@
     </bean>
 
     <context:component-scan base-package="com.ubintis.board" />
+    
+    <!-- multipart/form 추가 부분 -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+    <property name="maxUploadSize" value="10485760" /> 
+    <property name="defaultEncoding" value="utf-8" />
+	</bean>
 
 
 		<!-- 로그인 interceptor 부분 -->

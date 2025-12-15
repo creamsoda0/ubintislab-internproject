@@ -5,4 +5,22 @@
 
 <mapper namespace="com.ubintis.board.mapper.BoardMapper">
 
+	<insert id="insertClip" parameterType="MainBoardVO" useGeneratedKeys="true" keyProperty="boardId">
+        INSERT INTO mainboard (
+            user_id,
+            title,
+            content,
+            file_path,
+            reg_date,
+            mod_date
+        ) VALUES (
+            #{userId},   
+            #{title},
+            #{content},
+            #{filePath}, 
+            NOW(),       
+            NOW()        
+            )
+    </insert>
+
 </mapper>

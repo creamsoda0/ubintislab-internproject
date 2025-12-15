@@ -5,7 +5,7 @@ import java.util.Date;
 public class MainBoardVO {
 
 	private int boardId;
-	private int userNo;
+	private String userId;
 	private String title;
 	private String content;
 	private Date regDate;
@@ -20,11 +20,11 @@ public class MainBoardVO {
 	public void setBoardId(int boardId) {
 		this.boardId = boardId;
 	}
-	public int getUserNo() {
-		return userNo;
+	public String getUserNo() {
+		return userId;
 	}
-	public void setUserNo(int userNo) {
-		this.userNo = userNo;
+	public void setUserNo(String userNo) {
+		this.userId = userId;
 	}
 	public String getTitle() {
 		return title;

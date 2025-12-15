@@ -40,17 +40,15 @@ public class ClipController {
 	}
 	
 	@ResponseBody
-	@RequestMapping("/clip/write") // JSP 경로와 맞춤
+	@RequestMapping("/write") 
 	public String writeClip(HttpSession session, 
 	                        MainBoardVO vo, 
-	                        @RequestParam(value="uploadFile", required=false) MultipartFile uploadFile) {
-	                        
-	    String msg = "";
-	    
+	                        @RequestParam(value="uploadFile", required=false) MultipartFile uploadFile) {               
+	    String msg = "";   
+	 // 파일 업로드 처리 로직
 	    try {
-	        // 파일 업로드 처리 로직
 	        if (uploadFile != null && !uploadFile.isEmpty()) {
-	            // 저장할 경로 설정 (예: 웹루트/resources/upload 또는 외부 경로)
+	            // 저장할 경로 설정  webcontext/resources/upload 
 	            String uploadFolder = session.getServletContext().getRealPath("/static/upload/");
 	            File dir = new File(uploadFolder);
 	            if (!dir.exists()) {
@@ -66,16 +64,10 @@ public class ClipController {
 	            File saveFile = new File(uploadFolder, savedFileName);
 	            uploadFile.transferTo(saveFile);
 
-	            // 2. VO에 저장된 파일 경로(또는 파일명) 세팅
+	            // VO에 저장된 파일 경로(또는 파일명) 세팅
 	            vo.setFilePath("/static/upload/" + savedFileName); 
-	            // 혹은 vo.setFileName(originalFileName); 등 DB 구조에 맞게 설정
 	        }
-
-	        // 3. 작성자 정보 세팅 (세션이 있다면)
-	        // MemberVO user = (MemberVO) session.getAttribute("loginUser");
-	        // if(user != null) vo.setWriter(user.getName());
-
-	        // 4. DB 저장
+	        // DB 저장
 	        int result = boardservice.insertClip(vo);
 
 	        if (result >= 1) {

@@ -50,7 +50,7 @@
                                        readonly>
                                        
                                 <%-- 필요시 ID도 hidden으로 전송 --%>
-                                <input type="hidden" name="writerId" value="${sessionScope.loginUser.userId}"> 
+                                <input type="hidden" name="userId" value="${sessionScope.loginUser.userId}"> 
                             </td>
                         </tr>
                         
@@ -65,7 +65,7 @@
                             <th>첨부파일</th>
                             <td>
                                 <div class="file-box">
-                                    <input type="file" name="uploadFile" class="ipt-file">
+                                    <input type="file" name="uploadFile" id="uploadFile" class="ipt-file">
                                 </div>
                             </td>
                         </tr>
@@ -129,7 +129,7 @@
                     
                     // 성공 시 리스트로 이동 (메시지에 '성공'이나 '저장'이 포함된 경우)
                     if(response.indexOf("저장되었습니다") > -1) {
-                        location.href = "${contextPath}/clip/list";
+                        location.href = "${contextPath}/default";
                     }
                 },
                 error: function(xhr, status, error) {
