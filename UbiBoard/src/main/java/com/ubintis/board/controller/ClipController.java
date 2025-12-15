@@ -93,7 +93,7 @@ public class ClipController {
 	    
 	    return msg;
 	}
-	
+	// 게시글 상세보기 로직
 	@RequestMapping("/read")
 	public ModelAndView read(@RequestParam("boardId") int boardId) { 
 	    // 파라미터로 id(게시글 번호)만 명확하게 받습니다.
@@ -118,6 +118,10 @@ public class ClipController {
 	    
 	    return mav;
 	}
+	
+	//댓글 대댓글 로직
+	
+	
 	// 게시글 삭제 로직
 	@RequestMapping("/deleteClip")
 	public ModelAndView deleteClip (@RequestParam("boardId") int boardId, HttpSession session) {
