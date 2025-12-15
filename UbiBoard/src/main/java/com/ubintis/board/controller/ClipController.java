@@ -184,6 +184,21 @@ public class ClipController {
 		return mav;
 	}
 	
+	// 대댓글 작성 로직
+	@RequestMapping ("/writeSubComment")
+	public ModelAndView writeSubComment (SubCommentVO subcommentVO, 
+										@RequestParam("boardId") String boardId,
+										HttpSession session) {
+		ModelAndView mav = new ModelAndView();
+		// userId 를 가져옴.
+		UserVO loginUser = (UserVO) session.getAttribute("loginUser");
+		subcommentVO.setUserId(loginUser.getUserId());
+		
+		boardservice.writeSubComment(subcommentVO);
+		mav.setViewName("redirect:/clip/read?boardId=" + boardId);
+		
+		return mav;
+	}
 	
 	
 }

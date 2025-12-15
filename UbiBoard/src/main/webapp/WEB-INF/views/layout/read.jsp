@@ -230,10 +230,10 @@
 
                         <%-- 대댓글(답글) 작성 폼 (기본 숨김) --%>
                         <div id="replyForm_${comment.commentId}" class="reply-form-wrap">
-                            <form action="${contextPath}/comment/reply" method="post" style="display:flex; gap:10px;">
-                                <input type="hidden" name="boardId" value="${board.boardId}">
-                                <input type="hidden" name="commentId" value="${comment.commentId}"> <%-- 부모 댓글 ID --%>
-                                <textarea name="content" class="comment-input" style="height:40px;" placeholder="답글 내용을 입력하세요." required></textarea>
+                            <form action="${contextPath}/clip/writeSubComment" method="post" style="display:flex; gap:10px;">
+                                <input type="hidden" name="boardId" id="boardId" value="${board.boardId}">
+                                <input type="hidden" name="commentId" id="commentId" value="${comment.commentId}"> <%-- 부모 댓글 ID --%>
+                                <textarea name="content" class="comment-input" id="content" style="height:40px;" placeholder="답글 내용을 입력하세요." required></textarea>
                                 <button type="submit" class="btn-comment-save" style="width:60px; font-size:13px;">등록</button>
                             </form>
                         </div>

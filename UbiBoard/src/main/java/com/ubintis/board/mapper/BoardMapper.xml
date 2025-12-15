@@ -110,5 +110,19 @@
 		#{content},
 		NOW() )
 	</insert>
+	
+	<insert id="writeSubComment" parameterType="SubCommentVO">
+	INSERT INTO sub_comment (
+	comment_id,
+	user_id,
+	content,
+	reg_date
+	) VALUES (
+	#{commentId},
+	#{userId},
+	#{content},
+	NOW()
+	)
+	</insert>
 
 </mapper>

@@ -6,7 +6,7 @@ public class SubCommentVO {
 
 	private int replyId;
 	private int commentId;
-	private int userNo;
+	private String userId;
 	private String content;
 	private Date regDate;
 	private Date modDate;
@@ -22,11 +22,11 @@ public class SubCommentVO {
 	public void setCommentId(int commentId) {
 		this.commentId = commentId;
 	}
-	public int getUserNo() {
-		return userNo;
+	public String getuserId() {
+		return userId;
 	}
-	public void setUserNo(int userNo) {
-		this.userNo = userNo;
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 	public String getContent() {
 		return content;

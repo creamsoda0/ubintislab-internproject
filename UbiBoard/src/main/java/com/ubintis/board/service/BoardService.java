@@ -27,4 +27,6 @@ public interface BoardService {
 
 	void insertMainComment(MainCommentVO maincommentVO);
 
+	void writeSubComment(SubCommentVO subcommentVO);
+
 }

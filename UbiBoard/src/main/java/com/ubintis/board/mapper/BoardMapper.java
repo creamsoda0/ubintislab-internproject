@@ -34,6 +34,8 @@ public interface BoardMapper {
 
 	void insertMainComment(MainCommentVO maincommentVO);
 
+	void writeSubComment(SubCommentVO subcommentVO);
+
 	
 
 }
