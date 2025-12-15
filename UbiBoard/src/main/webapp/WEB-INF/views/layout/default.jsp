@@ -73,7 +73,7 @@
                     <tr>
                         <td>${vo.boardId}</td>
                         <td style="text-align:left;">
-                            <a href="${contextPath}/clip/read?id=${vo.boardId}">
+                            <a href="${contextPath}/clip/read?boardId=${vo.boardId}">
                                 ${vo.title}
                             </a>
                         </td>

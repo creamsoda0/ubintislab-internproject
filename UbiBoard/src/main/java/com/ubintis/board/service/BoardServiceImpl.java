@@ -7,7 +7,9 @@ import org.springframework.stereotype.Service;
 
 import com.ubintis.board.mapper.BoardMapper;
 import com.ubintis.board.vo.MainBoardVO;
+import com.ubintis.board.vo.MainCommentVO;
 import com.ubintis.board.vo.PagingVO;
+import com.ubintis.board.vo.SubCommentVO;
 
 @Service
 public class BoardServiceImpl implements BoardService {
@@ -31,6 +33,24 @@ public class BoardServiceImpl implements BoardService {
 	public int getTotalCount(PagingVO paging) {
 		
 		return mapper.getTotalCount(paging);
+	}
+
+	@Override
+	public MainBoardVO getClipById(int boardId) {
+		// TODO Auto-generated method stub
+		return mapper.getClipById(boardId);
+	}
+
+	@Override
+	public List<MainCommentVO> getCommentListById(int boardId) {
+		// TODO Auto-generated method stub
+		return mapper.getCommentListById(boardId);
+	}
+
+	@Override
+	public List<SubCommentVO> getAllSubCommentListById(int boardId) {
+		// TODO Auto-generated method stub
+		return mapper.getAllSubCommentListById(boardId);
 	}
 
 }

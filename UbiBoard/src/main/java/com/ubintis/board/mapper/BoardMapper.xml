@@ -5,33 +5,62 @@
 
 <mapper namespace="com.ubintis.board.mapper.BoardMapper">
 
-	<insert id="insertClip" parameterType="MainBoardVO" useGeneratedKeys="true" keyProperty="boardId">
-        INSERT INTO mainboard (
-            user_id,
-            title,
-            content,
-            file_path,
-            reg_date,
-            mod_date
-        ) VALUES (
-            #{userId},   
-            #{title},
-            #{content},
-            #{filePath}, 
-            NOW(),       
-            NOW()        
-            )
-    </insert>
-    
-    <select id="getClipList" parameterType="PagingVO" resultType="MainBoardVO">
-    SELECT *
-    FROM mainboard
-    ORDER BY board_id DESC  
-    LIMIT #{skip}, #{amount}      
-    </select>
-    
-    <select id="getTotalCount" parameterType="PagingVO" resultType="int">
-    SELECT count(*) FROM mainboard
+	<insert id="insertClip" parameterType="MainBoardVO"
+		useGeneratedKeys="true" keyProperty="boardId">
+		INSERT INTO mainboard (
+		user_id,
+		title,
+		content,
+		file_path,
+		reg_date,
+		mod_date
+		) VALUES (
+		#{userId},
+		#{title},
+		#{content},
+		#{filePath},
+		NOW(),
+		NOW()
+		)
+	</insert>
+
+	<select id="getClipList" parameterType="PagingVO"
+		resultType="MainBoardVO">
+		SELECT *
+		FROM mainboard
+		ORDER BY board_id DESC
+		LIMIT #{skip},
+		#{amount}
 	</select>
 
+	<select id="getTotalCount" parameterType="PagingVO"
+		resultType="int">
+		SELECT count(*) FROM mainboard
+	</select>
+
+	<select id="getClipById" parameterType="int"
+		resultType="MainBoardVO">
+		SELECT *
+		FROM mainboard
+		WHERE board_id = #{boardId}
+	</select>
+
+	<select id="getCommentListById" parameterType="int"
+		resultType="MainCommentVO">
+		SELECT *
+		FROM main_comment
+		WHERE board_id = #{boardId}
+		ORDER
+		BY comment_id ASC
+	</select>
+
+	<select id="getAllSubCommentListById" parameterType="int"
+		resultType="SubCommentVO">
+		SELECT s.* FROM sub_comment s
+		JOIN main_comment m ON
+		s.comment_id = m.comment_id
+		WHERE m.board_id = #{boardId}
+		ORDER BY
+		s.sub_id ASC
+	</select>
 </mapper>

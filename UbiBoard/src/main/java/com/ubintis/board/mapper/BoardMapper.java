@@ -5,7 +5,9 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.ubintis.board.vo.MainBoardVO;
+import com.ubintis.board.vo.MainCommentVO;
 import com.ubintis.board.vo.PagingVO;
+import com.ubintis.board.vo.SubCommentVO;
 
 @Mapper
 public interface BoardMapper {
@@ -15,5 +17,11 @@ public interface BoardMapper {
 	List<MainBoardVO> getClipList(PagingVO paging);
 
 	int getTotalCount(PagingVO paging);
+
+	MainBoardVO getClipById(int boardId);
+
+	List<MainCommentVO> getCommentListById(int boardId);
+
+	List<SubCommentVO> getAllSubCommentListById(int boardId);
 
 }

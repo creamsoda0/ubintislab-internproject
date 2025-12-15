@@ -1,6 +1,7 @@
 package com.ubintis.board.controller;
 
 import java.io.File;
+import java.util.List;
 import java.util.UUID;
 
 import javax.servlet.http.HttpSession;
@@ -16,6 +17,8 @@ import org.springframework.web.servlet.ModelAndView;
 import com.ubintis.board.service.BoardService;
 import com.ubintis.board.service.MemberService;
 import com.ubintis.board.vo.MainBoardVO;
+import com.ubintis.board.vo.MainCommentVO;
+import com.ubintis.board.vo.SubCommentVO;
 import com.ubintis.board.vo.UserVO;
 
 @Controller
@@ -91,5 +94,29 @@ public class ClipController {
 	    return msg;
 	}
 	
+	@RequestMapping("/read")
+	public ModelAndView read(@RequestParam("boardId") int boardId) { 
+	    // 파라미터로 id(게시글 번호)만 명확하게 받습니다.
+	    
+	    ModelAndView mav = new ModelAndView();
+
+	    // 게시글 상세 정보 가져오기
+	    MainBoardVO mainVO = boardservice.getClipById(boardId);
+
+	    // 메인 댓글(부모 댓글) 리스트 가져오기
+	    List<MainCommentVO> mainCommentList = boardservice.getCommentListById(boardId);
+
+	    // 대댓글(자식 댓글) 리스트 가져오기
+	    List<SubCommentVO> subCommentList = boardservice.getAllSubCommentListById(boardId);
+	    
+	    // 4. 화면에 데이터 전달
+	    mav.addObject("board", mainVO);           // 게시글 정보
+	    mav.addObject("commentList", mainCommentList); // 부모 댓글 리스트
+	    mav.addObject("subCommentList", subCommentList); // 대댓글 리스트
+
+	    mav.setViewName("/layout/read");
+	    
+	    return mav;
+	}
 	
 }

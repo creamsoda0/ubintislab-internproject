@@ -307,3 +307,5 @@
     .btn-area.center { flex-direction: column-reverse; } /* 모바일에서 취소가 아래로 */
     .btn-cancel, .btn-submit { width: 100%; }
 }
+
+
