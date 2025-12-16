@@ -251,7 +251,7 @@
                                         </div>
                                         <div class="meta-right">
                                             <c:if test="${sessionScope.loginUser.userId == sub.userId}">
-                                                <button type="button" onclick="deleteSubComment('${sub.replyId}')">삭제</button>
+                                                <button type="button" onclick="deleteSubComment('${sub.subId}')">삭제</button>
                                             </c:if>
                                         </div>
                                     </div>
@@ -311,14 +311,14 @@
         // 댓글 삭제
         function deleteComment(commentId) {
             if(confirm("댓글을 삭제하시겠습니까?")) {
-                location.href = "${contextPath}/comment/delete?commentId=" + commentId + "&boardId=${board.boardId}";
+                location.href = "${contextPath}/clip/deleteComment?commentId=" + commentId + "&boardId=${board.boardId}";
             }
         }
         
         // 대댓글 삭제
-        function deleteSubComment(replyId) {
+        function deleteSubComment(subId) {
             if(confirm("답글을 삭제하시겠습니까?")) {
-                location.href = "${contextPath}/comment/deleteSub?replyId=" + replyId + "&boardId=${board.boardId}";
+                location.href = "${contextPath}/clip/deleteSubComment?subId=" + subId + "&boardId=${board.boardId}";
             }
         }
     </script>

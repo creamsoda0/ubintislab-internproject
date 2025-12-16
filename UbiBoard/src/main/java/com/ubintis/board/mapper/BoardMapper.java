@@ -36,6 +36,16 @@ public interface BoardMapper {
 
 	void writeSubComment(SubCommentVO subcommentVO);
 
+	MainCommentVO getMainCommentById(int commentId);
+
+	void deleteMainCommentById(int commentId);
+
+	void deleteSubCommentById(int commentId);
+
+	SubCommentVO getSubCommentById(int subId);
+
+	void deleteSubCommentBySubId(int subId);
+
 	
 
 }

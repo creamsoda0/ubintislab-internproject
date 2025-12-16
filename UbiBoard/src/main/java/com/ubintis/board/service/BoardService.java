@@ -29,4 +29,12 @@ public interface BoardService {
 
 	void writeSubComment(SubCommentVO subcommentVO);
 
+	MainCommentVO getMainCommentById(int commentId);
+
+	void deleteMainCommentById(int commentId);
+
+	SubCommentVO getSubCommentById(int subId);
+
+	void deleteSubCommentById(int subId);
+
 }

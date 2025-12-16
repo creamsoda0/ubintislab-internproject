@@ -54,10 +54,11 @@
                     <tr>
                         <th class="mobile-hide">번호</th>
                         <th>제목</th>
-                        <th class="mobile-hide">첨부</th>
+                        <!-- <th class="mobile-hide">첨부</th> -->
                         <th>작성자</th>
                         <th class="mobile-hide">작성일</th>
                         <th class="mobile-hide">조회</th>
+                        <th class="mobile-hide">좋아요</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -72,7 +73,7 @@
                 <c:forEach var="vo" items="${clipList}">
                     <tr>
                         <td>${vo.boardId}</td>
-                        <td style="text-align:left;">
+                        <td style="text-align:middle;">
                             <a href="${contextPath}/clip/read?boardId=${vo.boardId}">
                                 ${vo.title}
                             </a>
@@ -82,6 +83,7 @@
                             <fmt:formatDate value="${vo.regDate}" pattern="yyyy-MM-dd"/>
                         </td>
                         <td>${vo.views}</td>
+                        <td>${vo.like}</td>
                     </tr>
                 </c:forEach>
             </c:otherwise>

@@ -4,17 +4,17 @@ import java.util.Date;
 
 public class SubCommentVO {
 
-	private int replyId;
+	private int subId;
 	private int commentId;
 	private String userId;
 	private String content;
 	private Date regDate;
 	private Date modDate;
-	public int getReplyId() {
-		return replyId;
+	public int getSubId() {
+		return subId;
 	}
-	public void setReplyId(int replyId) {
-		this.replyId = replyId;
+	public void setSubId(int subId) {
+		this.subId = subId;
 	}
 	public int getCommentId() {
 		return commentId;
@@ -22,7 +22,7 @@ public class SubCommentVO {
 	public void setCommentId(int commentId) {
 		this.commentId = commentId;
 	}
-	public String getuserId() {
+	public String getUserId() {
 		return userId;
 	}
 	public void setUserId(String userId) {

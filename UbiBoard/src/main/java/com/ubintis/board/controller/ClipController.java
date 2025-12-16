@@ -201,5 +201,46 @@ public class ClipController {
 		return mav;
 	}
 	
+	// 댓글 삭제 로직
+	@RequestMapping ("/deleteComment")
+	public ModelAndView deleteComment (MainCommentVO maincommentVO, HttpSession session, 
+										@RequestParam("boardId") int boardId) {
+		ModelAndView mav = new ModelAndView();
+		
+		maincommentVO = boardservice.getMainCommentById(maincommentVO.getCommentId());
+		
+		// 삭제 로직이므로 보안상 한 번더 확인
+		UserVO loginUser = (UserVO) session.getAttribute("loginUser");
+		if (!loginUser.getUserId().equals(maincommentVO.getUserId())) {
+	        mav.addObject("msg", "본인의 댓글만 삭제할 수 있습니다.");
+	        mav.setViewName("redirect:/goMain");
+	        return mav; 
+	    }
+		
+		boardservice.deleteMainCommentById(maincommentVO.getCommentId());
+		mav.setViewName("redirect:/clip/read?boardId=" + boardId);
+		
+		return mav;
+	}
+	
+	// 대댓글 삭제 로직
+	@RequestMapping ("/deleteSubComment")
+	public ModelAndView deleteSubComment (SubCommentVO subcommentVO, HttpSession session, 
+										@RequestParam("boardId") int boardId) {
+		ModelAndView mav = new ModelAndView();
+		subcommentVO = boardservice.getSubCommentById(subcommentVO.getSubId());
+		
+		// 삭제 로직이므로 보안상 한 번더 확인
+		UserVO loginUser = (UserVO) session.getAttribute("loginUser");
+		if (!loginUser.getUserId().equals(subcommentVO.getUserId())) {
+	        mav.addObject("msg", "본인의 댓글만 삭제할 수 있습니다.");
+	        mav.setViewName("redirect:/goMain");
+	        return mav; 
+	    }
+		boardservice.deleteSubCommentById(subcommentVO.getSubId());
+		mav.setViewName("redirect:/clip/read?boardId=" + boardId);
+		
+		return mav;
+	}
 	
 }

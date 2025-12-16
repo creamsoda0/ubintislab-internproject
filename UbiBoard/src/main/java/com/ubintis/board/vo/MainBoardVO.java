@@ -13,6 +13,7 @@ public class MainBoardVO {
 	private int views;
 	private String comment;
 	private String filePath;
+	private int like;
 	
 	public int getBoardId() {
 		return boardId;
@@ -67,6 +68,12 @@ public class MainBoardVO {
 	}
 	public void setFilePath(String filePath) {
 		this.filePath = filePath;
+	}
+	public int getLike() {
+		return like;
+	}
+	public void setLike(int like) {
+		this.like = like;
 	}
 	
 	

@@ -85,5 +85,31 @@ public class BoardServiceImpl implements BoardService {
 		mapper.writeSubComment(subcommentVO);
 	}
 
+	@Override
+	public MainCommentVO getMainCommentById(int commentId) {
+		// TODO Auto-generated method stub
+		return mapper.getMainCommentById(commentId);
+	}
+	
+	@Transactional
+	@Override
+	public void deleteMainCommentById(int commentId) {
+		// TODO Auto-generated method stub
+		mapper.deleteSubCommentById(commentId);
+		mapper.deleteMainCommentById(commentId);
+	}
+
+	@Override
+	public SubCommentVO getSubCommentById(int subId) {
+		// TODO Auto-generated method stub
+		return mapper.getSubCommentById(subId);
+	}
+
+	@Override
+	public void deleteSubCommentById(int subId) {
+		// TODO Auto-generated method stub
+		mapper.deleteSubCommentBySubId(subId);
+	}
+
 
 }

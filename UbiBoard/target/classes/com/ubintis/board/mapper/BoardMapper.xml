@@ -124,5 +124,29 @@
 	NOW()
 	)
 	</insert>
+	
+	<select id="getMainCommentById" parameterType="int" resultType="MainCommentVO">
+	SELECT * FROM main_comment
+	WHERE comment_id = #{commentId}
+	</select>
+	
+	<delete id="deleteMainCommentById" parameterType="int">
+	DELETE FROM main_comment
+	WHERE comment_id = #{commentId}
+	</delete>
+	
+	<delete id="deleteSubCommentById" parameterType="int">
+	DELETE FROM sub_comment
+	WHERE comment_id = #{commentId}
+	</delete>
 
+	<select id="getSubCommentById" parameterType="int" resultType="SubCommentVO">
+	SELECT * FROM sub_comment
+	WHERE sub_id = #{subId}
+	</select>
+	
+	<delete id="deleteSubCommentBySubId">
+	DELETE FROM sub_comment
+	WHERE sub_id = #{subId}
+	</delete>
 </mapper>
