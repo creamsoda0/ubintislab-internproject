@@ -248,7 +248,7 @@ public class MemberController {
 	            // [주의] setMaxInactiveInterval은 세션 전체의 수명(로그인 유지 시간 등)을 바꿔버립니다.
 	            // 단순히 인증번호 유효시간 체크용이라면, 차라리 '발송시간'을 세션에 같이 저장하는 것이 안전합니다.
 	            // 여기서는 일단 기존 로직을 유지하되, 주석으로 남깁니다.
-	            session.setMaxInactiveInterval(180); // 3분
+	            session.setMaxInactiveInterval(600); // 3분
 	            
 	            return "success";
 	        } else {
