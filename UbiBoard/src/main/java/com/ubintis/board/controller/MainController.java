@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.ubintis.board.service.BoardService;
+import com.ubintis.board.util.MaskingUtil;
 import com.ubintis.board.vo.MainBoardVO;
 import com.ubintis.board.vo.PageVO;
 import com.ubintis.board.vo.PagingVO;
@@ -19,6 +20,7 @@ public class MainController {
 	
 	@Autowired
 	private BoardService boardservice;
+	
 	
 	@RequestMapping(value = "/default")
 	public ModelAndView loginpage(Model model) {
@@ -41,6 +43,8 @@ public class MainController {
 		int total = boardservice.getTotalCount(paging);
 				
 		List<MainBoardVO> list = boardservice.getClipList(paging);
+		
+		
 		
 		mav.addObject("clipList", list);
 	    mav.addObject("pageMaker", new PageVO(paging, total)); // 페이징 정보 전달

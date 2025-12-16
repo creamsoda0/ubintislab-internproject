@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="${contextPath}/static/main/css/board.css">
     
     <script src="${contextPath}/static/main/js/jquery-1.11.3.min.js"></script>
+    <script src="${contextPath}/static/main/js/masking.js"></script>
 </head>
 <body>
 
@@ -78,7 +79,7 @@
                                 ${vo.title}
                             </a>
                         </td>
-                        <td>${vo.userId}</td>
+                        <td><span class="mask-id">${vo.userId}</span></td>
                         <td>
                             <fmt:formatDate value="${vo.regDate}" pattern="yyyy-MM-dd"/>
                         </td>

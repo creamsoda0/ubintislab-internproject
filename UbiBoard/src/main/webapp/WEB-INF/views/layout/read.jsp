@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
     <script src="${contextPath}/static/main/js/jquery-1.11.3.min.js"></script>
-
+	<script src="${contextPath}/static/main/js/masking.js"></script>
     <style>
         /* ================= 기존 스타일 유지 ================= */
         body { background-color: #f8f9fa; }
@@ -212,7 +212,7 @@
                         <div class="main-comment-box">
                             <div class="comment-meta">
                                 <div class="meta-left">
-                                    <strong>${comment.userId}</strong>
+                                    <strong><span class="mask-id">${comment.userId}</span></strong>
                                     <span><fmt:formatDate value="${comment.regDate}" pattern="yyyy-MM-dd HH:mm"/></span>
                                 </div>
                                 <div class="meta-right">
@@ -246,7 +246,7 @@
                                     <span class="reply-icon">↳</span>
                                     <div class="comment-meta">
                                         <div class="meta-left">
-                                            <strong>${sub.userId}</strong>
+                                            <strong><span class="mask-id">${sub.userId}</span></strong>
                                             <span><fmt:formatDate value="${sub.regDate}" pattern="yyyy-MM-dd HH:mm"/></span>
                                         </div>
                                         <div class="meta-right">

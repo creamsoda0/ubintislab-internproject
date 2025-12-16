@@ -13,7 +13,14 @@
     <title>아이디 찾기 결과 | 유비앤티스랩</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+	
+    
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
 
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    
+	<script src="${contextPath}/static/main/js/masking.js"></script>
+	<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
     <style>
         /* =========================================
            아이디 찾기 결과 스타일 (UBNTIS Style)
@@ -236,10 +243,10 @@
 
             <div class="id-box">
                 <p class="user-name">
-                    <strong>${resultUser.name}</strong> 님의 통합 아이디는
+                    <strong><span class="mask-name">${resultUser.name}</span></strong> 님의 통합 아이디는
                 </p>
                 <p class="user-id">
-                    ${resultUser.userId}
+                    <span class="mask-id">${resultUser.userId}</span>
                 </p>
             </div>
 
