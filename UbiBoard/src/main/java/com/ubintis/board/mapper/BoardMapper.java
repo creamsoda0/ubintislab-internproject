@@ -49,6 +49,8 @@ public interface BoardMapper {
 
 	void insertFile(FileVO fileVO);
 
+	List<FileVO> getFileList(int boardId);
+
 	
 
 }

@@ -11,7 +11,8 @@
             <typeAlias alias="UserVO" type="com.ubintis.board.vo.UserVO"/>   
             <typeAlias alias="UserWithDrawVO" type="com.ubintis.board.vo.UserWithDrawVO"/>   
             <typeAlias alias="PageVO" type="com.ubintis.board.vo.PageVO"/>   
-            <typeAlias alias="PagingVO" type="com.ubintis.board.vo.PagingVO"/>               
+            <typeAlias alias="PagingVO" type="com.ubintis.board.vo.PagingVO"/>   
+            <typeAlias alias="FileVO" type="com.ubintis.board.vo.FileVO"/>              
         </typeAliases>
 </configuration>
 

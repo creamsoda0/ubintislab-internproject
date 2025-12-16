@@ -17,7 +17,8 @@
 	</insert>
 
 	<insert id="insertFile" parameterType="FileVO">
-		INSERT INTO BOARD_FILE (board_id, original_name, saved_name, file_path,
+		INSERT INTO BOARD_FILE
+		(board_id, original_name, saved_name, file_path,
 		reg_date, mod_date)
 		VALUES (#{boardId}, #{originalName}, #{savedName}, #{filePath}, NOW(),
 		NOW())
@@ -113,7 +114,8 @@
 	</insert>
 
 	<insert id="writeSubComment" parameterType="SubCommentVO">
-		INSERT INTO sub_comment (
+		INSERT INTO
+		sub_comment (
 		comment_id,
 		user_id,
 		content,
@@ -133,12 +135,14 @@
 	</select>
 
 	<delete id="deleteMainCommentById" parameterType="int">
-		DELETE FROM main_comment
+		DELETE FROM
+		main_comment
 		WHERE comment_id = #{commentId}
 	</delete>
 
 	<delete id="deleteSubCommentById" parameterType="int">
-		DELETE FROM sub_comment
+		DELETE FROM
+		sub_comment
 		WHERE comment_id = #{commentId}
 	</delete>
 
@@ -152,4 +156,20 @@
 		DELETE FROM sub_comment
 		WHERE sub_id = #{subId}
 	</delete>
+
+	<select id="getFileList" parameterType="int" resultType="FileVO">
+		SELECT
+		file_id,
+		board_id,
+		original_name,
+		saved_name,
+		file_path,
+		file_size,
+		reg_date
+		FROM board_file
+		WHERE board_id = #{boardId}
+	</select>
+
+
+
 </mapper>

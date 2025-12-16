@@ -128,30 +128,30 @@ public class ClipController {
 		fis.close();
 	}
 
-	// 게시글 상세보기 로직
 	@RequestMapping("/read")
 	public ModelAndView read(@RequestParam("boardId") int boardId) {
-		// 파라미터로 id(게시글 번호)만 명확하게 받습니다.
+	    
+	    ModelAndView mav = new ModelAndView();
 
-		ModelAndView mav = new ModelAndView();
+	    // 1. 게시글 상세 정보 가져오기
+	    MainBoardVO mainVO = boardservice.getClipById(boardId);
 
-		// 게시글 상세 정보 가져오기
-		MainBoardVO mainVO = boardservice.getClipById(boardId);
+	    // 2. [추가] 게시글에 첨부된 파일 리스트 가져오기 (따로 호출)
+	    List<FileVO> fileList = boardservice.getFileList(boardId);
 
-		// 메인 댓글(부모 댓글) 리스트 가져오기
-		List<MainCommentVO> mainCommentList = boardservice.getCommentListById(boardId);
+	    // 3. 댓글 리스트 가져오기
+	    List<MainCommentVO> mainCommentList = boardservice.getCommentListById(boardId);
+	    List<SubCommentVO> subCommentList = boardservice.getAllSubCommentListById(boardId);
 
-		// 대댓글(자식 댓글) 리스트 가져오기
-		List<SubCommentVO> subCommentList = boardservice.getAllSubCommentListById(boardId);
+	    // 4. 화면에 데이터 전달
+	    mav.addObject("board", mainVO);           // 게시글 정보
+	    mav.addObject("fileList", fileList);      // [추가] 파일 리스트 (이름: fileList)
+	    mav.addObject("commentList", mainCommentList);
+	    mav.addObject("subCommentList", subCommentList);
 
-		// 화면에 데이터 전달
-		mav.addObject("board", mainVO); // 게시글 정보
-		mav.addObject("commentList", mainCommentList); // 부모 댓글 리스트
-		mav.addObject("subCommentList", subCommentList); // 대댓글 리스트
+	    mav.setViewName("/layout/read");
 
-		mav.setViewName("/layout/read");
-
-		return mav;
+	    return mav;
 	}
 
 	// 게시글 삭제 로직

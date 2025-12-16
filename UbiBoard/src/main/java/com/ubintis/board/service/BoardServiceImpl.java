@@ -34,7 +34,7 @@ public class BoardServiceImpl implements BoardService {
 	    System.out.println(">>>>>>>>>> 생성된 게시글 번호: " + vo.getBoardId());
 
 	    // 2. 파일 저장 로직
-	    String uploadFolder = "C:\\ubiboard_upload\\"; // 설정한 경로
+	    String uploadFolder = "D:\\sung-min-upload\\"; // 설정한 경로
 
 	    // 이제 uploadFiles를 파라미터로 받아왔으니 에러가 안 납니다.
 	    if (uploadFiles != null && !uploadFiles.isEmpty()) {
@@ -157,6 +157,12 @@ public class BoardServiceImpl implements BoardService {
 	public void insertFile(FileVO fileVO) {
 		// TODO Auto-generated method stub
 		mapper.insertFile(fileVO);
+	}
+
+	@Override
+	public List<FileVO> getFileList(int boardId) {
+		// TODO Auto-generated method stub
+		return mapper.getFileList(boardId);
 	}
 
 

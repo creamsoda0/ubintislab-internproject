@@ -42,6 +42,8 @@ public interface BoardService {
 
 	void deleteSubCommentById(int subId);
 
+	List<FileVO> getFileList(int boardId);
+
 	
 
 }

@@ -6,7 +6,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<title>${board.title}| 상세보기</title>
+<title>${board.title}|상세보기</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <c:set var="contextPath" value="${pageContext.request.contextPath}" />
@@ -313,16 +313,18 @@ body {
 						<th>조회수</th>
 						<td>${board.views}</td>
 						<th>첨부파일</th>
-						<td>
-							<%-- <a href="${contextPath}${board.filePath}" download class="file-link">💾 다운로드</a> --%>
-							<c:if test="${not empty board.filePath}">
-								<c:forEach var="file" items="${board.fileList}">
-									<li><a
+						<td><c:if test="${empty fileList}">
+								<span style="color: #999;">첨부된 파일이 없습니다.</span>
+							</c:if> <c:forEach var="file" items="${fileList}">
+								<div class="file-item" style="margin-bottom: 5px;">
+									<a
 										href="${contextPath}/clip/download?filePath=${file.filePath}">
-											💾 ${file.originalName} 다운로드 </a></li>
-								</c:forEach>
-							</c:if>
-						</td>
+										💾 ${file.originalName} </a> <span
+										style="font-size: 12px; color: #888;"> (<fmt:formatNumber
+											value="${file.fileSize / 1024}" pattern="0.0" /> KB)
+									</span>
+								</div>
+							</c:forEach></td>
 					</tr>
 				</tbody>
 			</table>
