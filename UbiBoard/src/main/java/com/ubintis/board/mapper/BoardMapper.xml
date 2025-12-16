@@ -170,6 +170,11 @@
 		WHERE board_id = #{boardId}
 	</select>
 
+	<update id="updateHit" parameterType="int">
+		UPDATE mainboard
+		SET views = views + 1
+		WHERE board_id = #{boardId}
+	</update>
 
 
 </mapper>

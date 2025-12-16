@@ -44,6 +44,8 @@ public interface BoardService {
 
 	List<FileVO> getFileList(int boardId);
 
+	void updateHit(int boardId);
+
 	
 
 }

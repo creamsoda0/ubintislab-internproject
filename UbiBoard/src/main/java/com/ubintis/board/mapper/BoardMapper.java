@@ -51,6 +51,8 @@ public interface BoardMapper {
 
 	List<FileVO> getFileList(int boardId);
 
+	void updateHit(int boardId);
+
 	
 
 }

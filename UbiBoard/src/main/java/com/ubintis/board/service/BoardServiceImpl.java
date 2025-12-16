@@ -165,6 +165,12 @@ public class BoardServiceImpl implements BoardService {
 		return mapper.getFileList(boardId);
 	}
 
+	@Override
+	public void updateHit(int boardId) {
+		// TODO Auto-generated method stub
+		mapper.updateHit(boardId);
+	}
+
 
 
 

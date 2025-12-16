@@ -132,7 +132,7 @@ public class ClipController {
 	public ModelAndView read(@RequestParam("boardId") int boardId) {
 	    
 	    ModelAndView mav = new ModelAndView();
-
+	    boardservice.updateHit(boardId);
 	    // 1. 게시글 상세 정보 가져오기
 	    MainBoardVO mainVO = boardservice.getClipById(boardId);
 
