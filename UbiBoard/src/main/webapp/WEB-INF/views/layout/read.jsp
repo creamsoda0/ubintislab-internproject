@@ -181,9 +181,10 @@
                         <td>${board.views}</td>
                         <th>첨부파일</th>
                         <td>
-                            <c:if test="${not empty board.filePath}">
-                                <a href="${contextPath}${board.filePath}" download class="file-link">💾 다운로드</a>
-                            </c:if>
+						<%-- <a href="${contextPath}${board.filePath}" download class="file-link">💾 다운로드</a> --%>
+							<c:if test="${not empty board.filePath}">
+    						<a href="${contextPath}/clip/download?filePath=${board.filePath}" class="file-link">💾 다운로드</a>
+							</c:if>
                         </td>
                     </tr>
                 </tbody>

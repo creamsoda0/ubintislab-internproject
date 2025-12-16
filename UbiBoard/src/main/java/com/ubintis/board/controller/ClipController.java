@@ -1,9 +1,12 @@
 package com.ubintis.board.controller;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.UUID;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +46,8 @@ public class ClipController {
 		return mav;	
 	}
 	
+	
+	
 	@ResponseBody
 	@RequestMapping(value="/write", produces = "text/plain;charset=UTF-8") 
 	public String writeClip(HttpSession session, 
@@ -53,7 +58,10 @@ public class ClipController {
 	    try {
 	        if (uploadFile != null && !uploadFile.isEmpty()) {
 	            // 저장할 경로 설정  webcontext/resources/upload 
-	            String uploadFolder = session.getServletContext().getRealPath("/static/upload/");
+	            String uploadFolder = "D:\\sung-min-upload";
+
+	            System.out.println(">>>>>>>>>> 실제 파일 저장 경로: " + uploadFolder);
+	            
 	            File dir = new File(uploadFolder);
 	            if (!dir.exists()) {
 	                dir.mkdirs(); // 폴더가 없으면 생성
@@ -94,6 +102,56 @@ public class ClipController {
 	    
 	    return msg;
 	}
+	
+	// 파일 다운로드 로직
+	@RequestMapping("/download")
+	public void download(@RequestParam("filePath") String filePath, HttpServletResponse response) throws Exception {
+	    
+	    // 1. DB에 저장된 경로: "/static/upload/uuid_파일명.jpg"
+	    //    우리가 필요한 건 실제 파일명인 "uuid_파일명.jpg" 부분임
+	    //    경로에서 파일명만 잘라냄
+	    String fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
+	    
+	    // 2. 실제 물리적 파일 경로 (아까 설정한 D드라이브 경로)
+	    //    주의: filePath 전체를 쓰는 게 아니라, 폴더 경로 + 파일명을 합쳐야 함
+	    String uploadFolder = "D:\\sung-min-upload";
+	    File file = new File(uploadFolder, fileName);
+
+	    if(!file.exists()) {
+	        System.out.println("파일이 존재하지 않습니다.");
+	        return;
+	    }
+
+	    // 3. 다운로드 시 보여줄 "원본 파일명" 만들기 (UUID 제거)
+	    //    저장될 때 "uuid_원래이름" 형식이므로, 첫 번째 "_" 뒤를 자름
+	    String originalName = fileName.substring(fileName.indexOf("_") + 1);
+
+	    // 4. 한글 파일명 깨짐 방지 (브라우저 호환성 처리)
+	    //    이 처리를 안 하면 한글 파일은 "___.___" 처럼 깨져서 나옴
+	    String encodedOriginalName = new String(originalName.getBytes("UTF-8"), "ISO-8859-1");
+
+	    // 5. 헤더 설정 (브라우저에게 "이건 다운로드 파일이야"라고 알려줌)
+	    response.setContentType("application/octet-stream");
+	    response.setHeader("Content-Disposition", "attachment; filename=\"" + encodedOriginalName + "\"");
+	    response.setContentLength((int)file.length());
+
+	    // 6. 파일 내보내기 (스트림 전송)
+	    FileInputStream fis = new FileInputStream(file);
+	    OutputStream os = response.getOutputStream();
+
+	    byte[] b = new byte[4096]; // 버퍼 생성
+	    int read = 0;
+	    while((read = fis.read(b)) != -1) {
+	        os.write(b, 0, read);
+	    }
+
+	    os.flush();
+	    os.close();
+	    fis.close();
+	}
+
+	
+	
 	// 게시글 상세보기 로직
 	@RequestMapping("/read")
 	public ModelAndView read(@RequestParam("boardId") int boardId) { 
