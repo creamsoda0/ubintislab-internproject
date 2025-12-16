@@ -36,18 +36,50 @@ public class MemberServiceImpl implements MemberService {
 	public List<UserVO> getUserList() {
 	    return mapper.getUserList();
 	}
-
+	
 	@Override
 	public void insertMember(UserVO userVO) {
+		
+		// 아이디가 중복일시 예외 던지는 로직
+		int count = mapper.idCheck(userVO.getUserId());
+		if (count > 0) {
+            throw new IllegalStateException("이미 존재하는 아이디입니다.");
+        }
+		// 아이디 길이 체크
+		if (userVO.getUserId() != null && userVO.getUserId().length() > 20) {
+	        // 비정상적인 요청이므로 즉시 에러 발생시킴
+	        throw new IllegalArgumentException("아이디는 20자를 초과할 수 없습니다.");
+	    }
+	    
+	    // 이름 길이 체크
+	    if (userVO.getName() != null && userVO.getName().length() > 20) {
+	        throw new IllegalArgumentException("이름은 20자를 초과할 수 없습니다.");
+	    }
+	    
+	    // 수신동의의 경우 null일경우 기본값 비수신으로 처리
+	    if (userVO.getEmailAgreed() == null) {
+	         userVO.setEmailAgreed(0); 
+	         // 필수라면 throw new IllegalArgumentException(...)
+	    }
+	    
         // 사용자가 입력한 있는 그대로의 비밀번호
         String rawPw = userVO.getPassword();
         // 암호화된 비밀번호
         String encodePw = passwordEncoder.encode(rawPw);       
         // 암호화된 비번을 다시 VO에 담아서 DB로 보냄
         userVO.setPassword(encodePw);
+        
+        
 
 		mapper.insertMember(userVO);		
 	}
+	
+	/*
+	 * // XSS 방어용 프라이빗 메서드 (클래스 하단에 추가) private String preventXss(String value) { if
+	 * (value == null) return null; return value.replaceAll("&", "&amp;")
+	 * .replaceAll("<", "&lt;") .replaceAll(">", "&gt;") .replaceAll("\"", "&quot;")
+	 * .replaceAll("'", "&#x27;"); }
+	 */
 
 	@Override
 	public UserVO login(UserVO userVO) {

@@ -227,8 +227,38 @@
             .email-box { display: flex; flex-direction: column; gap: 5px; }
             .addr-box input { margin-bottom: 5px; }
         }
-    </style>
+        
+        /* 비밀번호 에러메세지용 */
+        /* 1. 기본 에러 메시지 스타일 (빨강) */
+.error-msg {
+    display: block;           /* 줄바꿈하여 input 아래에 위치 */
+    margin-top: 6px;          /* 위쪽 여백 */
+    font-size: 13px;          /* 글자 크기 */
+    color: #e74c3c;           /* 세련된 빨간색 (Flat UI Red) */
+    font-weight: 600;         /* 약간 굵게 */
+    letter-spacing: -0.5px;   /* 자간 살짝 좁힘 */
+    transition: all 0.2s ease; /* 색상 변경 시 부드럽게 */
+}
 
+/* 2. 성공 메시지 스타일 (초록) - JS로 클래스 추가 (.success) */
+.error-msg.success-msg {
+    color: #27ae60;           /* 세련된 초록색 (Green) */
+}
+
+/* 3. (선택사항) 에러 발생 시 흔들리는 애니메이션 효과 */
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+}
+
+.shake {
+    animation: shake 0.3s ease-in-out;
+}
+    </style>
+		
 
 </head>
 <body>
@@ -271,6 +301,7 @@
                             <th><span class="req">*</span>비밀번호</th>
                             <td>
                                 <input type="password" name="password" id="password" placeholder="비밀번호" style="width: 200px;">
+                                <span id="pwMsg" class="error-msg"></span>
                                 <span class="help-text">9자 이상, 영문/숫자/특수문자 조합</span>
                             </td>
                         </tr>
@@ -278,6 +309,7 @@
                             <th><span class="req">*</span>비밀번호 확인</th>
                             <td>
                                 <input type="password" name="passwordConfirm" id="passwordConfirm" placeholder="비밀번호 재입력" style="width: 200px;">
+                            	<span id="pwConfirmMsg" class="error-msg"></span>
                             </td>
                         </tr>
                     </tbody>
@@ -290,7 +322,7 @@
                     <tbody>
                         <tr>
                             <th><span class="req">*</span>이름</th>
-                            <td><input type="text" name="name" style="width: 200px;" value="홍길동"></td>
+                            <td><input type="text" name="name" style="width: 200px;" placeholder="이름을 입력하세요."></td>
                         </tr>
                         <tr>
                             <th><span class="req">*</span>생년월일</th>
@@ -316,8 +348,8 @@
                         <tr>
                             <th><span class="req">*</span>이메일</th>
                             <td class="email-box">
-                                <input type="text" name="emailId" style="width: 150px;"> @ 
-                                <input type="text" name="emailDomain" id="emailDomain" style="width: 150px;">
+                                <input type="text" name="emailId" maxlength="30" style="width: 150px;"> @ 
+                                <input type="text" name="emailDomain" maxlength="30" id="emailDomain" style="width: 150px;">
                                 <select id="emailDomainSelect" onchange="changeEmailDomain()" style="width: 150px;">
                                     <option value="direct">직접입력</option>
                                     <option value="naver.com">naver.com</option>
@@ -357,7 +389,7 @@
                                     <option value="2">나의 보물 1호는?</option>
                                     <option value="3">초등학교 짝꿍 이름은?</option>
                                 </select>
-                                <input type="text" name="hintAnswer" style="width: 100%; max-width: 300px;" placeholder="답변 입력">
+                                <input type="text" name="hintAnswer" style="width: 100%; max-width: 300px;" maxlength="50" placeholder="답변 입력">
                             </td>
                         </tr>
                     </tbody>

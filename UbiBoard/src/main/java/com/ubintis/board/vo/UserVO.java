@@ -13,8 +13,8 @@ public class UserVO {
 	private String phone;
 	private String address;
 	private String email;
-	private int emailAgreed;
-	private int smsAgreed;
+	private Integer emailAgreed;
+	private Integer smsAgreed;
 	private int hintId;
 	private String hintAnswer;
 	private String refreshToken;
@@ -76,19 +76,19 @@ public class UserVO {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	public int getEmailAgreed() {
+	public Integer getEmailAgreed() {
 		return emailAgreed;
 	}
-	public void setEmailAgreed(int emailAgreed) {
+	public void setEmailAgreed(Integer emailAgreed) {
 		this.emailAgreed = emailAgreed;
 	}
-	public int getSmsAgreed() {
+	public Integer getSmsAgreed() {
 		return smsAgreed;
 	}
-	public void setSmsAgreed(int smsAgreed) {
+	public void setSmsAgreed(Integer smsAgreed) {
 		this.smsAgreed = smsAgreed;
 	}
-	public int getHintId() {
+	public Integer getHintId() {
 		return hintId;
 	}
 	public void setHintId(int hintId) {

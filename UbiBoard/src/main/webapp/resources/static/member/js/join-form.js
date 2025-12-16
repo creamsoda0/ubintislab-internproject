@@ -35,6 +35,55 @@ $(document).ready(function(){
         dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
         monthNamesShort: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월']
     });
+    
+    // 정규식 선언 (영문+숫자+특수문자 9자 이상)
+    var pwReg = /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{9,25}$/;
+
+    // [1] 비밀번호 유효성 실시간 검사
+    $("#password").on("input", function(){
+        var pw = $(this).val();
+        var $msg = $("#pwMsg"); // 메시지 띄울 span 태그
+
+        if(pw == "") {
+            $msg.text(""); // 비어있으면 메시지 지움
+            return;
+        }
+
+        if(!pwReg.test(pw)) {
+            // 조건 불만족
+            $msg.text("비밀번호 규칙에 맞지 않습니다 (9자 이상, 영문/숫자/특수문자).");
+            $msg.removeClass("success-msg"); // 초록색 제거
+        } else {
+            // 조건 만족
+            $msg.text("사용 가능한 비밀번호입니다.");
+            $msg.addClass("success-msg");    // 초록색 추가
+        }
+        
+        // 비밀번호를 고치면 '확인' 칸도 다시 검사해야 함
+        $("#passwordConfirm").trigger("input"); 
+    });
+
+    // [2] 비밀번호 일치 여부 실시간 검사
+    $("#passwordConfirm").on("input", function(){
+        var pw = $("#password").val();
+        var pwConfirm = $(this).val();
+        var $msg = $("#pwConfirmMsg");
+
+        if(pwConfirm == "") {
+            $msg.text("");
+            return;
+        }
+
+        if(pw != pwConfirm) {
+            // 불일치
+            $msg.text("비밀번호가 일치하지 않습니다.");
+            $msg.removeClass("success-msg");
+        } else {
+            // 일치
+            $msg.text("비밀번호가 일치합니다.");
+            $msg.addClass("success-msg");
+        }
+    });
 
 }); // end ready
 
@@ -101,6 +150,50 @@ function checkForm() {
     if(f.phone.value.trim() == "") {
         alert("휴대전화 번호를 입력해주세요.");
         f.phone.focus();
+        return false;
+    }
+    
+    // 9. 추가 이메일 입력확인
+    // 이메일 유효성 및 길이 검사
+    if(f.emailId.value.trim() == "") {
+        alert("이메일을 입력해주세요.");
+        f.emailId.focus();
+        return false;
+    }
+    
+    if(f.emailDomain.value.trim() == "") {
+        alert("이메일 도메인을 입력해주세요.");
+        f.emailDomain.focus();
+        return false;
+    }
+    
+    var fullEmail = f.emailId.value + "@" + f.emailDomain.value;
+    if(fullEmail.length > 50) {
+        alert("이메일 주소가 너무 깁니다. 50자 이내로 입력해주세요.");
+        f.emailId.focus();
+        return false;
+    }
+    
+    // 비밀번호 힌트 검사
+    
+    // 1. 질문 선택 여부 검사
+    if(f.hintId.value == "") {
+        alert("비밀번호 힌트 질문을 선택해주세요.");
+        f.hintId.focus();
+        return false;
+    }
+
+    // 2. 정답 입력 여부 검사
+    if(f.hintAnswer.value.trim() == "") {
+        alert("비밀번호 힌트 정답을 입력해주세요.");
+        f.hintAnswer.focus();
+        return false;
+    }
+    
+    // 3. (혹시 모를) 길이 검사
+    if(f.hintAnswer.value.length > 50) {
+        alert("힌트 정답은 50자 이내로 입력해주세요.");
+        f.hintAnswer.focus();
         return false;
     }
 
