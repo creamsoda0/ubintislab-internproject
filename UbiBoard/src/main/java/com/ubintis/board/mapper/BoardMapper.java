@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.ubintis.board.vo.FileVO;
 import com.ubintis.board.vo.MainBoardVO;
 import com.ubintis.board.vo.MainCommentVO;
 import com.ubintis.board.vo.PagingVO;
@@ -45,6 +46,8 @@ public interface BoardMapper {
 	SubCommentVO getSubCommentById(int subId);
 
 	void deleteSubCommentBySubId(int subId);
+
+	void insertFile(FileVO fileVO);
 
 	
 

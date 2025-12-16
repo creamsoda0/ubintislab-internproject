@@ -5,24 +5,24 @@
 
 <mapper namespace="com.ubintis.board.mapper.BoardMapper">
 
-	<insert id="insertClip" parameterType="MainBoardVO"
-		useGeneratedKeys="true" keyProperty="boardId">
-		INSERT INTO mainboard (
-		user_id,
-		title,
-		content,
-		file_path,
-		reg_date,
-		mod_date
-		) VALUES (
-		#{userId},
-		#{title},
-		#{content},
-		#{filePath},
-		NOW(),
-		NOW()
-		)
+
+	<insert id="insertClip" parameterType="MainBoardVO">
+		<selectKey keyProperty="boardId" resultType="int"
+			order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+
+		INSERT INTO mainboard (title, content, user_id, reg_date, mod_date )
+		VALUES (#{title}, #{content}, #{userId}, NOW(), NOW())
 	</insert>
+
+	<insert id="insertFile" parameterType="FileVO">
+		INSERT INTO BOARD_FILE (board_id, original_name, saved_name, file_path,
+		reg_date, mod_date)
+		VALUES (#{boardId}, #{originalName}, #{savedName}, #{filePath}, NOW(),
+		NOW())
+	</insert>
+
 
 	<select id="getClipList" parameterType="PagingVO"
 		resultType="MainBoardVO">
@@ -99,7 +99,8 @@
 	</update>
 
 	<insert id="insertMainComment" parameterType="MainCommentVO">
-		INSERT INTO main_comment (
+		INSERT INTO
+		main_comment (
 		board_id,
 		user_id,
 		content,
@@ -110,43 +111,45 @@
 		#{content},
 		NOW() )
 	</insert>
-	
+
 	<insert id="writeSubComment" parameterType="SubCommentVO">
-	INSERT INTO sub_comment (
-	comment_id,
-	user_id,
-	content,
-	reg_date
-	) VALUES (
-	#{commentId},
-	#{userId},
-	#{content},
-	NOW()
-	)
+		INSERT INTO sub_comment (
+		comment_id,
+		user_id,
+		content,
+		reg_date
+		) VALUES (
+		#{commentId},
+		#{userId},
+		#{content},
+		NOW()
+		)
 	</insert>
-	
-	<select id="getMainCommentById" parameterType="int" resultType="MainCommentVO">
-	SELECT * FROM main_comment
-	WHERE comment_id = #{commentId}
+
+	<select id="getMainCommentById" parameterType="int"
+		resultType="MainCommentVO">
+		SELECT * FROM main_comment
+		WHERE comment_id = #{commentId}
 	</select>
-	
+
 	<delete id="deleteMainCommentById" parameterType="int">
-	DELETE FROM main_comment
-	WHERE comment_id = #{commentId}
-	</delete>
-	
-	<delete id="deleteSubCommentById" parameterType="int">
-	DELETE FROM sub_comment
-	WHERE comment_id = #{commentId}
+		DELETE FROM main_comment
+		WHERE comment_id = #{commentId}
 	</delete>
 
-	<select id="getSubCommentById" parameterType="int" resultType="SubCommentVO">
-	SELECT * FROM sub_comment
-	WHERE sub_id = #{subId}
+	<delete id="deleteSubCommentById" parameterType="int">
+		DELETE FROM sub_comment
+		WHERE comment_id = #{commentId}
+	</delete>
+
+	<select id="getSubCommentById" parameterType="int"
+		resultType="SubCommentVO">
+		SELECT * FROM sub_comment
+		WHERE sub_id = #{subId}
 	</select>
-	
+
 	<delete id="deleteSubCommentBySubId">
-	DELETE FROM sub_comment
-	WHERE sub_id = #{subId}
+		DELETE FROM sub_comment
+		WHERE sub_id = #{subId}
 	</delete>
 </mapper>

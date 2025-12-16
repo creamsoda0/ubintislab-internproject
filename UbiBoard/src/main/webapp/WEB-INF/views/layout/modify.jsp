@@ -193,7 +193,7 @@
                                 ※ 새로운 파일을 선택하면 기존 파일은 삭제되고 덮어씌워집니다.
                             </p>
                         </c:if>
-                        <input type="file" name="uploadFile" class="form-input" style="margin-top:10px; border:none; padding-left:0;">
+                        <input type="file" name="uploadFiles" id=uploadFiles multiple class="form-control" style="margin-top:10px; border:none; padding-left:0;">
                     </div>
                 </div>
 

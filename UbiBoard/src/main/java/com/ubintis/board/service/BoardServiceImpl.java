@@ -1,12 +1,16 @@
 package com.ubintis.board.service;
 
+import java.io.File;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ubintis.board.mapper.BoardMapper;
+import com.ubintis.board.vo.FileVO;
 import com.ubintis.board.vo.MainBoardVO;
 import com.ubintis.board.vo.MainCommentVO;
 import com.ubintis.board.vo.PagingVO;
@@ -18,10 +22,48 @@ public class BoardServiceImpl implements BoardService {
 	@Autowired
     private BoardMapper mapper;
 	
+	@Transactional // [필수] 둘 중 하나라도 실패하면 롤백되어야 함
 	@Override
-	public int insertClip(MainBoardVO vo) {
-		
-		return mapper.insertClip(vo);
+	public void insertClip(MainBoardVO vo, List<MultipartFile> uploadFiles) throws Exception {
+
+	    // 1. 게시글 먼저 저장 (XML의 insertClip 실행)
+	    // 이 메서드가 끝나면 vo.getBoardId()에 방금 생긴 번호가 들어와 있습니다!
+	    mapper.insertClip(vo); 
+	    
+	    // 확인용 로그
+	    System.out.println(">>>>>>>>>> 생성된 게시글 번호: " + vo.getBoardId());
+
+	    // 2. 파일 저장 로직
+	    String uploadFolder = "C:\\ubiboard_upload\\"; // 설정한 경로
+
+	    // 이제 uploadFiles를 파라미터로 받아왔으니 에러가 안 납니다.
+	    if (uploadFiles != null && !uploadFiles.isEmpty()) {
+	        for (MultipartFile file : uploadFiles) {
+	            if (!file.isEmpty()) {
+	                
+	                // --- 파일 저장 (물리적) ---
+	                String originalFileName = file.getOriginalFilename();
+	                String uuid = UUID.randomUUID().toString();
+	                String savedFileName = uuid + "_" + originalFileName;
+	                
+	                File saveFile = new File(uploadFolder, savedFileName);
+	                file.transferTo(saveFile); // 실제 저장
+
+	                // --- 파일 정보 저장 (DB) ---
+	                FileVO fileVO = new FileVO();
+	                
+	                // ★ 게시글 번호 연결 (가장 중요)
+	                fileVO.setBoardId(vo.getBoardId()); 
+	                
+	                fileVO.setOriginalName(originalFileName);
+	                fileVO.setSavedName(savedFileName);
+	                fileVO.setFilePath("/static/upload/" + savedFileName); // 웹 접근 경로
+
+	                // 3. 파일 테이블에 Insert
+	                mapper.insertFile(fileVO);
+	            }
+	        }
+	    }
 	}
 
 	@Override
@@ -110,6 +152,14 @@ public class BoardServiceImpl implements BoardService {
 		// TODO Auto-generated method stub
 		mapper.deleteSubCommentBySubId(subId);
 	}
+
+	@Override
+	public void insertFile(FileVO fileVO) {
+		// TODO Auto-generated method stub
+		mapper.insertFile(fileVO);
+	}
+
+
 
 
 }

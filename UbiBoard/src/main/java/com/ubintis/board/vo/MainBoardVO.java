@@ -1,6 +1,7 @@
 package com.ubintis.board.vo;
 
 import java.util.Date;
+import java.util.List;
 
 public class MainBoardVO {
 
@@ -12,7 +13,7 @@ public class MainBoardVO {
 	private Date modDate;
 	private int views;
 	private String comment;
-	private String filePath;
+	private List<FileVO> fileList;
 	private int like;
 	
 	public int getBoardId() {
@@ -63,17 +64,18 @@ public class MainBoardVO {
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
-	public String getFilePath() {
-		return filePath;
-	}
-	public void setFilePath(String filePath) {
-		this.filePath = filePath;
-	}
+	
 	public int getLike() {
 		return like;
 	}
 	public void setLike(int like) {
 		this.like = like;
+	}
+	public List<FileVO> getFileList() {
+		return fileList;
+	}
+	public void setFileList(List<FileVO> fileList) {
+		this.fileList = fileList;
 	}
 	
 	
