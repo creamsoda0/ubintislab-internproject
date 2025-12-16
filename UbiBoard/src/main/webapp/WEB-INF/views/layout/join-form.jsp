@@ -11,11 +11,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
     <title>회원가입 | 유비앤티스랩</title>
+    <script>
+        var contextPath = "${pageContext.request.contextPath}";
+    </script>
 
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
     <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-
+	<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+	<script src="${pageContext.request.contextPath}/resources/static/member/js/join-form.js"></script>
     <style>
         /* =========================================
            회원가입 페이지 전용 스타일 (Modern Style)
@@ -224,113 +229,7 @@
         }
     </style>
 
-    <script>
-        var isIdChecked = false; // 아이디 중복 확인 여부
 
-        $(document).ready(function(){
-            // 아이디 입력값 변경 시 중복 확인 초기화
-            $("#userId").on("input", function(){
-                isIdChecked = false;
-            });
-        });
-
-        // 회원가입 폼 유효성 검사
-        function checkForm() {
-            var f = document.joinForm;
-
-            if(f.userId.value.trim() == "") {
-                alert("아이디를 입력해주세요.");
-                f.userId.focus();
-                return false;
-            }
-            
-            if(!isIdChecked) {
-                alert("아이디 중복 확인을 해주세요.");
-                return false;
-            }
-
-            if(f.password.value == "") {
-                alert("비밀번호를 입력해주세요.");
-                f.password.focus();
-                return false;
-            }
-
-            if(f.password.value != f.passwordConfirm.value) {
-                alert("비밀번호가 일치하지 않습니다.");
-                f.passwordConfirm.focus();
-                return false;
-            }
-
-            if(f.name.value.trim() == "") {
-                alert("이름을 입력해주세요.");
-                f.name.focus();
-                return false;
-            }
-
-            if(f.phone.value.trim() == "") {
-                alert("휴대전화 번호를 입력해주세요.");
-                f.phone.focus();
-                return false;
-            }
-
-            // 이메일 합치기 (hidden 필드에 저장하거나 서버에서 처리)
-            // 여기서는 폼 전송 시 각각 가도록 둠
-            
-            f.submit();
-        }
-
-        // 아이디 중복 체크
-        function checkId() {
-            var userId = $("#userId").val();
-
-            if(userId.trim() == "") {
-                alert("아이디를 입력해주세요.");
-                $("#userId").focus();
-                return;
-            }
-
-            $.ajax({
-                url: "${contextPath}/member/idCheck",
-                type: "post",
-                data: { "userId" : userId },
-                dataType: 'json',
-                success: function(result) {
-                    if(result == 1) {
-                        alert("이미 사용 중인 아이디입니다.");
-                        $("#userId").val("").focus();
-                        isIdChecked = false;
-                    } else {
-                        alert("사용 가능한 아이디입니다.");
-                        isIdChecked = true;
-                    }
-                },
-                error: function() {
-                    alert("서버 통신 오류입니다. 잠시 후 다시 시도해주세요.");
-                }
-            });
-        }
-
-        // 주소 찾기 (Daum API)
-        function openZipSearch() {
-            new daum.Postcode({
-                oncomplete: function(data) {
-                    $("#zipCode").val(data.zonecode);
-                    $("#addr1").val(data.address);
-                    $("#addr2").focus();
-                }
-            }).open();
-        }
-
-        // 이메일 도메인 선택
-        function changeEmailDomain() {
-            var domain = $("#emailDomainSelect").val();
-            if(domain == "direct") {
-                $("#emailDomain").val("").attr("readonly", false).focus();
-            } else {
-                $("#emailDomain").val(domain).attr("readonly", true);
-            }
-        }
-    </script>
 </head>
 <body>
 
@@ -395,11 +294,11 @@
                         </tr>
                         <tr>
                             <th><span class="req">*</span>생년월일</th>
-                            <td><input type="text" name="birth" style="width: 200px;" value="1973-08-23" placeholder="YYYY-MM-DD"></td>
+                            <td><input type="text" name="birth" style="width: 200px;" value="1973-08-23" placeholder="YYYY-MM-DD" readonly></td>
                         </tr>
                         <tr>
                             <th><span class="req">*</span>휴대전화</th>
-                            <td><input type="text" name="phone" style="width: 200px;" value="010-1234-5678" placeholder="'-' 없이 입력"></td>
+                            <td><input type="text" name="phone" maxlength="13" style="width: 200px;" value="010-1234-5678" placeholder="'-' 없이 입력"></td>
                         </tr>
                         <tr>
                             <th><span class="req">*</span>주소</th>
