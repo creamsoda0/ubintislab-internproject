@@ -3,7 +3,9 @@ package com.ubintis.board.controller;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
@@ -129,23 +131,32 @@ public class ClipController {
 	}
 
 	@RequestMapping("/read")
-	public ModelAndView read(@RequestParam("boardId") int boardId) {
+	public ModelAndView read(@RequestParam("boardId") int boardId,HttpSession session) {
 	    
 	    ModelAndView mav = new ModelAndView();
 	    boardservice.updateHit(boardId);
-	    // 1. 게시글 상세 정보 가져오기
+	    //  게시글 상세 정보 가져오기
 	    MainBoardVO mainVO = boardservice.getClipById(boardId);
 
-	    // 2. [추가] 게시글에 첨부된 파일 리스트 가져오기 (따로 호출)
+	    //  게시글에 첨부된 파일 리스트 가져오기 (따로 호출)
 	    List<FileVO> fileList = boardservice.getFileList(boardId);
 
-	    // 3. 댓글 리스트 가져오기
+	    //  댓글 리스트 가져오기
 	    List<MainCommentVO> mainCommentList = boardservice.getCommentListById(boardId);
 	    List<SubCommentVO> subCommentList = boardservice.getAllSubCommentListById(boardId);
-
-	    // 4. 화면에 데이터 전달
+	    
+	    
+	    UserVO loginUser = (UserVO) session.getAttribute("loginUser");
+	    boolean isLiked = false;
+	    
+	    if (loginUser != null) {
+	        isLiked = boardservice.checkLike(boardId, loginUser.getUserId());
+	    }
+	    
+	//  화면에 데이터 전달
+	    mav.addObject("isLiked", isLiked); // 화면에 상태 전달 (true/false)
 	    mav.addObject("board", mainVO);           // 게시글 정보
-	    mav.addObject("fileList", fileList);      // [추가] 파일 리스트 (이름: fileList)
+	    mav.addObject("fileList", fileList);      // 파일 리스트 (이름: fileList)
 	    mav.addObject("commentList", mainCommentList);
 	    mav.addObject("subCommentList", subCommentList);
 
@@ -154,6 +165,32 @@ public class ClipController {
 	    return mav;
 	}
 
+	// 좋아요 기능 로직
+	@ResponseBody
+	@RequestMapping(value = "/like/toggle", method = RequestMethod.POST)
+	public Map<String, Object> toggleLike(@RequestParam("boardId") int boardId, HttpSession session) {
+	    Map<String, Object> map = new HashMap<>();
+	    
+	    UserVO loginUser = (UserVO) session.getAttribute("loginUser");
+	    if (loginUser == null) {
+	        map.put("result", "fail");
+	        map.put("message", "로그인이 필요합니다.");
+	        return map;
+	    }
+
+	    try {
+	        Map<String, Object> serviceResult = boardservice.toggleLike(boardId, loginUser.getUserId());
+	        map.put("result", "success");
+	        map.putAll(serviceResult); // status, count 포함됨
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        map.put("result", "error");
+	    }
+	    
+	    return map;
+	}
+	
+	
 	// 게시글 삭제 로직
 	@RequestMapping("/deleteClip")
 	public ModelAndView deleteClip(@RequestParam("boardId") int boardId, HttpSession session) {
@@ -187,24 +224,25 @@ public class ClipController {
 		return mav;
 	}
 
-	@ResponseBody // AJAX 응답 필수
+	// 파일 수정 로직입니다.
+	@ResponseBody 
 	@RequestMapping(value = "/updateClip", method = RequestMethod.POST, produces = "text/plain;charset=UTF-8")
 	public String updateClip(
 	        MainBoardVO mainVO, 
 	        HttpSession session,
-	        // 1. 새로 추가된 파일들
+	        // 새로 추가된 파일들
 	        @RequestParam(value = "uploadFiles", required = false) List<MultipartFile> uploadFiles,
-	        // 2. 삭제할 기존 파일들의 ID 목록
+	        //삭제할 기존 파일들의 ID 목록
 	        @RequestParam(value = "deleteFileIds", required = false) List<Integer> deleteFileIds
 	) {
 	    try {
-	        // [보안 체크 1] 로그인 여부
+	        // 로그인 여부
 	        UserVO loginUser = (UserVO) session.getAttribute("loginUser");
 	        if (loginUser == null) {
 	            return "로그인이 필요합니다.";
 	        }
 
-	        // [보안 체크 2] 본인 글인지 확인 (DB에서 원본 글 조회)
+	        //본인 글인지 확인 (DB에서 원본 글 조회)
 	        MainBoardVO originalBoard = boardservice.getClipById(mainVO.getBoardId());
 	        if (originalBoard == null) {
 	            return "존재하지 않는 게시글입니다.";
@@ -213,7 +251,7 @@ public class ClipController {
 	            return "본인의 글만 수정할 수 있습니다.";
 	        }
 
-	        // [핵심] 서비스 호출 (게시글 수정 + 파일 추가 + 파일 삭제를 한 방에 처리)
+	        
 	        // mainVO에는 boardId, title, content가 들어있음
 	        boardservice.updateClip(mainVO, uploadFiles, deleteFileIds);
 

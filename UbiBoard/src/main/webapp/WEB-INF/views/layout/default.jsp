@@ -84,7 +84,7 @@
                             <fmt:formatDate value="${vo.regDate}" pattern="yyyy-MM-dd"/>
                         </td>
                         <td>${vo.views}</td>
-                        <td>${vo.like}</td>
+                        <td>${vo.likeCount}</td>
                     </tr>
                 </c:forEach>
             </c:otherwise>

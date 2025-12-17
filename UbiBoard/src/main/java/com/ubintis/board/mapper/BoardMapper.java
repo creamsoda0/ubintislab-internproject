@@ -3,6 +3,7 @@ package com.ubintis.board.mapper;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import com.ubintis.board.vo.FileVO;
 import com.ubintis.board.vo.MainBoardVO;
@@ -57,6 +58,14 @@ public interface BoardMapper {
 
 	void deleteFile(Integer fileId);
 
+	int checkLike(@Param("boardId") int boardId, @Param("userId") String userId);
 	
+	void insertLike(@Param("boardId") int boardId, @Param("userId") String userId);
+	
+	void deleteLike(@Param("boardId") int boardId, @Param("userId") String userId);
+	
+	void updateLikeCount(@Param("boardId") int boardId, @Param("amount") int amount);
+	
+	int getLikeCount(int boardId);
 
 }

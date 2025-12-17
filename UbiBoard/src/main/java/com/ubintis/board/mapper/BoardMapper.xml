@@ -88,7 +88,8 @@
 		UPDATE mainboard
 		SET
 		title = #{title},
-		content = #{content},
+		content =
+		#{content},
 		mod_date =
 		NOW()
 		WHERE board_id = #{boardId}
@@ -173,11 +174,40 @@
 	</update>
 
 	<select id="getFileById" parameterType="int" resultType="FileVO">
-		SELECT * FROM board_file WHERE file_id = #{fileId}
+		SELECT *
+		FROM board_file WHERE file_id = #{fileId}
 	</select>
 
 	<delete id="deleteFile" parameterType="int">
-		DELETE FROM board_file WHERE file_id = #{fileId}
+		DELETE FROM board_file
+		WHERE file_id = #{fileId}
 	</delete>
+	
+	
+	<select id="checkLike" resultType="int">
+		SELECT COUNT(*)
+		FROM board_like
+		WHERE board_id = #{boardId} AND user_id = #{userId}
+	</select>
+
+	<insert id="insertLike">
+		INSERT INTO board_like (board_id, user_id)
+		VALUES (#{boardId}, #{userId})
+	</insert>
+
+	<delete id="deleteLike">
+		DELETE FROM board_like
+		WHERE board_id = #{boardId} AND user_id = #{userId}
+	</delete>
+
+	<update id="updateLikeCount">
+		UPDATE mainboard
+		SET like_count = like_count + #{amount}
+		WHERE board_id = #{boardId}
+	</update>
+
+	<select id="getLikeCount" resultType="int">
+		SELECT like_count FROM mainboard WHERE board_id = #{boardId}
+	</select>
 
 </mapper>

@@ -1,6 +1,7 @@
 package com.ubintis.board.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -48,6 +49,10 @@ public interface BoardService {
 
 	void updateClip(MainBoardVO mainVO, List<MultipartFile> uploadFiles, List<Integer> deleteFileIds) throws Exception;
 
-	
+	// 좋아요 상태 확인 (화면 진입 시 하트 색칠용)
+	public boolean checkLike(int boardId, String userId);
+
+	// 좋아요 토글 (누르면 ON/OFF) - 결과값으로 현재 상태와 카운트를 리턴
+	public Map<String, Object> toggleLike(int boardId, String userId);
 
 }

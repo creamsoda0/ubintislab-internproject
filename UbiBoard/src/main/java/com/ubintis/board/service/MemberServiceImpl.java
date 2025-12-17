@@ -188,6 +188,8 @@ public class MemberServiceImpl implements MemberService {
 
 	    return true; // ¼º°ø
 	}
+	
+	
 
 
 

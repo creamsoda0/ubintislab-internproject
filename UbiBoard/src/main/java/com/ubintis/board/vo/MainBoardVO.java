@@ -14,7 +14,7 @@ public class MainBoardVO {
 	private int views;
 	private String comment;
 	private List<FileVO> fileList;
-	private int like;
+	private int likeCount;
 	
 	public int getBoardId() {
 		return boardId;
@@ -65,11 +65,11 @@ public class MainBoardVO {
 		this.comment = comment;
 	}
 	
-	public int getLike() {
-		return like;
+	public int getLikeCount() {
+		return likeCount;
 	}
-	public void setLike(int like) {
-		this.like = like;
+	public void setLikeCount(int likeCount) {
+		this.likeCount = likeCount;
 	}
 	public List<FileVO> getFileList() {
 		return fileList;

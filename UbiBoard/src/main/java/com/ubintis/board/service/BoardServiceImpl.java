@@ -1,7 +1,9 @@
 package com.ubintis.board.service;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -193,14 +195,14 @@ public class BoardServiceImpl implements BoardService {
 		mapper.updateHit(boardId);
 	}
 
-	@Transactional // 트랜잭션 필수! (도중에 에러나면 파일 삭제/추가도 롤백)
+	@Transactional 
 	@Override
 	public void updateClip(MainBoardVO vo, List<MultipartFile> uploadFiles, List<Integer> deleteFileIds) throws Exception {
 	    
 	    //  게시글 정보(제목, 내용) 수정
 	    mapper.updateClipById(vo); 
 
-	    //  [파일 삭제 로직] 사용자가 삭제 버튼 누른 파일들 지우기
+	    // 사용자가 삭제 버튼 누른 파일들 지우기
 		
 	    if (deleteFileIds != null && !deleteFileIds.isEmpty()) {
 	        for (Integer fileId : deleteFileIds) {
@@ -219,7 +221,7 @@ public class BoardServiceImpl implements BoardService {
 	        }
 	    }
 
-	    // 3. [파일 추가 로직] 새로 업로드한 파일들 저장 (Write 로직과 동일)
+	    // 새로 업로드한 파일들 저장
 	    if (uploadFiles != null && !uploadFiles.isEmpty()) {
 	        for (MultipartFile file : uploadFiles) {
 	            if (!file.isEmpty()) {
@@ -247,6 +249,37 @@ public class BoardServiceImpl implements BoardService {
 	    }
 	}
 
+	@Override
+	public boolean checkLike(int boardId, String userId) {
+	    return mapper.checkLike(boardId, userId) > 0;
+	}
+
+	@Transactional
+	@Override
+	public Map<String, Object> toggleLike(int boardId, String userId) {
+	    Map<String, Object> resultMap = new HashMap<>();
+	    
+	    // 1. 현재 눌렀는지 확인
+	    int count = mapper.checkLike(boardId, userId);
+	    
+	    if (count == 0) {
+	        // 안 눌렀으면 -> 좋아요 추가 & 카운트 +1
+	        mapper.insertLike(boardId, userId);
+	        mapper.updateLikeCount(boardId, 1);
+	        resultMap.put("status", "liked"); // 상태: 켜짐
+	    } else {
+	        // 이미 눌렀으면 -> 좋아요 취소 & 카운트 -1
+	        mapper.deleteLike(boardId, userId);
+	        mapper.updateLikeCount(boardId, -1);
+	        resultMap.put("status", "unliked"); // 상태: 꺼짐
+	    }
+	    
+	    // 2. 갱신된 총 좋아요 수 가져오기
+	    int newCount = mapper.getLikeCount(boardId);
+	    resultMap.put("count", newCount);
+	    
+	    return resultMap;
+	}
 
 
 
