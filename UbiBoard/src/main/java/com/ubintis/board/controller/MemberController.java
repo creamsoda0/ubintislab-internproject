@@ -313,14 +313,16 @@ public class MemberController {
 
 	@ResponseBody // 문자열만 반환
 	@RequestMapping("/checkAuthCode")
-	public String checkAuthCode(@RequestParam("inputCode") String inputCode, HttpSession session) {
+	public ResponseEntity<String> checkAuthCode(@RequestParam("inputCode") String inputCode, HttpSession session) {
 
 		String realCode = (String) session.getAttribute("authCode");
 
 		if (realCode != null && realCode.equals(inputCode)) {
-			return "success"; // 일치함
+			session.removeAttribute("authCode");
+			return new ResponseEntity<>("success", HttpStatus.OK); // 200
 		} else {
-			return "fail"; // 불일치
+			return new ResponseEntity<>("fail", HttpStatus.NOT_FOUND); // 404
+
 		}
 	}
 

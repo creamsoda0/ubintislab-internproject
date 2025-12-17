@@ -237,7 +237,6 @@
                     $("#authnumber").focus();
                 },
                 
-                // ★ 400, 404, 500 등 에러일 때는 무조건 여기 실행
                 error: function(xhr) {
                     // xhr.status : 위에서 설정한 400, 404, 500 코드
                     // xhr.responseText : Controller에서 보낸 메시지 ("일치하는 회원이 없습니다" 등)
@@ -269,8 +268,8 @@
                 url: "${contextPath}/member/checkAuthCode",
                 type: "POST",
                 data: { inputCode: inputCode },
-                success: function(result) {
-                    if(result === "success") {
+                success: function(response) {
+          
                         alert("인증에 성공하였습니다.");
                         isCertified = true;
                         
@@ -281,14 +280,16 @@
                         
                         // 버튼 비활성화
                         $(".btn-small").prop("disabled", true).css("opacity", "0.6");
-                        
-                    } else {
-                        alert("인증번호가 일치하지 않습니다. 다시 확인해주세요.");
-                        isCertified = false;
-                    }
+                                            
                 },
-                error: function() {
-                    alert("서버 통신 오류입니다.");
+                error: function(xhr) {
+                	
+                	if (xhr.status == 404){
+                		isCertified = false;
+                		alert("인증번호가 일치하지 않습니다. 다시 확인해주세요.");
+                    } else {
+                    	alert("서버 통신 오류입니다.");
+                    }
                 }
             });
         }
