@@ -60,17 +60,44 @@ public class ClipController {
         String msg = "";
 
         try {
-            // 1. 세션에서 로그인 사용자 정보 가져오기 (안전장치)
             UserVO loginUser = (UserVO) session.getAttribute("loginUser");
             if (loginUser != null) {
                 vo.setUserId(loginUser.getUserId());
             } else {
                 return "로그인이 필요합니다.";
             }
-
-            // 2. 서비스 호출 (핵심!)
-            // ★ 여기서 게시글 저장 + 파일 저장 + DB 등록이 '한 방'에 처리됨
-            // ★ 트랜잭션도 Service 안에서 알아서 처리됨
+            // 제목 유효성 검사
+            if (vo.getTitle() == null || vo.getTitle().trim().isEmpty()) {
+                return "제목을 입력해주세요.";
+            }
+            // 내용 유효성 검사
+            if (vo.getContent() == null || vo.getContent().trim().isEmpty()) {
+                return "내용을 입력해주세요.";
+            }
+            // 제목 유효성 검사
+            if (vo.getTitle().length() > 100) {
+                return "제목은 100자 이내로 작성해주세요.";
+            }
+            // 파일 용량 확장자 유효성검사
+            if (uploadFiles != null && !uploadFiles.isEmpty()) {
+                for (MultipartFile file : uploadFiles) {
+                    if (!file.isEmpty()) {
+                        String originalName = file.getOriginalFilename();
+                        String ext = originalName.substring(originalName.lastIndexOf(".") + 1).toLowerCase();
+                        
+                        // 허용할 확장자 리스트 (화이트리스트 방식)
+                        if (!ext.matches("jpg|jpeg|png|gif|bmp|pdf|txt|hwp|xlsx|xls|ppt|pptx|doc|docx|zip")) {
+                            return "업로드가 불가능한 파일이 포함되어 있습니다. (" + ext + ")";
+                        }
+                        
+                        // (선택) 파일 크기 제한 (예: 10MB) - 보통 web.xml에서 하지만 여기서도 가능
+                        if (file.getSize() > 10 * 1024 * 1024) { 
+                            return "파일 크기는 10MB를 초과할 수 없습니다.";
+                        }
+                    }
+                }
+            }
+            
             boardservice.insertClip(vo, uploadFiles);
 
             msg = "게시글이 정상적으로 저장되었습니다.";
