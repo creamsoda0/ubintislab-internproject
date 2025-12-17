@@ -545,9 +545,10 @@ body {
 			<div class="like-section">
 				<button type="button" id="btnLike" class="btn-like"
 					onclick="toggleLike();">
-					<span id="heartIcon" class="heart-icon"> <c:choose>
-							<c:when test="${isLiked}">❤️</c:when>
-							<c:otherwise>🤍</c:otherwise>
+					<span id="heartIcon" class="heart-icon"> 
+						<c:choose>
+							<c:when test="${isLiked}">&#10084;&#65039;</c:when>
+							<c:otherwise>&#129293;</c:otherwise>
 						</c:choose>
 					</span> <span class="like-text">좋아요</span> <span id="likeCount"
 						class="like-count">${board.likeCount}</span>

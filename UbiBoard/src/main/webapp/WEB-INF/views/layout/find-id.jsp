@@ -232,18 +232,25 @@
                 url: "${contextPath}/member/sendAuthCode",
                 type: "POST",
                 data: { name: name, email: email },
-                success: function(result) {
-                    if(result === "success") {
-                        alert("인증번호가 이메일로 발송되었습니다.\n메일함을 확인해주세요.");
-                        $("#authnumber").focus();
-                    } else if(result === "fail_no_user") {
-                        alert("입력하신 정보와 일치하는 회원이 없습니다.");
-                    } else {
-                        alert("메일 발송 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
-                    }
+                success: function(response) {
+                    alert("인증번호가 이메일로 발송되었습니다.\n메일함을 확인해주세요.");
+                    $("#authnumber").focus();
                 },
-                error: function() {
-                    alert("서버 통신 오류입니다.");
+                
+                // ★ 400, 404, 500 등 에러일 때는 무조건 여기 실행
+                error: function(xhr) {
+                    // xhr.status : 위에서 설정한 400, 404, 500 코드
+                    // xhr.responseText : Controller에서 보낸 메시지 ("일치하는 회원이 없습니다" 등)
+                    
+                    if (xhr.status == 404) {
+                        alert("입력하신 정보와 일치하는 회원이 없습니다."); // 404 처리
+                    } else if (xhr.status == 400) {
+                        alert("이름과 이메일을 올바르게 입력해주세요."); // 400 처리
+                    } else if (xhr.status == 500) {
+                        alert("메일 발송 중 오류가 발생했습니다. (서버 문제)"); // 500 처리
+                    } else {
+                        alert("알 수 없는 오류가 발생했습니다.");
+                    }
                 }
             });
         }

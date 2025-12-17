@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -267,12 +269,12 @@ public class MemberController {
 
 	@ResponseBody
 	@RequestMapping("/sendAuthCode")
-	public String sendAuthCode(@RequestParam("name") String name, @RequestParam("email") String email,
+	public ResponseEntity<String> sendAuthCode(@RequestParam("name") String name, @RequestParam("email") String email,
 			HttpSession session) {
 
 		// 1. [유효성 검사] 입력값 누락 체크 (서버단 더블 체크)
 		if (name == null || name.trim().isEmpty() || email == null || email.trim().isEmpty()) {
-			return "fail_input";
+			return new ResponseEntity<>("이름과 이메일을 입력해주세요.", HttpStatus.BAD_REQUEST); // 400
 		}
 
 		try {
@@ -282,7 +284,7 @@ public class MemberController {
 			// 3. [회원 검증] 회원이 없거나, 입력한 '이름'과 DB의 '이름'이 다르면 실패 처리
 			// (기존 코드는 이메일만 있으면 이름을 아무거나 넣어도 통과되는 문제가 있었음)
 			if (user == null || !user.getName().equals(name)) {
-				return "fail_no_user";
+				return new ResponseEntity<>("일치하는 회원이 없습니다.", HttpStatus.NOT_FOUND); // 404
 			}
 
 			// 4. [메일 발송] 인증코드 생성 및 발송
@@ -297,15 +299,15 @@ public class MemberController {
 				// 여기서는 일단 기존 로직을 유지하되, 주석으로 남깁니다.
 				session.setMaxInactiveInterval(600); // 3분
 
-				return "success";
+				return new ResponseEntity<>("success", HttpStatus.OK); // 200
 			} else {
-				return "fail_send";
+				return new ResponseEntity<>("메일 발송 중 서버 오류 발생", HttpStatus.INTERNAL_SERVER_ERROR); // 500
 			}
 
 		} catch (Exception e) {
 			// 메일 발송 중 SMTP 서버 에러 등이 발생했을 때 멈추지 않고 실패 메시지 리턴
 			e.printStackTrace();
-			return "error";
+			return new ResponseEntity<>("메일 서버와의 통신 문제로 발송에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
