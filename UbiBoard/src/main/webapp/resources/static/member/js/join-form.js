@@ -167,6 +167,18 @@ function checkForm() {
         return false;
     }
     
+    // 이메일 정규식 검사 (특수문자 차단 및 형식 체크)
+        var fullEmail = f.emailId.value + "@" + f.emailDomain.value;
+    
+    // 이메일 정규식: 영문자, 숫자, 일부 특수문자(._-)만 허용 @ 도메인 . 끝자리
+    var emailReg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+    if(!emailReg.test(fullEmail)) {
+        alert("올바르지 않은 이메일 형식입니다.\n(한글이나 허용되지 않은 특수문자는 사용할 수 없습니다.)");
+        f.emailId.focus();
+        return false;
+    }
+    
     var fullEmail = f.emailId.value + "@" + f.emailDomain.value;
     if(fullEmail.length > 50) {
         alert("이메일 주소가 너무 깁니다. 50자 이내로 입력해주세요.");
@@ -203,27 +215,43 @@ function checkForm() {
 // 아이디 중복 체크
 function checkId() {
     var userId = $("#userId").val();
-
+    
+    // 1. 빈 값 체크
     if(userId.trim() == "") {
         alert("아이디를 입력해주세요.");
         $("#userId").focus();
         return;
     }
 
+    // 2. 유효성 검사 (AJAX 전, 여기서 먼저 체크!)
+    // 영문 소문자 + 숫자 조합, 5~20자
+    var idReg = /^[a-z0-9]{5,20}$/; 
+    
+    if (!idReg.test(userId)) {
+        alert("아이디는 영문 소문자와 숫자를 포함해 5~20자로 입력해야 합니다.\n(한글, 특수문자, 대문자 불가)");
+        $("#userId").focus();
+        return; 
+    }
+
+    // 3. 서버 중복 확인 (형식이 맞을 때만 실행)
     $.ajax({
-        // JSP에서 선언한 전역변수 contextPath 사용
         url: contextPath + "/member/idCheck", 
         type: "post",
         data: { "userId" : userId },
         dataType: 'json',
         success: function(result) {
             if(result == 1) {
+                // 이미 존재하는 아이디
                 alert("이미 사용 중인 아이디입니다.");
                 $("#userId").val("").focus();
-                isIdChecked = false;
+                isIdChecked = false; // 중복확인 실패 상태
             } else {
+                // 사용 가능한 아이디
                 alert("사용 가능한 아이디입니다.");
-                isIdChecked = true;
+                isIdChecked = true;  // 중복확인 성공 상태
+                
+                // (선택사항) 사용자가 아이디를 못 바꾸게 막으려면 아래 주석 해제
+                // $("#userId").attr("readonly", true);
             }
         },
         error: function() {

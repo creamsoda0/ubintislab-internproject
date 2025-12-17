@@ -206,7 +206,7 @@
         </p>
 
         <div class="btn-area">
-            <a href="${contextPath}/main" class="btn btn-home">메인으로</a>
+            <a href="${contextPath}/goMain" class="btn btn-home">메인으로</a>
             <a href="${contextPath}/member/goLoginPage" class="btn btn-login">로그인 하기</a>
         </div>
     </div>

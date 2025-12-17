@@ -3,7 +3,7 @@
 <configuration>
         <typeAliases>
 
-            <typeAlias alias="LoginLogVO" type="com.ubintis.board.vo.LoginLogVO"/>   
+
             <typeAlias alias="MainBoardVO" type="com.ubintis.board.vo.MainBoardVO"/>   
             <typeAlias alias="MainCommentVO" type="com.ubintis.board.vo.MainCommentVO"/>   
             <typeAlias alias="PasswordHintVO" type="com.ubintis.board.vo.PasswordHintVO"/>   

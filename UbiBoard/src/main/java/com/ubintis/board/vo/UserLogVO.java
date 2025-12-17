@@ -10,6 +10,14 @@ public class UserLogVO {
     private String ipAddress;
     private Date regDate;
     
+ // 생성자 (편의용)
+    public UserLogVO() {}
+    public UserLogVO(String userId, String activityType, String activityDetail, String ipAddress) {
+        this.userId = userId;
+        this.activityType = activityType;
+        this.activityDetail = activityDetail;
+        this.ipAddress = ipAddress;
+    }
     
 	public long getLogId() {
 		return logId;

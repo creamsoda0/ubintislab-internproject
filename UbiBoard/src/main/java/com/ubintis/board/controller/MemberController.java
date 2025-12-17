@@ -3,6 +3,7 @@ package com.ubintis.board.controller;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.ubintis.board.service.LogService;
 import com.ubintis.board.service.MemberService;
 import com.ubintis.board.vo.UserVO;
 
@@ -23,6 +25,9 @@ public class MemberController {
 
 	@Autowired
 	private MemberService memberService;
+	
+	@Autowired
+    private LogService logService;
 
 	@RequestMapping(value = "/join")
 	public ModelAndView memberJoin(Model model) {
@@ -64,11 +69,10 @@ public class MemberController {
 
 		return cnt; // 0이면 사용 가능, 1이면 중복
 	}
-	
-	// 회원가입 컨트롤러입니다.예외처리 작업 아직 안함. 
+	 
 	// 회원가입시 회원정보 DB 전송 컨트롤러
 	@RequestMapping(value = "/joinProcess", method = RequestMethod.POST)
-	public ModelAndView joinProcess (UserVO userVO) {
+	public ModelAndView joinProcess (UserVO userVO, HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView();
 		mav.setViewName("layout/join-success");
 		
@@ -99,6 +103,8 @@ public class MemberController {
 		
 		memberService.insertMember(userVO);
 		
+		logService.saveLog(userVO.getUserId(), "JOIN", "회원가입 성공", request);
+		
 		return mav;
 	}
 	
@@ -111,7 +117,7 @@ public class MemberController {
 	}
 	
 	@RequestMapping(value = "/loginProcess") 
-	public ModelAndView loginProcess (UserVO userVO, HttpSession session) {
+	public ModelAndView loginProcess (UserVO userVO, HttpSession session, HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView();
 		
 		// 서비스에서 로그인 체크 (UserVO 리턴 혹은 null)
@@ -119,8 +125,10 @@ public class MemberController {
 		
 		if (loginUser != null) {
 			session.setAttribute("loginUser", loginUser);
+			logService.saveLog(loginUser.getUserId(), "LOGIN", "로그인 성공", request);
 			mav.setViewName("redirect:/goMain"); //메인페이지로 이동
 		} else {
+			logService.saveLog(userVO.getUserId(), "LOGIN", "로그인 실패 아이디,패스워드 불일치", request);
 			mav.addObject("msg", "아이디 또는 비밀번호가 일치하지 않습니다.");
 			mav.setViewName("/layout/login-page");
 		}
@@ -130,9 +138,13 @@ public class MemberController {
 	
 	// 로그아웃 (세션 삭제)
 	@RequestMapping("/logout")
-	public ModelAndView logout(HttpSession session) {
+	public ModelAndView logout(HttpSession session, HttpServletRequest request) {
 	    // 세션에 저장된 모든 정보 삭제 (로그아웃 처리)
 		ModelAndView mav = new ModelAndView();
+		UserVO loginUser = (UserVO) session.getAttribute("loginUser");
+		if (loginUser != null) {
+	        logService.saveLog(loginUser.getUserId(), "LOGOUT", "로그아웃 성공", request);
+	    }
 		mav.setViewName("redirect:/default");
 	    session.invalidate();
 	    return mav; // 메인으로 이동
@@ -377,17 +389,21 @@ public class MemberController {
 	 //회원탈퇴 프로세스
 	 // 직접적인 트랜잭션 구현은 impl에 구현했음
 	 @RequestMapping("/memberDeleteProcess")
-	 public ModelAndView memberDeleteProcess(HttpSession session, UserVO userVO, @RequestParam("reason") String reason) {
+	 public ModelAndView memberDeleteProcess(HttpSession session, UserVO userVO, 
+			 								@RequestParam("reason") String reason,
+			 								HttpServletRequest request) {
 	     ModelAndView mav = new ModelAndView();
 
 	     try {
 	         boolean isSuccess = memberService.withdrawProcess(userVO, reason);
 	         
 	         if (isSuccess) {
+	        	 logService.saveLog(userVO.getUserId(), "WITHDRAW", "회원 탈퇴 처리", request);
 	             session.invalidate();
 	             mav.addObject("msg", "탈퇴되었습니다.");
 	             mav.addObject("url", "/main");
 	             mav.setViewName("/layout/member-deletesuccess");
+	             
 	         } else {
 	             mav.addObject("msg", "비밀번호가 일치하지 않습니다.");
 	             mav.setViewName("redirect:/member/goMemberDelete");
