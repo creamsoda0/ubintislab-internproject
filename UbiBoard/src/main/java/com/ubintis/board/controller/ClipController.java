@@ -6,20 +6,20 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.ubintis.board.service.BoardService;
 import com.ubintis.board.service.MemberService;
@@ -262,64 +262,181 @@ public class ClipController {
 	        //삭제할 기존 파일들의 ID 목록
 	        @RequestParam(value = "deleteFileIds", required = false) List<Integer> deleteFileIds
 	) {
-	    try {
-	        // 로그인 여부
-	        UserVO loginUser = (UserVO) session.getAttribute("loginUser");
-	        if (loginUser == null) {
-	            return "로그인이 필요합니다.";
-	        }
+		try {
+            //  로그인 여부 체크
+            UserVO loginUser = (UserVO) session.getAttribute("loginUser");
+            if (loginUser == null) {
+                return "로그인이 필요합니다.";
+            }
 
-	        //본인 글인지 확인 (DB에서 원본 글 조회)
-	        MainBoardVO originalBoard = boardservice.getClipById(mainVO.getBoardId());
-	        if (originalBoard == null) {
-	            return "존재하지 않는 게시글입니다.";
-	        }
-	        if (!loginUser.getUserId().equals(originalBoard.getUserId())) {
-	            return "본인의 글만 수정할 수 있습니다.";
-	        }
+            //  본인 글인지 확인 (DB 조회 필수)
+            MainBoardVO originalBoard = boardservice.getClipById(mainVO.getBoardId());
+            
+            if (originalBoard == null) {
+                return "존재하지 않는 게시글입니다.";
+            }
+            if (!loginUser.getUserId().equals(originalBoard.getUserId())) {
+                return "본인의 글만 수정할 수 있습니다."; // 권한 없음
+            }
 
-	        
-	        // mainVO에는 boardId, title, content가 들어있음
-	        boardservice.updateClip(mainVO, uploadFiles, deleteFileIds);
+            // 입력값 유효성 검사 (글쓰기와 동일하게 적용)
+            // 제목, 내용 빈 값 및 길이 제한 체크
+            if (mainVO.getTitle() == null || mainVO.getTitle().trim().isEmpty()) {
+                return "제목을 입력해주세요.";
+            }
+            if (mainVO.getContent() == null || mainVO.getContent().trim().isEmpty()) {
+                return "내용을 입력해주세요.";
+            }
+            if (mainVO.getTitle().length() > 100) {
+                return "제목은 100자 이내로 작성해주세요.";
+            }
 
-	        return "게시글이 정상적으로 수정되었습니다.";
+            // 파일 업로드 검사 
+            if (uploadFiles != null && !uploadFiles.isEmpty()) {
+                for (MultipartFile file : uploadFiles) {
+                    if (!file.isEmpty()) {
+                        String originalName = file.getOriginalFilename();
+                        String ext = originalName.substring(originalName.lastIndexOf(".") + 1).toLowerCase();
+                        
+                        // 허용된 확장자 리스트 (WhiteList)
+                        if (!ext.matches("jpg|jpeg|png|gif|bmp|pdf|txt|hwp|xlsx|xls|ppt|pptx|doc|docx|zip")) {
+                            return "업로드가 불가능한 파일이 포함되어 있습니다. (" + ext + ")";
+                        }
+                        
+                        // 파일 크기 제한
+                        if (file.getSize() > 10 * 1024 * 1024) {
+                            return "파일 크기는 10MB를 초과할 수 없습니다.";
+                        }
+                    }
+                }
+            }
+            mainVO.setUserId(loginUser.getUserId());
+            
+            boardservice.updateClip(mainVO, uploadFiles, deleteFileIds);
 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return "에러 발생: " + e.getMessage();
-	    }
+            return "게시글이 정상적으로 수정되었습니다.";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "수정 중 에러 발생: 잠시 후 다시 시도해주세요.";
+            }
 	}
 
 	// 댓글작성 로직
 	@RequestMapping("/writeComment")
-	public ModelAndView writeComment(MainCommentVO maincommentVO, HttpSession session) {
-		ModelAndView mav = new ModelAndView();
+	public ModelAndView writeComment(MainCommentVO maincommentVO, HttpSession session, RedirectAttributes rttr) {
+	    ModelAndView mav = new ModelAndView();
 
-		// userId 를 가져옴.
-		UserVO loginUser = (UserVO) session.getAttribute("loginUser");
-		maincommentVO.setUserId(loginUser.getUserId());
+	    //  세션에서 유저 정보 가져오기
+	    UserVO loginUser = (UserVO) session.getAttribute("loginUser");
+	    
+	    //  로그인이 안 된 경우 
+	    if (loginUser == null) {
+	        rttr.addFlashAttribute("msg", "로그인 후에 이용할 수 있습니다."); //redirect 시에도 메세지를 전달할 수 있음.
+	        mav.setViewName("redirect:/member/goLoginPage"); // 로그인 페이지로 보내는 게 더 자연스러움
+	        return mav;
+	    }
 
-		boardservice.insertMainComment(maincommentVO);
-
-		mav.setViewName("redirect:/clip/read?boardId=" + maincommentVO.getBoardId());
-		return mav;
+	    // 유효성 검사
+	    String validationResult = this.checkCommentContent(maincommentVO.getContent());
+	    if (!"PASS".equals(validationResult)) {
+	        rttr.addFlashAttribute("msg", validationResult); // 에러 메시지 전달
+	        // 실패 시 원래 보던 글(read)로 되돌려 보냄
+	        mav.setViewName("redirect:/clip/read?boardId=" + maincommentVO.getBoardId());
+	        return mav;
+	    }
+	    
+	    try {
+	        // 아이디 강제 주입 
+	        maincommentVO.setUserId(loginUser.getUserId());
+	        
+	        boardservice.insertMainComment(maincommentVO);
+	        
+	        // 성공 시 메시지 
+	        rttr.addFlashAttribute("msg", "댓글이 등록되었습니다.");
+	        
+	        mav.setViewName("redirect:/clip/read?boardId=" + maincommentVO.getBoardId());
+	    } catch(Exception e) {
+	        e.printStackTrace();
+	        rttr.addFlashAttribute("msg", "댓글 등록 중 시스템 오류가 발생했습니다.");
+	        // 에러 발생 시에도 원래 글 페이지로 이동
+	        mav.setViewName("redirect:/clip/read?boardId=" + maincommentVO.getBoardId());
+	    }
+	    
+	    return mav;
 	}
 
 	// 대댓글 작성 로직
 	@RequestMapping("/writeSubComment")
-	public ModelAndView writeSubComment(SubCommentVO subcommentVO, @RequestParam("boardId") String boardId,
-			HttpSession session) {
-		ModelAndView mav = new ModelAndView();
-		// userId 를 가져옴.
-		UserVO loginUser = (UserVO) session.getAttribute("loginUser");
-		subcommentVO.setUserId(loginUser.getUserId());
+	public ModelAndView writeSubComment(
+	        SubCommentVO subcommentVO, 
+	        @RequestParam("boardId") String boardId, // 리다이렉트용 게시글 ID
+	        HttpSession session, 
+	        RedirectAttributes rttr) { // 리다이렉트 메시지 전송용
+	    
+	    ModelAndView mav = new ModelAndView();
+	    
+	    // 세션 체크
+	    UserVO loginUser = (UserVO) session.getAttribute("loginUser");
+	    
+	    //  로그인 안 된 경우 방어
+	    if (loginUser == null) {
+	        rttr.addFlashAttribute("msg", "로그인 후에 이용할 수 있습니다.");
+	        mav.setViewName("redirect:/member/goLoginPage");
+	        return mav;
+	    }
+	    // (빈 값, 길이 제한, XSS 스크립트 공격 방지)
+	    String validationResult = this.checkCommentContent(subcommentVO.getContent());
+	    if (!"PASS".equals(validationResult)) {
+	        rttr.addFlashAttribute("msg", validationResult);
+	        mav.setViewName("redirect:/clip/read?boardId=" + boardId); // 실패 시 원래 글 유지
+	        return mav;
+	    }
 
-		boardservice.writeSubComment(subcommentVO);
-		// 댓글이 잘달렸는지 볼려는 리다이렉트
-		mav.setViewName("redirect:/clip/read?boardId=" + boardId);
+	    try {
+	        //  아이디 강제 주입 (HTML 변조 방지)
+	        subcommentVO.setUserId(loginUser.getUserId());
 
-		return mav;
+	        // 서비스 호출
+	        boardservice.writeSubComment(subcommentVO);
+	        
+	        // 성공 후 해당 게시글로 이동
+	        mav.setViewName("redirect:/clip/read?boardId=" + boardId);
+	        
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        rttr.addFlashAttribute("msg", "답글 등록 중 오류가 발생했습니다.");
+	        mav.setViewName("redirect:/clip/read?boardId=" + boardId);
+	    }
+
+	    return mav;
 	}
+	
+	// 댓글 정규식 체크 로직
+	private String checkCommentContent(String content) {
+        
+        //  빈 값 체크
+        if (content == null || content.trim().isEmpty()) {
+            return "내용을 입력해주세요.";
+        }
+
+        //  길이 제한 (DB 컬럼 크기에 맞춤, 예: 300자)
+        // 해커가 Postman으로 1GB짜리 텍스트를 보내 서버를 뻗게 하는 것을 방지
+        if (content.length() > 300) {
+            return "댓글은 300자 이내로 작성 가능합니다.";
+        }
+
+        // XSS(스크립트) 공격 패턴 검사 (정규식)
+        // (?i) : 대소문자 구분 안 함 
+        // <script, <iframe, <object, <embed, on...= (이벤트 핸들러) 등을 막음
+        String xssRegex = "(?i).*(<script|<iframe|<object|<embed|on[a-z]+\\s*=).*";
+        
+        if (Pattern.matches(xssRegex, content)) {
+            return "보안상 허용되지 않는 태그나 스크립트가 포함되어 있습니다.";
+        }
+        
+        return "PASS";
+    }
 
 	// 댓글 삭제 로직
 	@RequestMapping("/deleteComment")
