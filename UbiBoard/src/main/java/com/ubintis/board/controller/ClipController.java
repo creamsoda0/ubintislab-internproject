@@ -180,28 +180,49 @@ public class ClipController {
 	public ModelAndView goModify(@RequestParam("boardId") int boardId) {
 		ModelAndView mav = new ModelAndView();
 		MainBoardVO mainboardVO = boardservice.getClipById(boardId);
+		List<FileVO> fileList = boardservice.getFileList(boardId);
+		mav.addObject("fileList", fileList);
 		mav.addObject("board", mainboardVO);
 		mav.setViewName("/layout/modify");
 		return mav;
 	}
 
-	// 게시글 DB 수정
-	@RequestMapping("/updateClip")
-	public ModelAndView updateClip(MainBoardVO mainVO, HttpSession session) {
-		ModelAndView mav = new ModelAndView();
-		boardservice.updateClipById(mainVO);
+	@ResponseBody // AJAX 응답 필수
+	@RequestMapping(value = "/updateClip", method = RequestMethod.POST, produces = "text/plain;charset=UTF-8")
+	public String updateClip(
+	        MainBoardVO mainVO, 
+	        HttpSession session,
+	        // 1. 새로 추가된 파일들
+	        @RequestParam(value = "uploadFiles", required = false) List<MultipartFile> uploadFiles,
+	        // 2. 삭제할 기존 파일들의 ID 목록
+	        @RequestParam(value = "deleteFileIds", required = false) List<Integer> deleteFileIds
+	) {
+	    try {
+	        // [보안 체크 1] 로그인 여부
+	        UserVO loginUser = (UserVO) session.getAttribute("loginUser");
+	        if (loginUser == null) {
+	            return "로그인이 필요합니다.";
+	        }
 
-		// 로그인 한 번 더 확인으로 취약점 보완
-		MainBoardVO board = boardservice.getClipById(mainVO.getBoardId());
-		UserVO loginUser = (UserVO) session.getAttribute("loginUser");
-		if (!loginUser.getUserId().equals(board.getUserId())) {
-			mav.addObject("msg", "본인의 글만 수정할 수 있습니다.");
-			mav.setViewName("redirect:/goMain");
-			return mav;
-		}
+	        // [보안 체크 2] 본인 글인지 확인 (DB에서 원본 글 조회)
+	        MainBoardVO originalBoard = boardservice.getClipById(mainVO.getBoardId());
+	        if (originalBoard == null) {
+	            return "존재하지 않는 게시글입니다.";
+	        }
+	        if (!loginUser.getUserId().equals(originalBoard.getUserId())) {
+	            return "본인의 글만 수정할 수 있습니다.";
+	        }
 
-		mav.setViewName("redirect:/clip/read?boardId=" + mainVO.getBoardId());
-		return mav;
+	        // [핵심] 서비스 호출 (게시글 수정 + 파일 추가 + 파일 삭제를 한 방에 처리)
+	        // mainVO에는 boardId, title, content가 들어있음
+	        boardservice.updateClip(mainVO, uploadFiles, deleteFileIds);
+
+	        return "게시글이 정상적으로 수정되었습니다.";
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return "에러 발생: " + e.getMessage();
+	    }
 	}
 
 	// 댓글작성 로직

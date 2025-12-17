@@ -91,11 +91,6 @@
 		content = #{content},
 		mod_date =
 		NOW()
-
-		<if test="filePath != null and filePath != ''">
-			, file_path = #{filePath}
-		</if>
-
 		WHERE board_id = #{boardId}
 	</update>
 
@@ -172,9 +167,17 @@
 
 	<update id="updateHit" parameterType="int">
 		UPDATE mainboard
-		SET views = views + 1
+		SET views =
+		views + 1
 		WHERE board_id = #{boardId}
 	</update>
 
+	<select id="getFileById" parameterType="int" resultType="FileVO">
+		SELECT * FROM board_file WHERE file_id = #{fileId}
+	</select>
+
+	<delete id="deleteFile" parameterType="int">
+		DELETE FROM board_file WHERE file_id = #{fileId}
+	</delete>
 
 </mapper>

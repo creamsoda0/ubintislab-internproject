@@ -46,6 +46,8 @@ public interface BoardService {
 
 	void updateHit(int boardId);
 
+	void updateClip(MainBoardVO mainVO, List<MultipartFile> uploadFiles, List<Integer> deleteFileIds) throws Exception;
+
 	
 
 }

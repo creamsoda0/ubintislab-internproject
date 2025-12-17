@@ -53,6 +53,10 @@ public interface BoardMapper {
 
 	void updateHit(int boardId);
 
+	FileVO getFileById(Integer fileId);
+
+	void deleteFile(Integer fileId);
+
 	
 
 }
