@@ -422,6 +422,14 @@ public class MemberController {
 	public ModelAndView resetPwProcess(@RequestParam("userPw") String password, @RequestParam("userId") String userId) {
 		ModelAndView mav = new ModelAndView();
 
+		// 비밀번호 정규식 체크 (9~25자, 영문+숫자+특수문자)
+		String pwRegex = "^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{9,25}$";
+		if (!Pattern.matches(pwRegex, password)) {
+			mav.addObject("msg", "잘못된 접근입니다. 비밀번호 보안 규칙을 지켜주세요.");
+			mav.setViewName("redirect:/member/resetPwPage");
+			return mav;
+		}
+		
 		int result = memberService.updateUserPw(userId, password);
 		if (result > 0) {
 			// 성공 (1개 이상의 행이 업데이트됨)

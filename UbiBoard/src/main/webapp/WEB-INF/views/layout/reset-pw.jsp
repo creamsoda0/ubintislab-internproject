@@ -15,63 +15,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<link rel="stylesheet" href="${contextPath}/resources/static/member/css/reset-pw.css">
+	<script src="${contextPath}/resources/static/member/js/reset-pw.js"></script>
 
-    <script>
-        function changePwCheck() {
-            var userPw = $("#userPw").val();
-            var userPwConfirm = $("#userPwConfirm").val();
-
-            // 1. 빈 값 체크
-            if(userPw == "") {
-                alert("새 비밀번호를 입력해주세요.");
-                $("#userPw").focus();
-                return;
-            }
-            
-            // 2. 비밀번호 길이 체크
-            if(userPw.length < 9 || userPw.length > 20) {
-                alert("비밀번호는 9자 이상, 20자 이하로 입력해주세요.");
-                $("#userPw").focus();
-                return;
-            }
-
-            // 3. 비밀번호 확인 체크
-            if(userPwConfirm == "") {
-                alert("비밀번호 확인란을 입력해주세요.");
-                $("#userPwConfirm").focus();
-                return;
-            }
-
-            // 4. 일치 여부 체크
-            if(userPw != userPwConfirm) {
-                alert("비밀번호가 일치하지 않습니다.");
-                $("#userPwConfirm").val("");
-                $("#userPwConfirm").focus();
-                return;
-            }
-
-            // 전송
-            if(confirm("비밀번호를 변경하시겠습니까?")) {
-                document.resetPwForm.submit();
-            }
-        }
-        
-        // 다시 입력 (초기화)
-        function resetForm() {
-            $("#userPw").val("");
-            $("#userPwConfirm").val("");
-            $("#userPw").focus();
-        }
-    </script>
 </head>
 <body>
 
 <div class="container">
     
     <header class="header">
-        <h1><a href="${contextPath}/member/login">UBNTIS LAB</a></h1>
+        <h1><a href="${contextPath}/default">UBNTIS LAB</a></h1>
         <div class="header-links">
-            <a href="${contextPath}/member/login">로그인</a>
+            <a href="${contextPath}/default">로그인</a>
             <a href="${contextPath}/member/join">회원가입</a>
         </div>
     </header>
@@ -94,20 +48,21 @@
             
             <input type="hidden" name="userId" value="${userId}">
 
-            <div class="input-group">
-                <label for="userPw">새 비밀번호</label>
-                <input type="password" name="userPw" id="userPw" placeholder="새 비밀번호 입력">
-                <span class="help-text">
-                    ※ 9~20자 이내, 영문/숫자/특수문자 포함 필수<br>
-                    ※ 연속된 문자나 아이디와 동일한 비밀번호는 사용 불가
-                </span>
-            </div>
+<div class="input-group">
+    <label for="userPw">새 비밀번호</label>
+    <input type="password" name="userPw" id="userPw" placeholder="새 비밀번호 입력">
+    <span id="pwMsg" class="error-msg"></span> 
+    <span class="help-text">
+        ※ 9~20자 이내, 영문/숫자/특수문자 포함 필수<br>
+        ※ 연속된 문자나 아이디와 동일한 비밀번호는 사용 불가
+    </span>
+</div>
 
-            <div class="input-group">
-                <label for="userPwConfirm">비밀번호 확인</label>
-                <input type="password" name="userPwConfirm" id="userPwConfirm" placeholder="비밀번호 재입력">
-            </div>
-
+<div class="input-group">
+    <label for="userPwConfirm">비밀번호 확인</label>
+    <input type="password" name="userPwConfirm" id="userPwConfirm" placeholder="비밀번호 재입력">
+    <span id="pwConfirmMsg" class="error-msg"></span> 
+</div>
             <div class="btn-area">
                 <button type="button" class="btn btn-reset" onclick="resetForm()">다시 입력</button>
                 <button type="button" class="btn btn-submit" onclick="changePwCheck()">변경하기</button>
