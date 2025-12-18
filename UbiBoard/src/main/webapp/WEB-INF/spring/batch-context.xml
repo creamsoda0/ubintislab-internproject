@@ -1,0 +1,67 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:batch="http://www.springframework.org/schema/batch"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.springframework.org/schema/batch 
+                        http://www.springframework.org/schema/batch/spring-batch.xsd
+                        http://www.springframework.org/schema/context 
+                        http://www.springframework.org/schema/context/spring-context.xsd">
+
+<!-- batch는 여기서 scan에서 사용한다.  -->
+    <context:component-scan base-package="com.ubintis.board.batch" />
+
+    <bean id="jobRepository"
+        class="org.springframework.batch.core.repository.support.JobRepositoryFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="transactionManager" ref="transactionManager" />
+    </bean>
+
+    <bean id="jobLauncher"
+        class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
+        <property name="jobRepository" ref="jobRepository" />
+    </bean>
+
+    <batch:job id="dormantUserJob">
+        <batch:step id="moveDormantStep">
+            <batch:tasklet>
+                <batch:chunk reader="userReader"
+                             processor="userProcessor" 
+                             writer="userWriter" 
+                             commit-interval="100" />
+            </batch:tasklet>
+        </batch:step>
+    </batch:job>
+
+<bean id="userReader" class="org.springframework.batch.item.database.JdbcCursorItemReader">
+    <property name="dataSource" ref="dataSource" />
+    <property name="sql">
+        <value>
+            <![CDATA[
+            SELECT u.* FROM users u
+            LEFT JOIN (
+                /* 사용자별 가장 최근 로그 기록만 추출 */
+                SELECT user_id, MAX(reg_date) AS last_activity
+                FROM user_log
+                GROUP BY user_id
+            ) l ON u.user_id = l.user_id
+            WHERE u.password IS NOT NULL /* 이미 휴면인 계정 제외 (마스킹된 계정 제외) */
+              AND (
+                  /* 마지막 활동이 3개월 전인 경우 */
+                  l.last_activity < DATE_SUB(NOW(), INTERVAL 3 MONTH)
+                  OR 
+                  /* 활동 기록이 전혀 없는데 가입한 지 3개월이 지난 경우 */
+                  (l.last_activity IS NULL AND u.join_date < DATE_SUB(NOW(), INTERVAL 3 MONTH))
+              )
+            ]]>
+        </value>
+    </property>
+    <property name="rowMapper">
+        <bean class="com.ubintis.board.batch.UserRowMapper" />
+    </property>
+</bean>
+    <bean id="userProcessor" class="com.ubintis.board.batch.DormantUserProcessor" />
+    <bean id="userWriter" class="com.ubintis.board.batch.DormantUserWriter" />
+
+</beans>

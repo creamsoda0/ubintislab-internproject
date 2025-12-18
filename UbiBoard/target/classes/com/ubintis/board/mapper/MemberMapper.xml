@@ -47,10 +47,12 @@
 	<update id="updateMember" parameterType="UserVO">
 		UPDATE users
 		SET
-		phone = #{phone},
+		phone =
+		#{phone},
 		address = #{address},
 		email = #{email},
-		email_agreed = #{emailAgreed},
+		email_agreed =
+		#{emailAgreed},
 		sms_agreed = #{smsAgreed},
 		hint_id = #{hintId},
 		hint_answer = #{hintAnswer}
@@ -64,24 +66,28 @@
 	</select>
 
 	<select id="findId" parameterType="String" resultType="UserVO">
-		SELECT * FROM users
+		SELECT *
+		FROM users
 		WHERE name = #{name} AND email = #{email}
 	</select>
 
 	<select id="findUserByIdEmail" parameterType="String"
 		resultType="UserVO">
 		SELECT * FROM users
-		WHERE user_id = #{userId} AND email = #{email}
+		WHERE user_id = #{userId} AND email =
+		#{email}
 	</select>
 
 	<update id="updateUserPw">
 		UPDATE users
 		SET password = #{password}
-		WHERE user_id = #{userId}
+		WHERE user_id =
+		#{userId}
 	</update>
 
 	<insert id="migrateMember" parameterType="UserVO">
-		INSERT INTO user_withdraw (
+		INSERT INTO
+		user_withdraw (
 		user_id,
 		password,
 		name,
@@ -107,25 +113,57 @@
 		#{smsAgreed},
 		#{hintAnswer},
 		#{refreshToken},
-		#{reason}, 
+		#{reason},
 		NOW()
 		)
 	</insert>
-	
+
 	<update id="deleteMember" parameterType="String">
-    UPDATE users
-    SET 
-        password = NULL,
-        name = NULL,
-        birth = NULL,
-        phone = NULL,
-        address = NULL,
-        email = NULL,
-        email_agreed = NULL, 
-        sms_agreed = NULL,
-        hint_answer = NULL,
-        refresh_token = NULL,
-        join_date = NOW()  
-    WHERE user_id = #{userId}
+		UPDATE users
+		SET
+		password = NULL,
+		name = NULL,
+		birth = NULL,
+		phone = NULL,
+		address = NULL,
+		email = NULL,
+		email_agreed = NULL,
+		sms_agreed = NULL,
+		hint_answer = NULL,
+		refresh_token = NULL,
+		join_date = NOW()
+		WHERE user_id = #{userId}
 	</update>
+
+	<insert id="insertDormant"
+		parameterType="UserVO">
+		INSERT INTO user_dormant (
+		user_id, password, name, birth, phone, address,
+		email, email_agreed, sms_agreed, hint_id, hint_answer,
+		refresh_token, join_date, dormant_date, reason
+		) VALUES (
+		#{userId}, #{password}, #{name}, #{birth}, #{phone}, #{address},
+		#{email}, #{emailAgreed}, #{smsAgreed}, #{hintId}, #{hintAnswer},
+		#{refreshToken}, #{joinDate}, NOW(), '3개월 미접속으로 인한 휴면 전환'
+		)
+	</insert>
+
+	<update id="maskDormantUser" parameterType="string">
+		UPDATE users
+		SET
+		password = NULL,
+		name = NULL,
+		birth = NULL,
+		phone = NULL,
+		address = NULL,
+		email = NULL,
+		email_agreed = 0,
+		sms_agreed = 0,
+		hint_id = NULL,
+		hint_answer = NULL,
+		refresh_token = NULL
+		/* join_date는 통계용으로 남겨두는 경우가 많으나, 필요시 NULL 처리 가능 */
+		WHERE user_id = #{userId}
+	</update>
+
 </mapper>
