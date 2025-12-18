@@ -287,6 +287,9 @@ public class ClipController {
             if (mainVO.getContent() == null || mainVO.getContent().trim().isEmpty()) {
                 return "내용을 입력해주세요.";
             }
+            if (mainVO.getContent().length() > 255) {
+                return "내용이 너무 깁니다. 255자 이내로 작성해주세요.";
+            }
             if (mainVO.getTitle().length() > 100) {
                 return "제목은 100자 이내로 작성해주세요.";
             }

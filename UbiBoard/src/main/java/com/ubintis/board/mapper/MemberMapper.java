@@ -30,7 +30,6 @@ public interface MemberMapper {
 
 	public int updateUserPw(@Param("userId") String userId,@Param("password") String password);
 
-	// 이거 수정봐야함
 	public int deleteMember(String userId);
 
 	public int migrateMember(UserVO vo);

@@ -150,6 +150,11 @@
             document.getElementById("content").focus();
             return false;
         }
+        if (content.length > 255) {
+            alert("255자내로 입력해주세요.");
+            document.getElementById("content").focus();
+            return false;
+        }
 
         if (!confirm("게시글을 등록하시겠습니까?")) {
             return false;
