@@ -313,11 +313,20 @@ public class MemberController {
 
 	@ResponseBody // 문자열만 반환
 	@RequestMapping("/checkAuthCode")
-	public ResponseEntity<String> checkAuthCode(@RequestParam("inputCode") String inputCode, HttpSession session) {
+	public ResponseEntity<String> checkAuthCode(@RequestParam("inputCode") String inputCode, 
+												@RequestParam("userId") String userId,
+												HttpSession session) {
 
 		String realCode = (String) session.getAttribute("authCode");
+		
+		if (realCode == null) {
+	        return ResponseEntity.status(HttpStatus.GONE) // 410 에러
+	                             .body("인증 시간이 만료되었습니다. 인증번호를 다시 받아주세요.");
+	    }
 
 		if (realCode != null && realCode.equals(inputCode)) {
+			session.setAttribute("isPwResetAuthenticated", true);
+			session.setAttribute("verifiedUserId", userId);
 			session.removeAttribute("authCode");
 			return new ResponseEntity<>("success", HttpStatus.OK); // 200
 		} else {
@@ -357,40 +366,56 @@ public class MemberController {
 	// 인증번호 확인은 /checkAuthCode를 확인
 	@ResponseBody
 	@RequestMapping("/sendAuthCodeForPw")
-	public String sendAuthCodeForPw(@RequestParam("userId") String userId, @RequestParam("email") String email,
-			@RequestParam("name") String name, HttpSession session) {
+	public ResponseEntity<String> sendAuthCodeForPw(
+	        @RequestParam("userId") String userId, 
+	        @RequestParam("email") String email,
+	        @RequestParam("name") String name, 
+	        HttpSession session) {
 
-		// 어차피 이름 이메일 둘다 있으니까 이름과 이메일 둘 다 검색으로 넣어도 될듯
-		// (선택) 먼저 해당 이메일로 가입된 회원이 있는지 DB 체크 로직 추가 가능
-		UserVO user = memberService.findUserByIdEmail(userId, email);
-		if (user == null) {
-			return "fail_no_user"; // 회원이 아님
-		}
+	    // 회원 존재 여부 체크
+	    UserVO user = memberService.findUserByIdEmail(userId, email);
+	    if (user == null) {
+	        // 404 Not Found: 일치하는 회원이 없음
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+	                             .body("입력하신 정보와 일치하는 회원이 없습니다.");
+	    }
 
-		// 메일 발송하고 인증코드 받아옴
-		String authCode = memberService.sendAuthCode(email);
+	    // 메일 발송 및 인증코드 생성
+	    String authCode = memberService.sendAuthCode(email);
 
-		if (authCode != null) {
-			// 세션에 인증코드를 저장해둠 (나중에 비교용)
-			session.setAttribute("authCode", authCode);
-			// 세션 유효시간 설정 (예: 3분 = 180초)
-			session.setMaxInactiveInterval(180);
+	    if (authCode != null) {
+	        // 세션 저장 로직
+	        session.setAttribute("authCode", authCode);
+	        session.setMaxInactiveInterval(180); // 3분
 
-			return "success";
-		} else {
-			return "fail_send";
-		}
+	        // 200 OK: 성공
+	        return ResponseEntity.ok("success");
+	    } else {
+	        // 500 Internal Server Error: 메일 발송 실패
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                             .body("메일 발송 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+	    }
 	}
 
-	// 비밀번호 재설정 페이지로 이동
 	@RequestMapping("/resetPwPage")
-	public ModelAndView resetPwPage(@RequestParam("userId") String userId) {
-		ModelAndView mav = new ModelAndView();
-		mav.setViewName("/layout/reset-pw");
-		mav.addObject("userId", userId);
-		return mav;
-	}
+	public ModelAndView resetPwPage(@RequestParam("userId") String userId, HttpSession session) {
+	    ModelAndView mav = new ModelAndView();
 
+	    // 세션에서 인증 정보 가져오기
+	    String verifiedUserId = (String) session.getAttribute("verifiedUserId");
+	    Boolean isAuthenticated = (Boolean) session.getAttribute("isPwResetAuthenticated");
+
+	    // 보안 검사: 인증 플래그가 없거나, 인증된 ID와 요청한 ID가 다를 경우
+	    if (isAuthenticated == null || !isAuthenticated || !userId.equals(verifiedUserId)) {
+	        // 403 Forbidden 상황: 메인이나 에러 페이지로 리다이렉트
+	        mav.setViewName("redirect:/member/findPw?error=unauthorized");
+	        return mav;
+	    }
+
+	    mav.setViewName("/layout/reset-pw");
+	    mav.addObject("userId", userId);
+	    return mav;
+	}
 	// 비밀번호 재설정로직입니다.
 	// 예외처리 필요함 데이터를 넣는 경우
 	@RequestMapping("/resetPwProcess")
