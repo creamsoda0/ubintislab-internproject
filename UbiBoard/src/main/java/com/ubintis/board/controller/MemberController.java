@@ -246,8 +246,10 @@ public class MemberController {
 	@RequestMapping ("/verifyDormantAuthCode")
 	public ModelAndView verifyCode (@RequestParam("authCode") String inputCode,
 									@RequestParam("userId") String userId,
+									HttpServletRequest request,
 									HttpSession session) throws Exception {
 		ModelAndView mav = new ModelAndView();
+		String userIp = request.getRemoteAddr();
 		String realCode = (String) session.getAttribute("authCode");
 		if (realCode == null) {
 			mav.setViewName("redirect:/member/goActivateUser");
@@ -258,6 +260,7 @@ public class MemberController {
 			session.removeAttribute("authCode");
 			mav.addObject("userId", userId);
 			mav.setViewName("/layout/dormant-success");
+			logService.saveLog(userId, "RESTORE_DORMANT", "휴면계정 복구", userIp);
 			return mav;
 		}
 		throw new Exception("휴면계정전환이 실패하였습니다.");
