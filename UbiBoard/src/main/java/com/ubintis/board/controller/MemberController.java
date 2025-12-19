@@ -1,7 +1,9 @@
 package com.ubintis.board.controller;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
@@ -211,6 +213,34 @@ public class MemberController {
 	    } else {
 	    	throw new Exception("이메일 인증 서비스가 응답하지 않습니다.");        
 	    }	
+	}
+	
+	@RequestMapping(value = "/resendAuthCode", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseEntity<Map<String, Object>> resendAuthCode(@RequestParam("userId") String userId, HttpSession session) {
+	    Map<String, Object> result = new HashMap<>();
+	    
+	    try {
+	        UserVO dormantUser = memberService.getDormantUserById(userId);
+	        String newAuthCode = memberService.sendAuthCode(dormantUser.getEmail());
+	        
+	        if (newAuthCode != null) {
+	            session.setAttribute("authCode", newAuthCode);
+	            session.setMaxInactiveInterval(180); // 3분 갱신
+	            
+	            result.put("message", "인증번호가 재발송되었습니다.");
+	            // 200 OK: 표준 성공 코드
+	            return new ResponseEntity<>(result, HttpStatus.OK); 
+	        } else {
+	            result.put("message", "인증번호 생성에 실패했습니다.");
+	            // 400 Bad Request: 클라이언트의 요청이 잘못되었거나 처리가 불가능할 때
+	            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+	        }
+	    } catch (Exception e) {
+	        result.put("message", "서버 오류: " + e.getMessage());
+	        // 500 Internal Server Error: 서버 내부 로직 중 예외 발생 시
+	        return new ResponseEntity<>(result, HttpStatus.INTERNAL_SERVER_ERROR);
+	    }
 	}
 	
 	
