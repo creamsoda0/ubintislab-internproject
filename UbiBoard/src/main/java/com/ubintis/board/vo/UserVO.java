@@ -29,8 +29,13 @@ public class UserVO {
 	private String emailId;
 	private String emailDomain;
 	
-	// 회원 탈퇴 처리시 필요
+	// 회원 탈퇴 및 휴면계정 처리시 필요
 	private String reason;
+	
+	// 휴면 계정을 위한 VO값
+	// dormantID,dormantDate, reason
+	private Integer dormantId;
+	private Date dormantDate;
 	
 	
 	
@@ -147,6 +152,18 @@ public class UserVO {
 	}
 	public void setReason(String reason) {
 		this.reason = reason;
+	}
+	public Integer getDormantId() {
+		return dormantId;
+	}
+	public void setDormantId(Integer dormantId) {
+		this.dormantId = dormantId;
+	}
+	public Date getDormantDate() {
+		return dormantDate;
+	}
+	public void setDormantDate(Date dormantDate) {
+		this.dormantDate = dormantDate;
 	}
 	
 	

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ubintis.board.mapper.MemberMapper;
+import com.ubintis.board.vo.UserDormantVO;
 import com.ubintis.board.vo.UserVO;
 
 @Service
@@ -75,7 +76,9 @@ public class MemberServiceImpl implements MemberService {
 	}
 	
 	/*
-	 * // XSS 방어용 프라이빗 메서드 (클래스 하단에 추가) private String preventXss(String value) { if
+	 * // XSS 방어용 프라이빗 메서드 
+	 * (직접 경우의 수를 조사해서 손으로 친버전 ^^)
+	 * private String preventXss(String value) { if
 	 * (value == null) return null; return value.replaceAll("&", "&amp;")
 	 * .replaceAll("<", "&lt;") .replaceAll(">", "&gt;") .replaceAll("\"", "&quot;")
 	 * .replaceAll("'", "&#x27;"); }
@@ -83,6 +86,8 @@ public class MemberServiceImpl implements MemberService {
 
 	@Override
 	public UserVO login(UserVO userVO) {
+		
+		
 		// 아이디로 회원 정보 꺼내오기
 	    UserVO dbUser = mapper.getMemberById(userVO.getUserId());
 	    
@@ -93,6 +98,11 @@ public class MemberServiceImpl implements MemberService {
 	            return dbUser; // 로그인 성공 시 회원 정보 리턴
 	        }
 	    }
+	    UserVO dormantVO = mapper.getDormantUserById(dbUser.getUserId());
+	    if (dormantVO != null) {
+	    	return dormantVO;
+	    }
+	    
 	    return null; // 실패 시 null 리턴
 	}
 

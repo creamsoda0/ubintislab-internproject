@@ -77,6 +77,7 @@ public class MemberController {
 	@RequestMapping(value = "/joinProcess", method = RequestMethod.POST)
 	public ModelAndView joinProcess(UserVO userVO, HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView();
+		String userIp = request.getRemoteAddr();
 		mav.setViewName("layout/join-success");
 
 		mav.setViewName("redirect:/member/joinForm");
@@ -143,7 +144,7 @@ public class MemberController {
 
 		memberService.insertMember(userVO);
 
-		logService.saveLog(userVO.getUserId(), "JOIN", "회원가입 성공", request);
+		logService.saveLog(userVO.getUserId(), "JOIN", "회원가입 성공", userIp);
 
 		return mav;
 	}
@@ -159,20 +160,33 @@ public class MemberController {
 	@RequestMapping(value = "/loginProcess")
 	public ModelAndView loginProcess(UserVO userVO, HttpSession session, HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView();
+		String userIp = request.getRemoteAddr(); // IP 추출
 
-		// 서비스에서 로그인 체크 (UserVO 리턴 혹은 null)
-		UserVO loginUser = memberService.login(userVO);
+	    // 1. 서비스에서 사용자 조회 (아이디 존재 여부 확인)
+	    UserVO loginUser = memberService.login(userVO);
 
-		if (loginUser != null) {
-			session.setAttribute("loginUser", loginUser);
-			logService.saveLog(loginUser.getUserId(), "LOGIN", "로그인 성공", request);
-			mav.setViewName("redirect:/goMain"); // 메인페이지로 이동
-		} else {
-			logService.saveLog(userVO.getUserId(), "LOGIN", "로그인 실패 아이디,패스워드 불일치", request);
-			mav.addObject("msg", "아이디 또는 비밀번호가 일치하지 않습니다.");
-			mav.setViewName("/layout/login-page");
-		}
+	    // 2. 로그인 실패 처리 (객체가 null인 경우)
+	    if (loginUser == null) {
+	        logService.saveLog(userVO.getUserId(), "LOGIN", "로그인 실패: 아이디 또는 비밀번호 불일치", userIp);
+	        mav.addObject("msg", "아이디 또는 비밀번호가 일치하지 않습니다.");
+	        mav.setViewName("/layout/login-page");
+	        return mav;
+	    }
 
+	    // 3. 휴면 계정 체크 (이전 대화에서 말씀하신 'ID 외 필드가 null'인 경우 또는 dormantId 존재 여부)
+	    // Integer 타입일 경우 null 체크를 해야 합니다.
+	    if (loginUser.getDormantId() != null && loginUser.getDormantId() != 0) {
+	        logService.saveLog(loginUser.getUserId(), "DORMANT_ACCESS", "휴면 계정 접속 시도", userIp);
+	        mav.addObject("dormantUserId", loginUser.getUserId()); // 안내 페이지에 아이디 전달
+	        mav.setViewName("/layout/dormant-notice");
+	        return mav;
+	    }
+	    
+	    // 4. 정상 로그인 성공 처리
+	    session.setAttribute("loginUser", loginUser);
+	    logService.saveLog(loginUser.getUserId(), "LOGIN", "로그인 성공", userIp);
+	    mav.setViewName("redirect:/goMain");
+	    
 		return mav;
 	}
 
@@ -181,9 +195,10 @@ public class MemberController {
 	public ModelAndView logout(HttpSession session, HttpServletRequest request) {
 		// 세션에 저장된 모든 정보 삭제 (로그아웃 처리)
 		ModelAndView mav = new ModelAndView();
+		String userIp = request.getRemoteAddr();
 		UserVO loginUser = (UserVO) session.getAttribute("loginUser");
 		if (loginUser != null) {
-			logService.saveLog(loginUser.getUserId(), "LOGOUT", "로그아웃 성공", request);
+			logService.saveLog(loginUser.getUserId(), "LOGOUT", "로그아웃 성공", userIp);
 		}
 		mav.setViewName("redirect:/default");
 		session.invalidate();
@@ -463,12 +478,12 @@ public class MemberController {
 	public ModelAndView memberDeleteProcess(HttpSession session, UserVO userVO, @RequestParam("reason") String reason,
 			HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView();
-
+		String userIp = request.getRemoteAddr();
 		try {
 			boolean isSuccess = memberService.withdrawProcess(userVO, reason);
 
 			if (isSuccess) {
-				logService.saveLog(userVO.getUserId(), "WITHDRAW", "회원 탈퇴 처리", request);
+				logService.saveLog(userVO.getUserId(), "WITHDRAW", "회원 탈퇴 처리", userIp);
 				session.invalidate();
 				mav.addObject("msg", "탈퇴되었습니다.");
 				mav.addObject("url", "/main");

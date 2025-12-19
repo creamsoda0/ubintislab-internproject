@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import com.ubintis.board.vo.UserDormantVO;
 import com.ubintis.board.vo.UserVO;
 
 @Mapper
@@ -33,5 +34,7 @@ public interface MemberMapper {
 	public int deleteMember(String userId);
 
 	public int migrateMember(UserVO vo);
+
+	public UserVO getDormantUserById(String userId);
 	
 }

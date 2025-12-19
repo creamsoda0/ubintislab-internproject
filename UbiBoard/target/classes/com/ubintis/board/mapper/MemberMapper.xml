@@ -166,4 +166,9 @@
 		WHERE user_id = #{userId}
 	</update>
 
+	<select id="getDormantUserById" parameterType="String" resultType="UserVO">
+		SELECT * FROM user_dormant
+		WHERE user_id = #{userId}
+	</select>
+	
 </mapper>
