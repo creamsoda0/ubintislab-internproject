@@ -1,6 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
+
+
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -35,20 +38,21 @@
             <span class="glyphicon glyphicon-time"></span>
         </div>
         <h2 class="content-title">오랫동안 자리를 비우셨네요!</h2>
-        
         <p class="content-desc">
+        <strong><c:out value="${dormantUserId}"/></strong> 고객님은 현재 <storng>휴면 상태</storng>입니다.<br>
             고객님의 소중한 정보 보호를 위해<br>
             현재 계정이 <strong>휴면 상태</strong>로 전환되었습니다.
         </p>
 
         <div class="info-box">
-            <p><strong>휴면 전환일:</strong> 2024-03-15</p>
-            <p><strong>사유:</strong> 1년 이상 서비스 미접속</p>
+            <p><strong>휴면 전환일:</strong> 
+            <fmt:formatDate value="${dormantDate}" pattern="yyyy-MM-dd" /></p>
+            <p><strong>사유:</strong> <c:out value="${not empty reason ? reason : '3개월 이상 미접속'}"/></p>
             <p><strong>보관 기간:</strong> 파기 시까지 별도 분리 저장</p>
         </div>
 
-        <form action="${pageContext.request.contextPath}/login/activateUser.do" method="post">
-            <input type="hidden" name="userId" value="${dormantUserId}"> 
+        <form action="${pageContext.request.contextPath}/member/goActivateUser" method="post">
+            <input type="hidden" name="userId" id="userId" value="${dormantUserId}"> 
             <button type="submit" class="btn btn-block btn-activate">
                 지금 바로 계정 활성화하기
             </button>

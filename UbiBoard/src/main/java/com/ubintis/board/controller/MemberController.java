@@ -178,6 +178,8 @@ public class MemberController {
 	    if (loginUser.getDormantId() != null && loginUser.getDormantId() != 0) {
 	        logService.saveLog(loginUser.getUserId(), "DORMANT_ACCESS", "휴면 계정 접속 시도", userIp);
 	        mav.addObject("dormantUserId", loginUser.getUserId()); // 안내 페이지에 아이디 전달
+	        mav.addObject("reason", loginUser.getReason());
+	        mav.addObject("dormantDate", loginUser.getDormantDate());
 	        mav.setViewName("/layout/dormant-notice");
 	        return mav;
 	    }
@@ -189,6 +191,29 @@ public class MemberController {
 	    
 		return mav;
 	}
+	// 휴면계정전환을 위한 이메일 인증코드 자동 보내기
+	@RequestMapping("/goActivateUser")
+	public ModelAndView goActivateUser (@RequestParam("userId") String userId,
+										HttpSession session) throws Exception {
+		ModelAndView mav = new ModelAndView();
+		
+		UserVO dormantUser = memberService.getDormantUserById(userId);
+		String authCode = memberService.sendAuthCode(dormantUser.getEmail());
+		
+		mav.addObject("userId", userId);
+		mav.setViewName("/layout/dormant-auth");
+	    if(authCode != null) {
+	        // 세션에 인증코드를 저장해둠 (나중에 비교용)
+	        session.setAttribute("authCode", authCode);
+	        // 세션 유효시간 설정 (예: 3분 = 180초)
+	        session.setMaxInactiveInterval(180); 
+	        return mav;
+	    } else {
+	    	throw new Exception("이메일 인증 서비스가 응답하지 않습니다.");        
+	    }	
+	}
+	
+	
 
 	// 로그아웃 (세션 삭제)
 	@RequestMapping("/logout")

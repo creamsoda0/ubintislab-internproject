@@ -49,6 +49,7 @@
             <mvc:exclude-mapping path="/member/resetPwPage" />
             <mvc:exclude-mapping path="/member/sendAuthCodeForPw" />
             <mvc:exclude-mapping path="/member/memberDeleteProcess" />
+            <mvc:exclude-mapping path="/member/goActivateUser" />
             
             
             <mvc:exclude-mapping path="/static/**" />

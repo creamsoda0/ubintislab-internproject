@@ -30,5 +30,7 @@ public interface MemberService {
 
 	public boolean withdrawProcess(UserVO userVO, String reason) throws Exception;
 
+	public UserVO getDormantUserById(String userId);
+
 	
 }

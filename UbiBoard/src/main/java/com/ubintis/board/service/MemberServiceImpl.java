@@ -198,6 +198,12 @@ public class MemberServiceImpl implements MemberService {
 
 	    return true; // ¼º°ø
 	}
+
+	@Override
+	public UserVO getDormantUserById(String userId) {
+		// TODO Auto-generated method stub
+		return mapper.getDormantUserById(userId);
+	}
 	
 	
 
