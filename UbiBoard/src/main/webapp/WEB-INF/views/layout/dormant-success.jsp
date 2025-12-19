@@ -41,7 +41,7 @@
             <p><b>계정 상태 :</b> <span class="label label-success">정상(활동)</span></p>
         </div>
 
-        <a href="${pageContext.request.contextPath}/login/loginPage.do" class="btn btn-go-login">
+        <a href="${pageContext.request.contextPath}/default" class="btn btn-go-login">
             로그인 페이지로 이동
         </a>
     </div>

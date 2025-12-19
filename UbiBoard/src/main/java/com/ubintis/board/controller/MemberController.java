@@ -226,7 +226,7 @@ public class MemberController {
 	        
 	        if (newAuthCode != null) {
 	            session.setAttribute("authCode", newAuthCode);
-	            session.setMaxInactiveInterval(180); // 3분 갱신
+	            session.setMaxInactiveInterval(600); // 3분 갱신
 	            
 	            result.put("message", "인증번호가 재발송되었습니다.");
 	            // 200 OK: 표준 성공 코드
@@ -243,6 +243,25 @@ public class MemberController {
 	    }
 	}
 	
+	@RequestMapping ("/verifyDormantAuthCode")
+	public ModelAndView verifyCode (@RequestParam("authCode") String inputCode,
+									@RequestParam("userId") String userId,
+									HttpSession session) throws Exception {
+		ModelAndView mav = new ModelAndView();
+		String realCode = (String) session.getAttribute("authCode");
+		if (realCode == null) {
+			mav.setViewName("redirect:/member/goActivateUser");
+	        return mav;
+	        }
+		if(realCode != null && realCode.equals(inputCode)) {
+			memberService.activateDormantUser(userId);
+			session.removeAttribute("authCode");
+			mav.addObject("userId", userId);
+			mav.setViewName("/layout/dormant-success");
+			return mav;
+		}
+		throw new Exception("휴면계정전환이 실패하였습니다.");
+	}
 	
 
 	// 로그아웃 (세션 삭제)
@@ -404,6 +423,8 @@ public class MemberController {
 
 		}
 	}
+	
+
 
 	@RequestMapping("/findIdProcess")
 	public ModelAndView findIdProcess(@RequestParam("email") String email, @RequestParam("name") String name) {

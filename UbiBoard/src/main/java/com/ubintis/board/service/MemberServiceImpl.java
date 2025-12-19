@@ -204,6 +204,16 @@ public class MemberServiceImpl implements MemberService {
 		// TODO Auto-generated method stub
 		return mapper.getDormantUserById(userId);
 	}
+
+	@Override
+	@Transactional
+	public void activateDormantUser(String userId) {
+		UserVO userVO = mapper.getDormantUserById(userId);
+		
+		mapper.ActivateDormantUser(userVO);
+		mapper.migrateDormantUser(userId);
+		
+	}
 	
 	
 

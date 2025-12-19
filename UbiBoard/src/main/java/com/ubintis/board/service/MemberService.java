@@ -32,5 +32,7 @@ public interface MemberService {
 
 	public UserVO getDormantUserById(String userId);
 
+	public void activateDormantUser(String userId);
+
 	
 }

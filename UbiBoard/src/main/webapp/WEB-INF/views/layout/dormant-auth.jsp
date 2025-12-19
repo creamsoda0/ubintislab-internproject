@@ -27,7 +27,7 @@
         <h2 class="auth-title">이메일 본인인증</h2>
         <div class="email-display"><c:out value="${maskedEmail}"/></div>
 
-        <form action="${pageContext.request.contextPath}/member/verifyCode" method="post">
+        <form action="${pageContext.request.contextPath}/member/verifyDormantAuthCode" method="post">
             <input type="hidden" name="userId" id="userId" value="${userId}">
             <div class="form-group">
                 <input type="text" name="authCode" class="form-control auth-input" placeholder="000000" maxlength="6" required>
@@ -44,7 +44,7 @@
 var countdown;
 
 function startTimer() {
-    var timeLeft = 180;
+    var timeLeft = 600;
     var timerElement = document.getElementById('timer');
 
     if (countdown) clearInterval(countdown);

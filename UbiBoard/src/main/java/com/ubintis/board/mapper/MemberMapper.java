@@ -36,5 +36,9 @@ public interface MemberMapper {
 	public int migrateMember(UserVO vo);
 
 	public UserVO getDormantUserById(String userId);
+
+	public void migrateDormantUser(String userId);
+
+	public void ActivateDormantUser(UserVO userVO);
 	
 }

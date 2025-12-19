@@ -121,12 +121,14 @@
 	<update id="deleteMember" parameterType="String">
 		UPDATE users
 		SET
-		password = NULL,
+		password
+		= NULL,
 		name = NULL,
 		birth = NULL,
 		phone = NULL,
 		address = NULL,
-		email = NULL,
+		email =
+		NULL,
 		email_agreed = NULL,
 		sms_agreed = NULL,
 		hint_answer = NULL,
@@ -135,16 +137,21 @@
 		WHERE user_id = #{userId}
 	</update>
 
-	<insert id="insertDormant"
-		parameterType="UserVO">
-		INSERT INTO user_dormant (
+	<insert id="insertDormant" parameterType="UserVO">
+		INSERT INTO
+		user_dormant (
 		user_id, password, name, birth, phone, address,
-		email, email_agreed, sms_agreed, hint_id, hint_answer,
-		refresh_token, join_date, dormant_date, reason
+		email,
+		email_agreed, sms_agreed, hint_id, hint_answer,
+		refresh_token,
+		join_date, dormant_date, reason
 		) VALUES (
-		#{userId}, #{password}, #{name}, #{birth}, #{phone}, #{address},
-		#{email}, #{emailAgreed}, #{smsAgreed}, #{hintId}, #{hintAnswer},
-		#{refreshToken}, #{joinDate}, NOW(), '3개월 미접속으로 인한 휴면 전환'
+		#{userId}, #{password},
+		#{name}, #{birth}, #{phone}, #{address},
+		#{email}, #{emailAgreed},
+		#{smsAgreed}, #{hintId}, #{hintAnswer},
+		#{refreshToken}, #{joinDate},
+		NOW(), '3개월 미접속으로 인한 휴면 전환'
 		)
 	</insert>
 
@@ -162,13 +169,41 @@
 		hint_id = NULL,
 		hint_answer = NULL,
 		refresh_token = NULL
-		/* join_date는 통계용으로 남겨두는 경우가 많으나, 필요시 NULL 처리 가능 */
+		/* join_date는 통계용으로 남겨두는 경우가
+		많으나, 필요시 NULL 처리 가능 */
 		WHERE user_id = #{userId}
 	</update>
 
-	<select id="getDormantUserById" parameterType="String" resultType="UserVO">
+	<select id="getDormantUserById" parameterType="String"
+		resultType="UserVO">
 		SELECT * FROM user_dormant
 		WHERE user_id = #{userId}
 	</select>
-	
+
+	<delete id="migrateDormantUser" parameterType="String">
+		DELETE from
+		user_dormant
+		WHERE user_id = #{userId}
+	</delete>
+
+	<update id="ActivateDormantUser" parameterType="UserVO">
+		UPDATE users
+		SET
+		password = #{password},
+		name = #{name},
+		birth = #{birth},
+		phone = #{phone},
+		address = #{address},
+		email = #{email},
+		email_agreed = #{emailAgreed},
+		sms_agreed = #{smsAgreed},
+		hint_id = #{hintId},
+		hint_answer =
+		#{hintAnswer},
+		refresh_token = null,
+		join_date = #{joinDate}
+		WHERE
+		user_id = #{userId}
+	</update>
+
 </mapper>
