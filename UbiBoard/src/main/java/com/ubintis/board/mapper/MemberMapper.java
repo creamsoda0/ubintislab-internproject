@@ -40,5 +40,11 @@ public interface MemberMapper {
 	public void migrateDormantUser(String userId);
 
 	public void ActivateDormantUser(UserVO userVO);
+
+	public void resetFailCount(String userId);
+
+	public int increaseFailCount(String userId);
+
+	public int getFailCount(String userId);
 	
 }

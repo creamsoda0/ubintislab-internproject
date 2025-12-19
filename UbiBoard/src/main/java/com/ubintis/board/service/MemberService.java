@@ -34,5 +34,9 @@ public interface MemberService {
 
 	public void activateDormantUser(String userId);
 
+	public void resetFailCount(String userId);
+
+	public int increaseFailCount(String userId);
+
 	
 }

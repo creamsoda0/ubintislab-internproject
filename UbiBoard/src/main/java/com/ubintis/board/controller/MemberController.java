@@ -75,82 +75,101 @@ public class MemberController {
 		return cnt; // 0ÀÌ¸é »ç¿ë °¡´É, 1ÀÌ¸é Áßº¹
 	}
 
-	// È¸¿ø°¡ÀÔ½Ã È¸¿øÁ¤º¸ DB Àü¼Û ÄÁÆ®·Ñ·¯
 	@RequestMapping(value = "/joinProcess", method = RequestMethod.POST)
 	public ModelAndView joinProcess(UserVO userVO, HttpServletRequest request) {
-		ModelAndView mav = new ModelAndView();
-		String userIp = request.getRemoteAddr();
-		mav.setViewName("layout/join-success");
+	    ModelAndView mav = new ModelAndView();
+	    String userIp = request.getRemoteAddr();
+	    
+	    // ±âº» ÀÌµ¿ °æ·Î¸¦ °¡ÀÔ ÆûÀ¸·Î ¼³Á¤ (½ÇÆĞ ½Ã ´ëºñ)
+	    // forward ½Ã¿¡´Â redirect: Å°¿öµå ¾øÀÌ JSP °æ·Î¸¸ Àû½À´Ï´Ù.
+	    mav.setViewName("layout/join-form"); 
 
-		mav.setViewName("redirect:/member/joinForm");
-		// ¾ÆÀÌµğ Á¤±Ô½Ä Ã¼Å© (¿µ¹® ¼Ò¹®ÀÚ/¼ıÀÚ, 5~20ÀÚ)
-		String idRegex = "^[a-z0-9]{5,20}$";
-		if (!Pattern.matches(idRegex, userVO.getUserId())) {
-			// °Ë»ç ½ÇÆĞ ½Ã: ´Ù½Ã È¸¿ø°¡ÀÔ ÆäÀÌÁö·Î µ¹·Áº¸³¿
-			mav.addObject("msg", "Àß¸øµÈ Á¢±ÙÀÔ´Ï´Ù. ¾ÆÀÌµğ´Â ¿µ¹® ¼Ò¹®ÀÚ¿Í ¼ıÀÚ¸¸ °¡´ÉÇÕ´Ï´Ù.");
-			mav.setViewName("redirect:/member/joinForm");
-			return mav; // È¸¿ø°¡ÀÔ jsp °æ·Î (forward)
-		}
+	    // ¾ÆÀÌµğ Á¤±Ô½Ä (¿µ¹® ¼Ò¹®ÀÚ/¼ıÀÚ, 5~20ÀÚ)
+	    String idRegex = "^[a-z0-9]{5,20}$";
+	    if (!Pattern.matches(idRegex, userVO.getUserId())) {
+	        mav.addObject("msg", "¾ÆÀÌµğ´Â ¿µ¹® ¼Ò¹®ÀÚ¿Í ¼ıÀÚ¸¸ °¡´ÉÇÕ´Ï´Ù (5~20ÀÚ).");
+	        return mav; 
+	    }
 
-		// ºñ¹Ğ¹øÈ£ Á¤±Ô½Ä Ã¼Å© (9~25ÀÚ, ¿µ¹®+¼ıÀÚ+Æ¯¼ö¹®ÀÚ)
-		String pwRegex = "^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{9,25}$";
-		if (!Pattern.matches(pwRegex, userVO.getPassword())) {
-			mav.addObject("msg", "Àß¸øµÈ Á¢±ÙÀÔ´Ï´Ù. ºñ¹Ğ¹øÈ£ º¸¾È ±ÔÄ¢À» ÁöÄÑÁÖ¼¼¿ä.");
-			mav.setViewName("redirect:/member/joinForm");
-			return mav;
-		}
+	    // ºñ¹Ğ¹øÈ£ Á¤±Ô½Ä (9~25ÀÚ, ¿µ¹®+¼ıÀÚ+Æ¯¼ö¹®ÀÚ)
+	    String pwRegex = "^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{9,25}$";
+	    if (!Pattern.matches(pwRegex, userVO.getPassword())) {
+	        mav.addObject("msg", "ºñ¹Ğ¹øÈ£ º¸¾È ±ÔÄ¢À» ÁöÄÑÁÖ¼¼¿ä (¿µ¹®,¼ıÀÚ,Æ¯¼ö¹®ÀÚ Æ÷ÇÔ 9~25ÀÚ).");
+	        return mav;
+	    }
 
-		// ÀÌ¸§ÀÌ³ª ÀÌ¸ŞÀÏµµ ÇÊ¿äÇÏ´Ù¸é ¿©±â¼­ °Ë»ç
-		String nameRegex = "^[°¡-ÆRa-zA-Z]{2,20}$";
+	    // ÀÌ¸§ Á¤±Ô½Ä
+	    String nameRegex = "^[°¡-ÆRa-zA-Z]{2,20}$";
+	    if (!Pattern.matches(nameRegex, userVO.getName())) {
+	        mav.addObject("msg", "ÀÌ¸§Àº ÇÑ±Û ¶Ç´Â ¿µ¹®À¸·Î 2~20ÀÚ ÀÌ³»¿©¾ß ÇÕ´Ï´Ù.");
+	        return mav;
+	    }
 
-		if (!Pattern.matches(nameRegex, userVO.getName())) {
-			mav.addObject("msg", "ÀÌ¸§Àº ÇÑ±Û ¶Ç´Â ¿µ¹®À¸·Î 2~20ÀÚ ÀÌ³»¿©¾ß ÇÕ´Ï´Ù. (Æ¯¼ö¹®ÀÚ, ¼ıÀÚ, °ø¹é ºÒ°¡)");
-			mav.setViewName("member/joinPage"); // redirect°¡ ¾Æ´Ï¶ó forward·Î º¸³»¾ß msg°¡ ¶å´Ï´Ù
-			return mav;
-		}
-		// ÀÌ¸ŞÀÏ Á¤±Ô½Ä°Ë»ç
-		if (!Pattern.matches(nameRegex, userVO.getEmailId())) {
-			mav.addObject("msg", "ÀÌ¸ŞÀÏ Çü½ÄÀÌ Àß¸øµÇ¾ú½À´Ï´Ù. (Æ¯¼ö¹®ÀÚ, ¼ıÀÚ, °ø¹é ºÒ°¡)");
-			mav.setViewName("member/joinPage"); // redirect°¡ ¾Æ´Ï¶ó forward·Î º¸³»¾ß msg°¡ ¶å´Ï´Ù
-			return mav;
-		}
-		if (!Pattern.matches(nameRegex, userVO.getEmailDomain())) {
-			mav.addObject("msg", "ÀÌ¸ŞÀÏ Çü½ÄÀÌ Àß¸øµÇ¾ú½À´Ï´Ù. (Æ¯¼ö¹®ÀÚ, ¼ıÀÚ, °ø¹é ºÒ°¡)");
-			mav.setViewName("member/joinPage"); // redirect°¡ ¾Æ´Ï¶ó forward·Î º¸³»¾ß msg°¡ ¶å´Ï´Ù
-			return mav;
-		}
+	    // ÀÌ¸ŞÀÏ ¾ÆÀÌµğ/µµ¸ŞÀÎ Á¤±Ô½Ä (¼ıÀÚ ¹× ÇÏÀÌÇÂ µî Çã¿ë)
+	    String emailIdRegex = "^[a-zA-Z0-9]{2,40}$";
+	    String emailDomainRegex = "^[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,10}$";
 
-		// email ³ª´²Áø°Å ÇÕÄ¡´Â ·ÎÁ÷
-		if (userVO.getEmailId() != null && !userVO.getEmailId().isEmpty() && userVO.getEmailDomain() != null
-				&& !userVO.getEmailDomain().isEmpty()) {
-			String fullEmail = userVO.getEmailId() + "@" + userVO.getEmailDomain();
-			userVO.setEmail(fullEmail); // ÇÕÄ£ °ªÀ» VOÀÇ email º¯¼ö¿¡ ÀúÀå
-		}
+	    if (!Pattern.matches(emailIdRegex, userVO.getEmailId())) {
+	        mav.addObject("msg", "ÀÌ¸ŞÀÏ ¾ÆÀÌµğ Çü½ÄÀÌ Àß¸øµÇ¾ú½À´Ï´Ù.");
+	        return mav;
+	    }
+	    if (!Pattern.matches(emailDomainRegex, userVO.getEmailDomain())) {
+	        mav.addObject("msg", "ÀÌ¸ŞÀÏ µµ¸ŞÀÎ Çü½ÄÀÌ Àß¸øµÇ¾ú½À´Ï´Ù.");
+	        return mav;
+	    }
 
-		String fullAddress = "";
+	 // ÁÖ¼Ò °ËÁõ (±âº»ÁÖ¼Ò ¹× »ó¼¼ÁÖ¼Ò)
+	    if (userVO.getZipCode() == null || userVO.getZipCode().isEmpty() || 
+	        userVO.getAddr1() == null || userVO.getAddr1().isEmpty()) {
+	        mav.addObject("msg", "ÁÖ¼Ò °Ë»öÀ» ÅëÇØ ±âº» ÁÖ¼Ò¸¦ ÀÔ·ÂÇØÁÖ¼¼¿ä.");
+	        return mav; // forward ¹æ½ÄÀ¸·Î ÀÔ·Â°ª À¯Áö
+	    }
 
-		// ¿ìÆí¹øÈ£°¡ ÀÖ´Â °æ¿ì¿¡¸¸ °ıÈ£¿Í ÇÔ²² Ãß°¡
-		if (userVO.getZipCode() != null && !userVO.getZipCode().isEmpty()) {
-			fullAddress += "(" + userVO.getZipCode() + ") ";
-		}
-		if (userVO.getAddr1() != null) {
-			fullAddress += userVO.getAddr1();
-		}
-		if (userVO.getAddr2() != null && !userVO.getAddr2().isEmpty()) {
-			fullAddress += " " + userVO.getAddr2();
-		}
-		// ÇÕÄ£ ÁÖ¼Ò¸¦ VOÀÇ address º¯¼ö¿¡ ÀúÀå
-		userVO.setAddress(fullAddress);
-		// ÇöÀç ½Ã°£ ¹İ¿µ
-		userVO.setJoinDate(new Date());
+	    String addr2 = (userVO.getAddr2() != null) ? userVO.getAddr2().trim() : "";
 
-		memberService.insertMember(userVO);
+	    // »ó¼¼ÁÖ¼Ò ÇÊ¼ö ÀÔ·Â Ã¼Å©
+	    if (addr2.isEmpty()) {
+	        mav.addObject("msg", "»ó¼¼ ÁÖ¼Ò¸¦ ÀÔ·ÂÇØÁÖ¼¼¿ä.");
+	        return mav;
+	    }
 
-		logService.saveLog(userVO.getUserId(), "JOIN", "È¸¿ø°¡ÀÔ ¼º°ø", userIp);
+	    // »ó¼¼ÁÖ¼Ò Á¤±Ô½Ä °Ë»ç (º¸¾È: ÇÑ±Û, ¿µ¹®, ¼ıÀÚ, °ø¹é, (), - . , ¸¸ Çã¿ë)
+	    // Java¿¡¼­´Â ¹é½½·¡½Ã(\)¸¦ µÎ ¹ø(\\) ½á¾ß ÇÕ´Ï´Ù.
+	    String addr2Regex = "^[°¡-ÆRa-zA-Z0-9\\s\\(\\)\\-\\.,]*$";
+	    if (!Pattern.matches(addr2Regex, addr2)) {
+	        mav.addObject("msg", "»ó¼¼ ÁÖ¼Ò¿¡ Çã¿ëµÇÁö ¾Ê´Â Æ¯¼ö¹®ÀÚ°¡ Æ÷ÇÔµÇ¾î ÀÖ½À´Ï´Ù.");
+	        return mav;
+	    }
 
-		return mav;
+	    // »ó¼¼ÁÖ¼Ò ±æÀÌ Ã¼Å© (DB ÄÃ·³ Å©±â¿¡ ¸ÂÃã)
+	    if (addr2.length() > 100) {
+	        mav.addObject("msg", "»ó¼¼ ÁÖ¼Ò´Â 100ÀÚ ÀÌ³»·Î ÀÔ·ÂÇØÁÖ¼¼¿ä.");
+	        return mav;
+	    }
+    
+	    // --- µ¥ÀÌÅÍ °¡°ø ·ÎÁ÷ (ÀÌÇÏ µ¿ÀÏ) ---
+	    if (userVO.getEmailId() != null && !userVO.getEmailId().isEmpty()) {
+	        userVO.setEmail(userVO.getEmailId() + "@" + userVO.getEmailDomain());
+	    }
+
+	    // ÁÖ¼Ò ÇÕÄ¡±â
+	    String fullAddress = "";
+	    if (userVO.getZipCode() != null && !userVO.getZipCode().isEmpty()) {
+	        fullAddress += "(" + userVO.getZipCode() + ") ";
+	    }
+	    userVO.setAddress(fullAddress + userVO.getAddr1() + " " + userVO.getAddr2());
+	    userVO.setJoinDate(new Date());
+
+	    // DB ÀúÀå ¹× ·Î±×
+	    memberService.insertMember(userVO);
+	    logService.saveLog(userVO.getUserId(), "JOIN", "È¸¿ø°¡ÀÔ ¼º°ø", userIp);
+
+	    // ¼º°ø ½Ã¿¡¸¸ ¼º°ø ÆäÀÌÁö·Î ÀÌµ¿
+	    mav.setViewName("layout/join-success"); 
+	    return mav;
 	}
-
+	
+	
 	@RequestMapping(value = "/goLoginPage")
 	public ModelAndView goLoginPage() {
 		ModelAndView mav = new ModelAndView();
@@ -159,40 +178,82 @@ public class MemberController {
 		return mav;
 	}
 
-	@RequestMapping(value = "/loginProcess")
-	public ModelAndView loginProcess(UserVO userVO, HttpSession session, HttpServletRequest request) {
-		ModelAndView mav = new ModelAndView();
-		String userIp = request.getRemoteAddr(); // IP ÃßÃâ
+	@RequestMapping(value = "/loginProcess", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseEntity<Map<String, Object>> loginProcess(
+	        @RequestParam("userId") String userId,  
+	        @RequestParam("password") String password,  
+	        HttpSession session,  
+	        HttpServletRequest request) {
 
-	    // 1. ¼­ºñ½º¿¡¼­ »ç¿ëÀÚ Á¶È¸ (¾ÆÀÌµğ Á¸Àç ¿©ºÎ È®ÀÎ)
-	    UserVO loginUser = memberService.login(userVO);
+	    Map<String, Object> result = new HashMap<>();
+	    String userIp = request.getRemoteAddr();
 
-	    // 2. ·Î±×ÀÎ ½ÇÆĞ Ã³¸® (°´Ã¼°¡ nullÀÎ °æ¿ì)
-	    if (loginUser == null) {
-	        logService.saveLog(userVO.getUserId(), "LOGIN", "·Î±×ÀÎ ½ÇÆĞ: ¾ÆÀÌµğ ¶Ç´Â ºñ¹Ğ¹øÈ£ ºÒÀÏÄ¡", userIp);
-	        mav.addObject("msg", "¾ÆÀÌµğ ¶Ç´Â ºñ¹Ğ¹øÈ£°¡ ÀÏÄ¡ÇÏÁö ¾Ê½À´Ï´Ù.");
-	        mav.setViewName("/layout/login-page");
-	        return mav;
+	    try {
+	        // ¾ÆÀÌµğ·Î »ç¿ëÀÚ Á¤º¸ ¸ÕÀú °¡Á®¿À±â
+	        UserVO loginUser = memberService.getMember(userId);
+
+	        // µî·ÏµÇÁö ¾ÊÀº ¾ÆÀÌµğ
+	        if (loginUser == null) {
+	            logService.saveLog(userId, "LOGIN_FAIL", "¾ÆÀÌµğ Á¸ÀçÇÏÁö ¾ÊÀ½", userIp);
+	            result.put("message", "µî·ÏµÇÁö ¾ÊÀº °èÁ¤ÀÔ´Ï´Ù.");
+	            return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
+	        }
+
+	        // °èÁ¤ Àá±İ Ã¼Å© (ºñ¹Ğ¹øÈ£ 5È¸ ½ÇÆĞ µî)
+	        if (loginUser.getLoginFail() >= 5) {
+	            logService.saveLog(userId, "LOGIN_BLOCK", "Àá±ä °èÁ¤ Á¢¼Ó ½Ãµµ", userIp);
+	            result.put("message", "ºñ¹Ğ¹øÈ£ 5È¸ ¿À·ù·Î ÀÎÇØ °èÁ¤ÀÌ Àá°ÜÀÖ½À´Ï´Ù.");
+	            return new ResponseEntity<>(result, HttpStatus.FORBIDDEN);
+	        }
+
+	        // ºñ¹Ğ¹øÈ£ °ËÁõ (DB Á¶È¸ ¶Ç´Â BCrypt matches)
+	        // loginUser °´Ã¼¿¡ ´ã±ä Á¤º¸¿Í ÀÔ·Â¹ŞÀº password¸¦ ºñ±³
+	        // memberService.login¿¡¼­ ºñ¹Ğ¹øÈ£°¡ ¸ÂÀ¸¸é °´Ã¼ ¹İÈ¯, Æ²¸®¸é null ¹İÈ¯ °¡Á¤
+	        loginUser.setPassword(password);
+	        UserVO authUser = memberService.login(loginUser); 
+
+	        if (authUser != null) {
+	            // [¼º°ø ÀıÂ÷ ½ÃÀÛ]
+	            
+	            // ºñ¹Ğ¹øÈ£´Â ¸ÂÁö¸¸ ÈŞ¸é °èÁ¤ÀÎ °æ¿ì Ã¼Å©
+	            if (authUser.getDormantId() != null && authUser.getDormantId() != 0) {
+	                logService.saveLog(userId, "DORMANT_ACCESS", "ÈŞ¸é °èÁ¤ Á¢¼Ó ½Ãµµ", userIp);
+	                result.put("message", "ÈŞ¸é »óÅÂÀÎ °èÁ¤ÀÔ´Ï´Ù. ¾È³» ÆäÀÌÁö·Î ÀÌµ¿ÇÕ´Ï´Ù.");
+	                result.put("status", "DORMANT"); 
+	                return new ResponseEntity<>(result, HttpStatus.OK); 
+	            }
+
+	            // ·Î±×ÀÎ ¼º°ø Ã³¸® (ÀÏ¹İ °èÁ¤)
+	            session.setAttribute("loginUser", authUser);
+	            memberService.resetFailCount(userId); // ½ÇÆĞ È½¼ö 0À¸·Î ÃÊ±âÈ­
+	            logService.saveLog(userId, "LOGIN", "·Î±×ÀÎ ¼º°ø", userIp);
+	            
+	            result.put("message", "·Î±×ÀÎ ¼º°ø");
+	            return new ResponseEntity<>(result, HttpStatus.OK);
+
+	        } else {
+	            // ºñ¹Ğ¹øÈ£ ºÒÀÏÄ¡
+	            int currentFailCount = memberService.increaseFailCount(userId); 
+	            
+	            if (currentFailCount >= 5) {
+	                logService.saveLog(userId, "LOGIN_LOCK", "ºñ¹Ğ¹øÈ£ 5È¸ ¿À·ù·Î °èÁ¤ Àá±İ", userIp);
+	                result.put("message", "ºñ¹Ğ¹øÈ£ 5È¸ ¿À·ù·Î °èÁ¤ÀÌ Àá°å½À´Ï´Ù.");
+	                return new ResponseEntity<>(result, HttpStatus.FORBIDDEN);
+	            } else {
+	                logService.saveLog(userId, "LOGIN_FAIL", "ºñ¹Ğ¹øÈ£ ºÒÀÏÄ¡ (" + currentFailCount + "È¸)", userIp);
+	                result.put("message", "¾ÆÀÌµğ ¶Ç´Â ºñ¹Ğ¹øÈ£°¡ ¸ÂÁö ¾Ê½À´Ï´Ù. (½ÇÆĞ È½¼ö: " + currentFailCount + "/5)");
+	                return new ResponseEntity<>(result, HttpStatus.UNAUTHORIZED);
+	            }
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        result.put("message", "¼­¹ö ³»ºÎ ¿À·ù°¡ ¹ß»ıÇß½À´Ï´Ù.");
+	        return new ResponseEntity<>(result, HttpStatus.INTERNAL_SERVER_ERROR);
 	    }
-
-	    // 3. ÈŞ¸é °èÁ¤ Ã¼Å© (ÀÌÀü ´ëÈ­¿¡¼­ ¸»¾¸ÇÏ½Å 'ID ¿Ü ÇÊµå°¡ null'ÀÎ °æ¿ì ¶Ç´Â dormantId Á¸Àç ¿©ºÎ)
-	    // Integer Å¸ÀÔÀÏ °æ¿ì null Ã¼Å©¸¦ ÇØ¾ß ÇÕ´Ï´Ù.
-	    if (loginUser.getDormantId() != null && loginUser.getDormantId() != 0) {
-	        logService.saveLog(loginUser.getUserId(), "DORMANT_ACCESS", "ÈŞ¸é °èÁ¤ Á¢¼Ó ½Ãµµ", userIp);
-	        mav.addObject("dormantUserId", loginUser.getUserId()); // ¾È³» ÆäÀÌÁö¿¡ ¾ÆÀÌµğ Àü´Ş
-	        mav.addObject("reason", loginUser.getReason());
-	        mav.addObject("dormantDate", loginUser.getDormantDate());
-	        mav.setViewName("/layout/dormant-notice");
-	        return mav;
-	    }
-	    
-	    // 4. Á¤»ó ·Î±×ÀÎ ¼º°ø Ã³¸®
-	    session.setAttribute("loginUser", loginUser);
-	    logService.saveLog(loginUser.getUserId(), "LOGIN", "·Î±×ÀÎ ¼º°ø", userIp);
-	    mav.setViewName("redirect:/goMain");
-	    
-		return mav;
 	}
+	
 	// ÈŞ¸é°èÁ¤ÀüÈ¯À» À§ÇÑ ÀÌ¸ŞÀÏ ÀÎÁõÄÚµå ÀÚµ¿ º¸³»±â
 	@RequestMapping("/goActivateUser")
 	public ModelAndView goActivateUser (@RequestParam("userId") String userId,

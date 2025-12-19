@@ -10,6 +10,20 @@
 		COUNT(*) FROM users
 		WHERE user_id = #{userId}
 	</select>
+	
+	<update id="resetFailCount" parameterType="String">
+	UPDATE users
+	SET login_fail = 0 WHERE user_id = #{userId}
+	</update>
+	
+	<update id="increaseFailCount" parameterType="String">
+	UPDATE users
+	SET login_fail = login_fail + 1 WHERE user_id = #{userId}
+	</update>
+	
+	<select id="getFailCount" parameterType="String" resultType="int">
+	SELECT login_fail FROM users WHERE user_id = #{userId}
+	</select>
 
 	<select id="getUserList" resultType="UserVO">
 		SELECT *
@@ -25,7 +39,11 @@
 		email,
 		email_agreed,
 		sms_agreed,
-		hint_id, hint_answer, join_date
+		hint_id, 
+		hint_answer, 
+		join_date,
+		login_fail,
+		last_agreement
 		) VALUES (
 		#{userId},
 		#{password}, #{name}, #{birth},
@@ -34,7 +52,11 @@
 		#{email},
 		#{emailAgreed},
 		#{smsAgreed},
-		#{hintId}, #{hintAnswer}, #{joinDate} )
+		#{hintId}, 
+		#{hintAnswer}, 
+		#{joinDate},
+		0,
+		NOW())
 	</insert>
 
 	<select id="getMemberById" parameterType="String"
@@ -121,19 +143,19 @@
 	<update id="deleteMember" parameterType="String">
 		UPDATE users
 		SET
-		password
-		= NULL,
+		password = NULL,
 		name = NULL,
 		birth = NULL,
 		phone = NULL,
 		address = NULL,
-		email =
-		NULL,
+		email = NULL,
 		email_agreed = NULL,
 		sms_agreed = NULL,
 		hint_answer = NULL,
 		refresh_token = NULL,
-		join_date = NOW()
+		join_date = NOW(),
+		login_fail = NULL,
+		last_agreement = NULL
 		WHERE user_id = #{userId}
 	</update>
 
@@ -198,12 +220,14 @@
 		email_agreed = #{emailAgreed},
 		sms_agreed = #{smsAgreed},
 		hint_id = #{hintId},
-		hint_answer =
-		#{hintAnswer},
+		hint_answer = #{hintAnswer},
 		refresh_token = null,
-		join_date = #{joinDate}
+		join_date = #{joinDate},
+		login_fail = 0
 		WHERE
 		user_id = #{userId}
 	</update>
+
+	
 
 </mapper>

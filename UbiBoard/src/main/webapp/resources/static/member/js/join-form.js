@@ -51,7 +51,7 @@ $(document).ready(function(){
 
         if(!pwReg.test(pw)) {
             // 조건 불만족
-            $msg.text("비밀번호 규칙에 맞지 않습니다 (9자 이상, 영문/숫자/특수문자).");
+            $msg.text("비밀번호 규칙에 맞지 않습니다 (9자 이상/25자 이하, 영문/숫자/특수문자).");
             $msg.removeClass("success-msg"); // 초록색 제거
         } else {
             // 조건 만족
@@ -145,19 +145,94 @@ function checkForm() {
         f.name.focus();
         return false;
     }
+    
+    // 7-1. 이름 정규식 검사
+    // 한글(가-힣)과 영문(a-z, A-Z)만 허용, 2~20자
+    var nameReg = /^[가-힣a-zA-Z]{2,20}$/;
+    if (!nameReg.test(f.name.value)) {
+        alert("이름은 한글 또는 영문으로 2~20자 이내로 입력해주세요.\n(숫자나 특수문자, 공백은 사용할 수 없습니다.)");
+        f.name.focus();
+        return false;
+    }
 
-    // 8. 전화번호 입력 확인
-    if(f.phone.value.trim() == "") {
+	// 8. 휴대전화 번호 입력 확인 및 정규식 검사
+    var phoneValue = f.phone.value.trim();
+    if(phoneValue == "") {
         alert("휴대전화 번호를 입력해주세요.");
         f.phone.focus();
         return false;
     }
+
+    // 휴대전화 정규식: 01x-xxxx-xxxx 형식 (하이픈 필수)
+    var phoneReg = /^01(?:0|1|[6-9])-(?:\d{3}|\d{4})-\d{4}$/;
     
-    // 9. 추가 이메일 입력확인
-    // 이메일 유효성 및 길이 검사
-    if(f.emailId.value.trim() == "") {
-        alert("이메일을 입력해주세요.");
+    if (!phoneReg.test(phoneValue)) {
+        alert("올바른 휴대전화 번호 형식이 아닙니다.\n(예: 010-1234-5678)");
+        f.phone.focus();
+        return false;
+    }
+    
+// 9. 이메일 입력 및 유효성 검사
+    var emailId = f.emailId.value.trim();
+    var emailDomain = f.emailDomain.value.trim();
+
+    if(emailId == "") {
+        alert("이메일 아이디를 입력해주세요.");
         f.emailId.focus();
+        return false;
+    }
+    if(emailDomain == "") {
+        alert("이메일 도메인을 입력해주세요.");
+        f.emailDomain.focus();
+        return false;
+    }
+
+    // 전체 이메일 조합
+    var fullEmail = emailId + "@" + emailDomain;
+
+    // 이메일 정규식: 영문, 숫자, 특수문자(._%+- ) @ 영문, 숫자, 점(.) 포함 도메인 . 2자 이상 국가코드
+    var emailReg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+    if(!emailReg.test(fullEmail)) {
+        alert("올바르지 않은 이메일 형식입니다.\n(한글이나 허용되지 않은 특수문자는 사용할 수 없습니다.)");
+        f.emailId.focus();
+        return false;
+    }
+
+    // 길이 제한 체크 (DB 컬럼 크기에 맞춤)
+    if(fullEmail.length > 50) {
+        alert("이메일 주소가 너무 깁니다. 합쳐서 50자 이내로 입력해주세요.");
+        f.emailId.focus();
+        return false;
+    }
+    
+    // 10. 주소 입력 확인 (우편번호/기본주소)
+    if(f.zipCode.value == "" || f.addr1.value == "") {
+        alert("주소 검색을 통해 주소를 입력해주세요.");
+        return false;
+    }
+
+    // 11. 상세 주소 검증
+    var addr2Value = f.addr2.value.trim();
+    if(addr2Value == "") {
+        alert("상세 주소를 입력해주세요.");
+        f.addr2.focus();
+        return false;
+    }
+
+    // 상세 주소 정규식: 한글, 영문, 숫자, 공백, 특수문자(- ( ) , .) 허용
+    // < > script 등 보안에 취약한 문자를 원천 차단하기 위함입니다.
+    var addr2Reg = /^[가-힣a-zA-Z0-9\s\(\)\-\.,]*$/;
+    if(!addr2Reg.test(addr2Value)) {
+        alert("상세 주소에 허용되지 않는 특수문자가 포함되어 있습니다.");
+        f.addr2.focus();
+        return false;
+    }
+
+    // 길이 제한 (DB 컬럼 크기에 맞춰 조절, 보통 100자)
+    if(addr2Value.length > 100) {
+        alert("상세 주소가 너무 깁니다. 100자 이내로 입력해주세요.");
+        f.addr2.focus();
         return false;
     }
     

@@ -19,6 +19,8 @@ public class UserVO {
 	private String hintAnswer;
 	private String refreshToken;
 	private Date joinDate;
+	private int loginFail;
+	private Date lastAgreement;
 	
 	
 	// 아래는 프론트에만 있는 값
@@ -164,6 +166,18 @@ public class UserVO {
 	}
 	public void setDormantDate(Date dormantDate) {
 		this.dormantDate = dormantDate;
+	}
+	public int getLoginFail() {
+		return loginFail;
+	}
+	public void setLoginFail(int loginFail) {
+		this.loginFail = loginFail;
+	}
+	public Date getLastAgreement() {
+		return lastAgreement;
+	}
+	public void setLastAgreement(Date lastAgreement) {
+		this.lastAgreement = lastAgreement;
 	}
 	
 	

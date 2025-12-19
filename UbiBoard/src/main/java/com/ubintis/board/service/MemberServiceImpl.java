@@ -86,24 +86,34 @@ public class MemberServiceImpl implements MemberService {
 
 	@Override
 	public UserVO login(UserVO userVO) {
-		
-		
-		// 아이디로 회원 정보 꺼내오기
-	    UserVO dbUser = mapper.getMemberById(userVO.getUserId());
+	    // 먼저 입력받은 아이디 자체를 변수에 담아둡니다 (NPE 방지)
+	    String inputId = userVO.getUserId();
+	    String inputPw = userVO.getPassword();
+
+	    // 일반 회원 테이블에서 조회
+	    UserVO dbUser = mapper.getMemberById(inputId);
 	    
-	    // 일치하는 아이디가 있는지, 그리고 비밀번호가 맞는지 확인
 	    if (dbUser != null) {
-	        // 비밀번호 비교 
-	        if (passwordEncoder.matches(userVO.getPassword(), dbUser.getPassword())) {
-	            return dbUser; // 로그인 성공 시 회원 정보 리턴
+	        // 일반 회원에 존재할 경우 비밀번호 검증
+	        if (passwordEncoder.matches(inputPw, dbUser.getPassword())) {
+	            return dbUser; // 로그인 성공
+	        }
+	        // 비밀번호가 틀렸다면 여기서 더 진행하지 않고 null 반환 (또는 실패 처리)
+	        return null; 
+	    }
+
+	    // 일반 회원에 없다면 휴면 계정 테이블에서 조회
+	    // 이때 dbUser.getUserId()가 아니라 처음에 받아온 inputId를 써야 안전합니다.
+	    UserVO dormantVO = mapper.getDormantUserById(inputId);
+	    if (dormantVO != null) {
+	        // 휴면 계정의 경우 비밀번호 일치 여부는 보통 안내 페이지 이동 후 판단하거나
+	        // 여기서 바로 체크할 수도 있습니다. (프로젝트 정책에 따라)
+	        if (passwordEncoder.matches(inputPw, dormantVO.getPassword())) {
+	             return dormantVO; // 휴면 계정으로 로그인 성공 (컨트롤러에서 분기 처리됨)
 	        }
 	    }
-	    UserVO dormantVO = mapper.getDormantUserById(dbUser.getUserId());
-	    if (dormantVO != null) {
-	    	return dormantVO;
-	    }
 	    
-	    return null; // 실패 시 null 리턴
+	    return null; // 어디에도 없거나 비번이 틀린 경우
 	}
 
 	@Override
@@ -213,6 +223,20 @@ public class MemberServiceImpl implements MemberService {
 		mapper.ActivateDormantUser(userVO);
 		mapper.migrateDormantUser(userId);
 		
+	}
+
+	@Override
+	public void resetFailCount(String userId) {
+		// TODO Auto-generated method stub
+		mapper.resetFailCount(userId);
+	}
+
+	@Override
+	public int increaseFailCount(String userId) {
+		// TODO Auto-generated method stub
+		mapper.increaseFailCount(userId);
+		
+		return mapper.getFailCount(userId);
 	}
 	
 	

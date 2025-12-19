@@ -1,226 +1,162 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+
 
 <c:set var="contextPath" value="${pageContext.request.contextPath}" />
 
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<title>로그인 | 유비앤티스랩</title>
+
+<link
+	href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap"
+	rel="stylesheet">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/static/member/css/login-page.css">
+
+<script>
+
+$(document).ready(function() {
+    // 엔터키 입력 시 로그인 실행
+    $("#password, #userId").on("keypress", function(e) {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            loginCheck();
+        }
+    });
+});
+
+/**
+ * 상태 메시지 표시 함수
+ * @param type: 'error', 'warning', 'lock' (CSS 클래스와 매칭)
+ * @param message: 표시할 텍스트
+ */
+function showStatus(type, message) {
+    var $msgBox = $('#statusMsg');
+    var $msgText = $msgBox.find('.msg-text');
     
-    <title>로그인 | 유비앤티스랩</title>
+    // 기존 클래스 제거 후 새 타입 추가
+    $msgBox.removeClass('error warning lock').addClass(type);
+    $msgText.html(message); // HTML로 삽입하여 링크 태그 동작 허용
+    
+    $msgBox.stop().hide().fadeIn(300); // 부드러운 애니메이션 효과
+}
 
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+function loginCheck() {
+    var userId = $("#userId").val().trim();
+    var password = $("#password").val().trim();
+    var $msgBox = $('#statusMsg');
 
-    <style>
-        /* =========================================
-           로그인 페이지 전용 스타일 (UBNTIS Style)
-           ========================================= */
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        
-        body {
-            font-family: 'Noto Sans KR', sans-serif;
-            background-color: #f4f6f9; /* 차분한 배경색 */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            color: #333;
-        }
+    // 1. 미입력 체크
+    if (userId == "" || password == "") {
+        showStatus('warning', '아이디와 비밀번호를 모두 입력해주세요.');
+        if(userId == "") $("#userId").focus();
+        else $("#password").focus();
+        return false;
+    }
 
-        /* 로그인 컨테이너 (카드) */
-        .login-wrapper {
-            width: 100%;
-            max-width: 420px;
-            padding: 20px;
-        }
+    // 2. 로그인 버튼 비활성화 (중복 클릭 방지)
+    var $btn = $(".btn-login");
+    $btn.prop("disabled", true).text("로그인 중...");
 
-        .login-card {
-            background: #fff;
-            padding: 50px 40px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05); /* 부드러운 그림자 */
-            text-align: center;
-        }
-
-        /* 로고 영역 */
-        .logo-area { margin-bottom: 40px; }
-        .logo-area h1 {
-            font-size: 28px;
-            font-weight: 700;
-            color: #2c3e50; /* 다크 네이비 */
-            letter-spacing: -0.5px;
-        }
-        .logo-area p {
-            margin-top: 10px;
-            font-size: 14px;
-            color: #888;
-        }
-        /* 로고 이미지가 있을 경우 아래 주석 해제하여 사용 */
-        /* .logo-img { max-width: 180px; height: auto; } */
-
-        /* 폼 영역 */
-        .login-form .input-group { margin-bottom: 15px; text-align: left; }
-        .login-form label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            color: #555;
-        }
-        .login-form input[type="text"],
-        .login-form input[type="password"] {
-            width: 100%;
-            height: 48px;
-            padding: 0 15px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 15px;
-            transition: all 0.2s;
-            background-color: #fafafa;
-        }
-        .login-form input:focus {
-            border-color: #2c3e50;
-            background-color: #fff;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
-        }
-
-        /* 에러 메시지 */
-        .error-msg {
-            background-color: #ffebee;
-            color: #d32f2f;
-            font-size: 13px;
-            padding: 10px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-            text-align: center;
-            font-weight: 500;
-        }
-
-        /* 로그인 버튼 */
-        .btn-login {
-            width: 100%;
-            height: 50px;
-            margin-top: 10px;
-            background-color: #2c3e50; /* 회사 테마 컬러 (Navy) */
-            color: #fff;
-            font-size: 16px;
-            font-weight: 700;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        .btn-login:hover { background-color: #1a252f; }
-
-        /* 하단 링크 (회원가입/찾기) */
-        .login-links {
-            margin-top: 25px;
-            display: flex;
-            justify-content: center;
-            gap: 15px; /* 간격 */
-            font-size: 13px;
-            color: #888;
-        }
-        .login-links a {
-            text-decoration: none;
-            color: #666;
-            transition: color 0.2s;
-        }
-        .login-links a:hover { color: #2c3e50; text-decoration: underline; }
-        .login-links span { color: #ddd; } /* 구분선 */
-
-        /* 하단 카피라이트 */
-        .footer-copy {
-            margin-top: 40px;
-            font-size: 12px;
-            color: #aaa;
-            text-align: center;
-        }
-    </style>
-
-    <script>
-        function loginCheck() {
-            var id = document.getElementById("userId");
-            var pw = document.getElementById("password");
-
-            if (id.value.trim() == "") {
-                alert("아이디를 입력해주세요.");
-                id.focus();
-                return false;
-            }
-            if (pw.value.trim() == "") {
-                alert("비밀번호를 입력해주세요.");
-                pw.focus();
-                return false;
-            }
+    // 3. AJAX 로그인 요청
+    $.ajax({
+        url: "${pageContext.request.contextPath}/member/loginProcess",
+        type: "POST",
+        data: {
+            userId: userId,
+            password: password
+        },
+        dataType: "json", // 서버에서 JSON 응답을 기대함
+        success: function(response) {
+            // 로그인 성공 시 메인 페이지로 이동
+            location.href = "${pageContext.request.contextPath}/goMain";
+        },
+        error: function(xhr) {
+            $btn.prop("disabled", false).text("로그인"); // 버튼 복구
             
-            // 폼 전송
-            document.getElementById("loginForm").submit();
-        }
+            var status = xhr.status;
+            var response = xhr.responseJSON;
+            var message = (response && response.message) ? response.message : "로그인 중 오류가 발생했습니다.";
 
-        // 엔터키 입력 시 로그인 실행
-        document.addEventListener("DOMContentLoaded", function() {
-            var inputPw = document.getElementById("password");
-            inputPw.addEventListener("keypress", function(event) {
-                if (event.key === "Enter") {
-                    event.preventDefault();
-                    loginCheck();
-                }
-            });
-        });
-    </script>
+            if (status === 404) {
+                // 케이스: 등록되지 않은 계정
+                showStatus('error', '⚠️ ' + message);
+                $("#userId").focus();
+            } 
+            else if (status === 401) {
+                // 케이스: 아이디/비번 불일치 (실패 횟수 포함)
+                showStatus('error', '❌ ' + message);
+                $("#password").val("").focus();
+            } 
+            else if (status === 403) {
+                // 케이스: 계정 잠김 (잠금 해제 링크 포함)
+                var unlockLink = '<a href="${pageContext.request.contextPath}/member/unlockAuth" class="unlock-link">잠금해제(이메일 인증)</a>';
+                showStatus('lock', '🔒 ' + message + unlockLink);
+            } 
+            else {
+                showStatus('error', '🚫 서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+            }
+        }
+    });
+}
+</script>
+
 </head>
 <body>
 
-    <div class="login-wrapper">
-        <div class="login-card">
-            
-            <div class="logo-area">
-                <%-- <img src="${contextPath}/static/member/img/logo_ubntis.png" alt="UBNTIS LAB" class="logo-img"> --%>
-                
-                <h1>UBNTIS LAB</h1>
-                <p>유비앤티스랩 서비스 이용을 환영합니다.</p>
-            </div>
+	<div class="login-wrapper">
+		<div class="login-card">
 
-            <form id="loginForm" name="loginForm" action="${contextPath}/member/loginProcess" method="post" class="login-form">
-                
-                <c:if test="${not empty msg}">
-                    <div class="error-msg">
-                        ⚠️ ${msg}
-                    </div>
-                </c:if>
+			<div class="logo-area">
+				<h1>UBNTIS LAB</h1>
+				<p>유비앤티스랩 서비스 이용을 환영합니다.</p>
+			</div>
 
-                <div class="input-group">
-                    <label for="userId">아이디</label>
-                    <input type="text" id="userId" name="userId" placeholder="아이디를 입력하세요" autocomplete="off" />
-                </div>
+			<form id="loginForm" name="loginForm" onsubmit="return false;"
+				class="login-form">
 
-                <div class="input-group">
-                    <label for="password">비밀번호</label>
-                    <input type="password" id="password" name="password" placeholder="비밀번호를 입력하세요" />
-                </div>
+				<div id="statusMsg" class="status-msg-box" style="display: none;">
+					<span class="msg-icon"></span> <span class="msg-text"></span>
+				</div>
 
-                <button type="button" class="btn-login" onclick="loginCheck()">로그인</button>
-            </form>
+				<div class="input-group">
+					<label for="userId">아이디</label>
+					<div class="input-wrapper">
+						<i class="icon-user"></i> <input type="text" id="userId"
+							name="userId" placeholder="아이디를 입력하세요" autocomplete="off" />
+					</div>
+				</div>
 
-            <div class="login-links">
-                <a href="${contextPath}/member/join">회원가입</a>
-                <span>|</span>
-                <a href="${contextPath}/member/goFindId">아이디 찾기</a>
-                <span>|</span>
-                <a href="${contextPath}/member/goFindPw">비밀번호 재발급</a>
-            </div>
+				<div class="input-group">
+					<label for="password">비밀번호</label>
+					<div class="input-wrapper">
+						<i class="icon-lock"></i> <input type="password" id="password"
+							name="password" placeholder="비밀번호를 입력하세요" />
+					</div>
+				</div>
 
-        </div>
+				<button type="button" class="btn-login" onclick="loginCheck()">로그인</button>
+			</form>
 
-        <div class="footer-copy">
-            &copy; UBNTIS LAB Corp. All Rights Reserved.
-        </div>
-    </div>
+			<div class="login-links">
+				<a href="${contextPath}/member/join">회원가입</a> <span class="divider">|</span>
+				<a href="${contextPath}/member/goFindId">아이디 찾기</a> <span
+					class="divider">|</span> <a href="${contextPath}/member/goFindPw">비밀번호
+					재발급</a>
+			</div>
+
+		</div>
+
+		<div class="footer-copy">&copy; 2025 UBNTIS LAB Corp. All Rights
+			Reserved.</div>
+	</div>
 
 </body>
 </html>
