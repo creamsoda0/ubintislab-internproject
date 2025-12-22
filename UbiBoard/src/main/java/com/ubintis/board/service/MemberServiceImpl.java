@@ -250,6 +250,12 @@ public class MemberServiceImpl implements MemberService {
 		// TODO Auto-generated method stub
 		mapper.recoverLoginFail(userId);
 	}
+
+	@Override
+	public void updateLastAgreement(String userId) {
+		// TODO Auto-generated method stub
+		mapper.updateLastAgreement(userId);
+	}
 	
 	
 

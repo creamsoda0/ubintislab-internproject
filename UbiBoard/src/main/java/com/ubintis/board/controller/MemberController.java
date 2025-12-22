@@ -1,5 +1,8 @@
 package com.ubintis.board.controller;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -214,7 +217,7 @@ public class MemberController {
 	        UserVO authUser = memberService.login(loginUser); 
 
 	        if (authUser != null) {
-	            // [성공 절차 시작]
+	            
 	            
 	            // 비밀번호는 맞지만 휴면 계정인 경우 체크
 	            if (authUser.getDormantId() != null && authUser.getDormantId() != 0) {
@@ -223,14 +226,28 @@ public class MemberController {
 	                result.put("status", "DORMANT"); 
 	                return new ResponseEntity<>(result, HttpStatus.OK); 
 	            }
-
+	            // last_agreement 날짜를 조회해서 1년이 넘었으면 re-agree로 넘기는 로직이 들어갈 자리
+	         
+	            LocalDateTime lastAgreed = authUser.getLastAgreement().toInstant()
+	            	    .atZone(ZoneId.systemDefault())
+	            	    .toLocalDateTime();
+	            // 현재시간으로부터 1년전
+	            LocalDateTime oneYearAgo = LocalDateTime.now().minusYears(1);
+	            if (lastAgreed.isBefore(oneYearAgo)) {
+	                result.put("message", "재동의 대상자 입니다.");
+	                result.put("status", "needReAgree");
+	                session.setAttribute("loginUser", authUser);
+	                logService.saveLog(userId, "LOGIN", "로그인 성공", userIp);
+	                session.setAttribute("RE_AGREE_REQUIRED", true);
+	                memberService.resetFailCount(userId); // 실패 횟수 0으로 초기화
+	                return new ResponseEntity<>(result, HttpStatus.OK);
+	            }
+	            
 	            // 로그인 성공 처리 (일반 계정)
 	            session.setAttribute("loginUser", authUser);
 	            memberService.resetFailCount(userId); // 실패 횟수 0으로 초기화
 	            logService.saveLog(userId, "LOGIN", "로그인 성공", userIp);
-	            
-	            
-	            
+	            result.put("status", "success");
 	            result.put("message", "로그인 성공");
 	            return new ResponseEntity<>(result, HttpStatus.OK);
 
@@ -699,5 +716,34 @@ public class MemberController {
 		return mav;
 	}
 	
+	@RequestMapping (value = "/goReAgreePage")
+	public ModelAndView goReAgreePage (HttpSession session) {
+		ModelAndView mav = new ModelAndView();
+		mav.setViewName("/layout/re-agree");
+		return mav;
+	}
+	
+	@RequestMapping (value="/updateReAgree")
+	public ModelAndView updateReAgree (HttpSession session, 
+							HttpServletRequest request) throws Exception {
+		ModelAndView mav = new ModelAndView();
+		String userIp = request.getRemoteAddr();
+		UserVO loginUser = (UserVO) session.getAttribute("loginUser");
+		String userId = loginUser.getUserId();
+		if (loginUser != null) {
+			try {
+				memberService.updateLastAgreement(loginUser.getUserId());
+				loginUser.setLastAgreement(new java.util.Date());
+				logService.saveLog(userId, "RE_AGREE", "약관 재동의 완료", userIp);
+				session.removeAttribute("RE_AGREE_REQUIRED");
+			}catch (Exception e) {
+	            e.printStackTrace();
+	            throw new Exception();
+	            }
+		}
+		
+		mav.setViewName("redirect:/goMain");
+		return mav;
+	}
 	
 }

@@ -42,5 +42,7 @@ public interface MemberService {
 
 	public void recoverLoginFail(String userId);
 
+	public void updateLastAgreement(String userId);
+
 	
 }

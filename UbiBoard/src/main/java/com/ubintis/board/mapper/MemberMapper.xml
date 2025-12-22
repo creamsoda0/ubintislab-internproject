@@ -241,4 +241,11 @@
 	WHERE user_id = #{userId}
 	</update>
 
+	<update id="updateLastAgreement" parameterType="String">
+	UPDATE users
+	SET
+	last_agreement = NOW()
+	WHERE user_id = #{userId}
+	</update>
+	
 </mapper>

@@ -145,7 +145,7 @@ body { font-family: 'Noto Sans KR', sans-serif; background-color: #f9f9f9; color
                 </div>
             </div>
 
-            <div class="terms-item">
+<!--             <div class="terms-item">
                 <div class="terms-header">
                     <label>
                         <input type="checkbox" id="agreeMarketing" class="single-check" name="marketingAgree">
@@ -156,7 +156,7 @@ body { font-family: 'Noto Sans KR', sans-serif; background-color: #f9f9f9; color
                     유비앤티스랩의 새로운 기술 소식 및 이벤트 정보를 이메일로 받아보실 수 있습니다.
                 </div>
             </div>
-
+ -->
             <div class="btn-area">
                 <button type="button" class="btn-main btn-logout" onclick="location.href='${contextPath}/member/logout'">다음에 하기(로그아웃)</button>
                 <button type="button" class="btn-main btn-submit" onclick="submitAgreement()">동의하고 계속하기</button>

@@ -74,9 +74,14 @@ function loginCheck() {
             password: password
         },
         dataType: "json", // 서버에서 JSON 응답을 기대함
-        success: function(response) {
+        success: function(data) {
             // 로그인 성공 시 메인 페이지로 이동
+            if (data.status === "success"){
             location.href = "${pageContext.request.contextPath}/goMain";
+            } else if (data.status === "needReAgree"){
+            	alert("개인정보 이용 재동의가 필요합니다. 동의 페이지로 이동합니다.")
+            	location.href = "${contextPath}/member/goReAgreePage";
+            }
         },
         error: function(xhr) {
             $btn.prop("disabled", false).text("로그인"); // 버튼 복구
