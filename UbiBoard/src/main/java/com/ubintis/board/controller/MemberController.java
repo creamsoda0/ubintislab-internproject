@@ -229,6 +229,8 @@ public class MemberController {
 	            memberService.resetFailCount(userId); // 실패 횟수 0으로 초기화
 	            logService.saveLog(userId, "LOGIN", "로그인 성공", userIp);
 	            
+	            
+	            
 	            result.put("message", "로그인 성공");
 	            return new ResponseEntity<>(result, HttpStatus.OK);
 
@@ -683,15 +685,19 @@ public class MemberController {
 
 	// 로그인 잠금 해제 
 	@RequestMapping(value = "/unlockAccount")
-	public ModelAndView unlockAccount (HttpSession session, UserVO userVO) {
+	public ModelAndView unlockAccount (HttpSession session, UserVO userVO, HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView();
+		String userIp = request.getRemoteAddr();
 		// 보안처리가 필요한 것일까? unlockTargetId==verifiedUserId ?
 		String userId =(String) session.getAttribute("verifiedUserId");
 		userVO.setUserId(userId);
 		memberService.recoverLoginFail(userVO.getUserId());
+		logService.saveLog(userId, "RESTORE LOGIN FAIL", "로그인 잠김해제 성공", userIp);
+		
 		mav.setViewName("/layout/unlock-loginsuccess");
 		
 		return mav;
 	}
+	
 	
 }
