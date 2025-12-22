@@ -11,4 +11,8 @@
         <defender>xssPreventer</defender>
     </default>
 
-    </config>
+    <url-rule>
+        <url>/*</url> <params>
+            <all-check>true</all-check> </params>
+    </url-rule>
+</config>

@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.nhncorp.lucy.security.xss.XssPreventer;
 import com.ubintis.board.service.BoardService;
 import com.ubintis.board.service.MemberService;
 import com.ubintis.board.vo.FileVO;
@@ -58,6 +59,11 @@ public class ClipController {
             @RequestParam(value="uploadFiles", required=false) List<MultipartFile> uploadFiles
     ) {
         String msg = "";
+        
+        vo.setUserId(XssPreventer.escape(vo.getUserId()));
+        vo.setTitle(XssPreventer.escape(vo.getTitle()));
+        vo.setContent(XssPreventer.escape(vo.getContent()));
+        
 
         try {
             UserVO loginUser = (UserVO) session.getAttribute("loginUser");
@@ -262,6 +268,11 @@ public class ClipController {
 	        //삭제할 기존 파일들의 ID 목록
 	        @RequestParam(value = "deleteFileIds", required = false) List<Integer> deleteFileIds
 	) {
+		
+        mainVO.setUserId(XssPreventer.escape(mainVO.getUserId()));
+        mainVO.setTitle(XssPreventer.escape(mainVO.getTitle()));
+        mainVO.setContent(XssPreventer.escape(mainVO.getContent()));
+		
 		try {
             //  로그인 여부 체크
             UserVO loginUser = (UserVO) session.getAttribute("loginUser");
