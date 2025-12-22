@@ -52,7 +52,9 @@
             <mvc:exclude-mapping path="/member/goActivateUser" />
             <mvc:exclude-mapping path="/member/resendAuthCode" />
             <mvc:exclude-mapping path="/member/verifyDormantAuthCode" />
-            
+            <mvc:exclude-mapping path="/member/goUnlockAuth" />
+            <mvc:exclude-mapping path="/member/sendUnlockAuthCode" />
+            <mvc:exclude-mapping path="/member/unlockAccount" />
             <mvc:exclude-mapping path="/static/**" />
             <mvc:exclude-mapping path="/resources/**" />
 

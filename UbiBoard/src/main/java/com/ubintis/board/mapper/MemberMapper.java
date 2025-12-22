@@ -46,5 +46,9 @@ public interface MemberMapper {
 	public int increaseFailCount(String userId);
 
 	public int getFailCount(String userId);
+
+	public UserVO findLoginFailUser(UserVO userVO);
+
+	public void recoverLoginFail(String userId);
 	
 }

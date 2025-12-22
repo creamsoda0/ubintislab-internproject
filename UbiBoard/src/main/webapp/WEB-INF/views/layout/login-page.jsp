@@ -53,7 +53,7 @@ function loginCheck() {
     var password = $("#password").val().trim();
     var $msgBox = $('#statusMsg');
 
-    // 1. 미입력 체크
+    // 미입력 체크
     if (userId == "" || password == "") {
         showStatus('warning', '아이디와 비밀번호를 모두 입력해주세요.');
         if(userId == "") $("#userId").focus();
@@ -61,11 +61,11 @@ function loginCheck() {
         return false;
     }
 
-    // 2. 로그인 버튼 비활성화 (중복 클릭 방지)
+    // 로그인 버튼 비활성화 (중복 클릭 방지)
     var $btn = $(".btn-login");
     $btn.prop("disabled", true).text("로그인 중...");
 
-    // 3. AJAX 로그인 요청
+    // AJAX 로그인 요청
     $.ajax({
         url: "${pageContext.request.contextPath}/member/loginProcess",
         type: "POST",
@@ -97,7 +97,7 @@ function loginCheck() {
             } 
             else if (status === 403) {
                 // 케이스: 계정 잠김 (잠금 해제 링크 포함)
-                var unlockLink = '<a href="${pageContext.request.contextPath}/member/unlockAuth" class="unlock-link">잠금해제(이메일 인증)</a>';
+                var unlockLink = '<a href="${pageContext.request.contextPath}/member/goUnlockAuth" class="unlock-link">잠금해제(이메일 인증)</a>';
                 showStatus('lock', '🔒 ' + message + unlockLink);
             } 
             else {

@@ -38,5 +38,9 @@ public interface MemberService {
 
 	public int increaseFailCount(String userId);
 
+	public UserVO findLoginFailUser(UserVO userVO);
+
+	public void recoverLoginFail(String userId);
+
 	
 }

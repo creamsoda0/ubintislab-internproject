@@ -238,6 +238,18 @@ public class MemberServiceImpl implements MemberService {
 		
 		return mapper.getFailCount(userId);
 	}
+
+	@Override
+	public UserVO findLoginFailUser(UserVO userVO) {
+		// TODO Auto-generated method stub
+		return mapper.findLoginFailUser(userVO);
+	}
+
+	@Override
+	public void recoverLoginFail(String userId) {
+		// TODO Auto-generated method stub
+		mapper.recoverLoginFail(userId);
+	}
 	
 	
 

@@ -640,5 +640,58 @@ public class MemberController {
 		}
 		return mav;
 	}
+	
+	// 로그인 잠금 실패 이메일 인증 페이지로 이동
+	@RequestMapping("/goUnlockAuth")
+	public ModelAndView goUnlockAuth (UserVO userVO) {
+		
+		ModelAndView mav = new ModelAndView();
+		mav.addObject("userVO", userVO);
+		mav.setViewName("/layout/unlock-login");
+		
+		return mav;
+		
+	}
+	
+	// 로그인 잠금 해제 이메일 인증 발송
+	@ResponseBody
+	@RequestMapping(value = "/sendUnlockAuthCode", method = RequestMethod.POST)
+	public ResponseEntity<String> sendUnlockAuthCode(@RequestParam("userId") String userId,
+													@RequestParam("email") String email,
+													UserVO userVO, HttpSession session) {
+		
+		userVO.setUserId(userId);
+		userVO.setEmail(email);
+	    UserVO member = memberService.findLoginFailUser(userVO); 
+	    if (member == null) {
+	        // 해당 정보와 일치하는 유저가 없거나 잠금 상태가 아닐 때
+	        return new ResponseEntity<>("fail_no_user", HttpStatus.NOT_FOUND);
+	    }
+	    try {
+	    	String authcode = memberService.sendAuthCode(userVO.getEmail());
+	        
+	        session.setAttribute("authCode", authcode);
+	        session.setAttribute("unlockTargetId", userVO.getUserId());
+	        session.setMaxInactiveInterval(180); // 3분만 유효
+	        return new ResponseEntity<>("success", HttpStatus.OK);
 
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return new ResponseEntity<>("fail_send", HttpStatus.INTERNAL_SERVER_ERROR);
+	    }
+	}
+
+	// 로그인 잠금 해제 
+	@RequestMapping(value = "/unlockAccount")
+	public ModelAndView unlockAccount (HttpSession session, UserVO userVO) {
+		ModelAndView mav = new ModelAndView();
+		// 보안처리가 필요한 것일까? unlockTargetId==verifiedUserId ?
+		String userId =(String) session.getAttribute("verifiedUserId");
+		userVO.setUserId(userId);
+		memberService.recoverLoginFail(userVO.getUserId());
+		mav.setViewName("/layout/unlock-loginsuccess");
+		
+		return mav;
+	}
+	
 }

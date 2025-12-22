@@ -228,6 +228,17 @@
 		user_id = #{userId}
 	</update>
 
+	<select id="findLoginFailUser" parameterType="UserVO" resultType="UserVO">
+	SELECT * FROM users
+	WHERE user_id = #{userId} AND login_fail >= 5 AND email = #{email}
 	
+	</select>
+	
+	<update id="recoverLoginFail" parameterType="String">
+	UPDATE users
+	SET
+	login_fail = 0
+	WHERE user_id = #{userId}
+	</update>
 
 </mapper>
