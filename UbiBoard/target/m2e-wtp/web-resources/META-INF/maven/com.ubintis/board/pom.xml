@@ -203,6 +203,13 @@
 			<artifactId>spring-security-config</artifactId>
 			<version>5.7.3</version>
 		</dependency>
+		<!-- 로그인 연장 시스템 구축을 위한 의존성 -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-taglibs</artifactId>
+			<version>5.7.3</version>
+		</dependency>
+
 		<!-- multipart/form 파일 업로드 설정 dependency -->
 		<dependency>
 			<groupId>commons-fileupload</groupId>

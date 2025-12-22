@@ -52,5 +52,7 @@ public interface MemberMapper {
 	public void recoverLoginFail(String userId);
 
 	public void updateLastAgreement(String userId);
+
+	public UserVO getUserById(String userId);
 	
 }

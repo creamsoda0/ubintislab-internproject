@@ -1,8 +1,12 @@
 package com.ubintis.board.vo;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 public class UserVO {
 	private String userId;
@@ -38,8 +42,6 @@ public class UserVO {
 	// dormantID,dormantDate, reason
 	private Integer dormantId;
 	private Date dormantDate;
-	
-	
 	
 	public String getUserId() {
 		return userId;
