@@ -39,6 +39,7 @@ public class MemberServiceImpl implements MemberService {
 	}
 	
 	@Override
+	@Transactional
 	public void insertMember(UserVO userVO) {
 		
 		// 아이디가 중복일시 예외 던지는 로직
@@ -70,9 +71,8 @@ public class MemberServiceImpl implements MemberService {
         // 암호화된 비번을 다시 VO에 담아서 DB로 보냄
         userVO.setPassword(encodePw);
         
-        
-
-		mapper.insertMember(userVO);		
+		mapper.insertMember(userVO);
+		mapper.insertUserPolicy(userVO);
 	}
 	
 	/*
@@ -198,14 +198,15 @@ public class MemberServiceImpl implements MemberService {
 
 	    // 이관
 	    // (Service 내부에서 DAO 호출 시 fullInfo와 reason을 적절히 매핑해서 넘김)
-	    fullInfo.setReason(reason); // VO에 reason 필드가 있다고 가정
+	    fullInfo.setWithdrawReason(reason); // VO에 reason 필드가 있다고 가정
 	    int migrateResult = mapper.migrateMember(fullInfo); 
 	    if (migrateResult == 0) throw new Exception("Migration Failed");
 
 	    // 삭제
 	    int dResult = mapper.deleteMember(userVO.getUserId());
-	    if (dResult == 0) throw new Exception("Delete Failed");
-
+	    int uResult = mapper.updateWithDrawUserPolicy(userVO.getUserId(), reason);
+	    if (dResult == 0 && uResult == 0) throw new Exception("Delete Failed");
+	    
 	    return true; // 성공
 	}
 
@@ -222,6 +223,7 @@ public class MemberServiceImpl implements MemberService {
 		
 		mapper.ActivateDormantUser(userVO);
 		mapper.migrateDormantUser(userId);
+		mapper.updateDormantUserPolicy(userId);
 		
 	}
 

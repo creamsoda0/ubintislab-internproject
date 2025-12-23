@@ -32,12 +32,14 @@ public class UserVO {
 	private String emailDomain;
 	
 	// 회원 탈퇴 및 휴면계정 처리시 필요
-	private String reason;
+	private String withdrawDate;
+	private String withdrawReason;
 	
 	// 휴면 계정을 위한 VO값
 	// dormantID,dormantDate, reason
 	private Integer dormantId;
 	private Date dormantDate;
+	private Date dormantReason;
 	
 	
 	
@@ -149,11 +151,11 @@ public class UserVO {
 	public void setEmailDomain(String emailDomain) {
 		this.emailDomain = emailDomain;
 	}
-	public String getReason() {
-		return reason;
+	public String getWithdrawReason() {
+		return withdrawReason;
 	}
-	public void setReason(String reason) {
-		this.reason = reason;
+	public void setWithdrawReason(String withdrawReason) {
+		this.withdrawReason = withdrawReason;
 	}
 	public Integer getDormantId() {
 		return dormantId;
@@ -178,6 +180,18 @@ public class UserVO {
 	}
 	public void setLastAgreement(Date lastAgreement) {
 		this.lastAgreement = lastAgreement;
+	}
+	public Date getDormantReason() {
+		return dormantReason;
+	}
+	public void setDormantReason(Date dormantReason) {
+		this.dormantReason = dormantReason;
+	}
+	public String getWithdrawDate() {
+		return withdrawDate;
+	}
+	public void setWithdrawDate(String withdrawDate) {
+		this.withdrawDate = withdrawDate;
 	}
 	
 	

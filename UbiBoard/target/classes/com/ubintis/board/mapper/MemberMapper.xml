@@ -12,17 +12,17 @@
 	</select>
 	
 	<update id="resetFailCount" parameterType="String">
-	UPDATE users
+	UPDATE user_policy
 	SET login_fail = 0 WHERE user_id = #{userId}
 	</update>
 	
 	<update id="increaseFailCount" parameterType="String">
-	UPDATE users
+	UPDATE user_policy
 	SET login_fail = login_fail + 1 WHERE user_id = #{userId}
 	</update>
 	
 	<select id="getFailCount" parameterType="String" resultType="int">
-	SELECT login_fail FROM users WHERE user_id = #{userId}
+	SELECT login_fail FROM user_policy WHERE user_id = #{userId}
 	</select>
 
 	<select id="getUserList" resultType="UserVO">
@@ -40,10 +40,7 @@
 		email_agreed,
 		sms_agreed,
 		hint_id, 
-		hint_answer, 
-		join_date,
-		login_fail,
-		last_agreement
+		hint_answer 
 		) VALUES (
 		#{userId},
 		#{password}, #{name}, #{birth},
@@ -53,10 +50,31 @@
 		#{emailAgreed},
 		#{smsAgreed},
 		#{hintId}, 
-		#{hintAnswer}, 
-		#{joinDate},
+		#{hintAnswer} 
+		)
+	</insert>
+	
+	<insert id="insertUserPolicy" parameterType="UserVO">
+		INSERT INTO user_policy (
+		user_id,
+		recent_login,
+		last_agreement,
+		join_date,
+		login_fail,
+		dormant_date,
+		dormant_reason,
+		withdraw_date,
+		withdraw_reason
+		) VALUES (
+		#{userId}
+		NULL,
+		NOW(),
+		NOW(),
 		0,
-		NOW())
+		NULL,
+		NULL,
+		NULL,
+		NULL)
 	</insert>
 
 	<select id="getMemberById" parameterType="String"
@@ -118,11 +136,7 @@
 		address,
 		email,
 		email_agreed,
-		sms_agreed,
-		hint_answer,
-		refresh_token,
-		reason,
-		withdraw_date
+		sms_agreed
 		) VALUES (
 		#{userId},
 		#{password},
@@ -132,11 +146,7 @@
 		#{address},
 		#{email},
 		#{emailAgreed},
-		#{smsAgreed},
-		#{hintAnswer},
-		#{refreshToken},
-		#{reason},
-		NOW()
+		#{smsAgreed}
 		)
 	</insert>
 
@@ -151,11 +161,15 @@
 		email = NULL,
 		email_agreed = NULL,
 		sms_agreed = NULL,
-		hint_answer = NULL,
-		refresh_token = NULL,
-		join_date = NOW(),
-		login_fail = NULL,
-		last_agreement = NULL
+		hint_answer = NULL
+		WHERE user_id = #{userId}
+	</update>
+	
+	<update id="updateWithDrawUserPolicy">
+		UPDATE user_policy
+		SET
+		withdraw_date = NOW();
+		withdraw_reason = #{reason}
 		WHERE user_id = #{userId}
 	</update>
 
@@ -165,15 +179,11 @@
 		user_id, password, name, birth, phone, address,
 		email,
 		email_agreed, sms_agreed, hint_id, hint_answer,
-		refresh_token,
-		join_date, dormant_date, reason
 		) VALUES (
 		#{userId}, #{password},
 		#{name}, #{birth}, #{phone}, #{address},
 		#{email}, #{emailAgreed},
-		#{smsAgreed}, #{hintId}, #{hintAnswer},
-		#{refreshToken}, #{joinDate},
-		NOW(), '3개월 미접속으로 인한 휴면 전환'
+		#{smsAgreed}, #{hintId}, #{hintAnswer}
 		)
 	</insert>
 
@@ -190,10 +200,14 @@
 		sms_agreed = 0,
 		hint_id = NULL,
 		hint_answer = NULL,
-		refresh_token = NULL
-		/* join_date는 통계용으로 남겨두는 경우가
-		많으나, 필요시 NULL 처리 가능 */
 		WHERE user_id = #{userId}
+	</update>
+	
+	<update id="updateDormantUserPolicy">
+		UPDATE user_policy
+		SET
+		dormant_date = NOW(),
+		dormant_reason = '3개월 미접속으로 인한 휴면전환'
 	</update>
 
 	<select id="getDormantUserById" parameterType="String"
@@ -221,28 +235,35 @@
 		sms_agreed = #{smsAgreed},
 		hint_id = #{hintId},
 		hint_answer = #{hintAnswer},
-		refresh_token = null,
-		join_date = #{joinDate},
-		login_fail = 0
 		WHERE
 		user_id = #{userId}
 	</update>
+	
+	<update id="updateDormantUserPolicy">
+	UPDATE user_policy
+	SET
+	last_agreement = NOW(),
+	login_fail = 0,
+	dormant_date = NULL,
+	dormant_reason = NULL
+	WHERE user_id = #{userId}
+	</update>
 
 	<select id="findLoginFailUser" parameterType="UserVO" resultType="UserVO">
-	SELECT * FROM users
-	WHERE user_id = #{userId} AND login_fail >= 5 AND email = #{email}
+	SELECT * FROM user_policy
+	WHERE user_id = #{userId} AND login_fail >= 5
 	
 	</select>
 	
 	<update id="recoverLoginFail" parameterType="String">
-	UPDATE users
+	UPDATE user_policy
 	SET
 	login_fail = 0
 	WHERE user_id = #{userId}
 	</update>
 
 	<update id="updateLastAgreement" parameterType="String">
-	UPDATE users
+	UPDATE user_policy
 	SET
 	last_agreement = NOW()
 	WHERE user_id = #{userId}

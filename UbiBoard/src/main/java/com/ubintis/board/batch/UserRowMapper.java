@@ -22,8 +22,7 @@ public class UserRowMapper implements RowMapper<UserVO> {
         user.setSmsAgreed(rs.getInt("sms_agreed"));
         user.setHintId(rs.getInt("hint_id"));
         user.setHintAnswer(rs.getString("hint_answer"));
-        user.setRefreshToken(rs.getString("refresh_token"));
-        user.setJoinDate(rs.getDate("join_date"));
+
         return user;
     }
 }

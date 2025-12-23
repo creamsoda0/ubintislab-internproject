@@ -15,10 +15,7 @@ public class UserWithDrawVO {
 	private int smsAgreed;
 	private int hintId;
 	private String hintAnswer;
-	private String refreshToken;
-	private Date withdrawDate;
-	private Date joinDate;
-	private String reason;
+
 	
 	
 	// joindate 추가해야할 수도 있음.
@@ -94,30 +91,4 @@ public class UserWithDrawVO {
 	public void setHintAnswer(String hintAnswer) {
 		this.hintAnswer = hintAnswer;
 	}
-	public String getRefreshToken() {
-		return refreshToken;
-	}
-	public void setRefreshToken(String refreshToken) {
-		this.refreshToken = refreshToken;
-	}
-	public Date getWithdrawDate() {
-		return withdrawDate;
-	}
-	public void setWithdrawDate(Date withdrawDate) {
-		this.withdrawDate = withdrawDate;
-	}
-	public Date getJoinDate() {
-		return joinDate;
-	}
-	public void setJoinDate(Date joinDate) {
-		this.joinDate = joinDate;
-	}
-	public String getReason() {
-		return reason;
-	}
-	public void setReason(String reason) {
-		this.reason = reason;
-	}
-	
-	
 }

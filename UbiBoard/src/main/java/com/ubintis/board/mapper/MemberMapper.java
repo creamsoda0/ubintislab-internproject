@@ -52,5 +52,11 @@ public interface MemberMapper {
 	public void recoverLoginFail(String userId);
 
 	public void updateLastAgreement(String userId);
+
+	public void updateDormantUserPolicy(String userId);
+
+	public int updateWithDrawUserPolicy(@Param("userId") String userId,@Param("reason") String reason);
+
+	public void insertUserPolicy(UserVO userVO);
 	
 }

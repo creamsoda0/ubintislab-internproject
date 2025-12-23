@@ -39,21 +39,17 @@
     <property name="sql">
         <value>
             <![CDATA[
-            SELECT u.* FROM users u
-            LEFT JOIN (
-                /* 사용자별 가장 최근 로그 기록만 추출 */
-                SELECT user_id, MAX(reg_date) AS last_activity
-                FROM user_log
-                GROUP BY user_id
-            ) l ON u.user_id = l.user_id
-            WHERE u.password IS NOT NULL /* 이미 휴면인 계정 제외 (마스킹된 계정 제외) */
-              AND (
-                  /* 마지막 활동이 3개월 전인 경우 */
-                  l.last_activity < DATE_SUB(NOW(), INTERVAL 3 MONTH)
-                  OR 
-                  /* 활동 기록이 전혀 없는데 가입한 지 3개월이 지난 경우 */
-                  (l.last_activity IS NULL AND u.join_date < DATE_SUB(NOW(), INTERVAL 3 MONTH))
-              )
+SELECT u.user_id
+FROM users u
+JOIN user_policy p ON u.user_id = p.user_id
+WHERE u.password IS NOT NULL  /* 이미 휴면인 계정 제외 */
+  AND (
+      /* 1. 최근 로그인 기록이 3개월 전인 경우 */
+      p.recent_login < DATE_SUB(NOW(), INTERVAL 3 MONTH)
+      OR 
+      /* 2. 로그인 기록이 전혀 없는데 가입한 지 3개월이 지난 경우 */
+      (p.recent_login IS NULL AND p.join_date < DATE_SUB(NOW(), INTERVAL 3 MONTH))
+  );
             ]]>
         </value>
     </property>

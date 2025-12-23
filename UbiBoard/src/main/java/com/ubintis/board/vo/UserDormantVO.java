@@ -20,10 +20,7 @@ public class UserDormantVO {
 	private int smsAggreed;
 	private int hintId;
 	private String hintAnswer;
-	private String refreshToken;
-	private Date joinDate;
-	private Date dormantDate;
-	private String reason;
+
 	public int getDormantId() {
 		return dormantId;
 	}
@@ -96,29 +93,6 @@ public class UserDormantVO {
 	public void setHintAnswer(String hintAnswer) {
 		this.hintAnswer = hintAnswer;
 	}
-	public String getRefreshToken() {
-		return refreshToken;
-	}
-	public void setRefreshToken(String refreshToken) {
-		this.refreshToken = refreshToken;
-	}
-	public Date getJoinDate() {
-		return joinDate;
-	}
-	public void setJoinDate(Date joinDate) {
-		this.joinDate = joinDate;
-	}
-	public Date getDormantDate() {
-		return dormantDate;
-	}
-	public void setDormantDate(Date dormantDate) {
-		this.dormantDate = dormantDate;
-	}
-	public String getReason() {
-		return reason;
-	}
-	public void setReason(String reason) {
-		this.reason = reason;
-	}
+
 	
 }
