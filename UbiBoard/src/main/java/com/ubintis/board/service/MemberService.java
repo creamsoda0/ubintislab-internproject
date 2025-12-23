@@ -2,6 +2,7 @@ package com.ubintis.board.service;
 
 import java.util.List;
 
+import com.ubintis.board.vo.UserPolicyVO;
 import com.ubintis.board.vo.UserVO;
 
 public interface MemberService {
@@ -10,7 +11,7 @@ public interface MemberService {
 
 	public List<UserVO> getUserList();
 
-	public void insertMember(UserVO userVO);
+	public void insertMember(UserVO userVO) throws Exception;
 
 	public UserVO login(UserVO userVO);
 
@@ -43,6 +44,8 @@ public interface MemberService {
 	public void recoverLoginFail(String userId);
 
 	public void updateLastAgreement(String userId);
+
+	public UserPolicyVO getUserPolicyById(String userId);
 
 	
 }

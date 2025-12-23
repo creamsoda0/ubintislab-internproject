@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.ubintis.board.vo.UserDormantVO;
+import com.ubintis.board.vo.UserPolicyVO;
 import com.ubintis.board.vo.UserVO;
 
 @Mapper
@@ -17,7 +18,7 @@ public interface MemberMapper {
 	
 	public List<UserVO> getUserList();
 
-	public void insertMember(UserVO userVO);
+	public int insertMember(UserVO userVO);
 
 	public UserVO getMemberById(String userId);
 
@@ -54,9 +55,17 @@ public interface MemberMapper {
 	public void updateLastAgreement(String userId);
 
 	public void updateDormantUserPolicy(String userId);
+	
+	public void updateDormantToActivateUserPolicy(String userId);
 
 	public int updateWithDrawUserPolicy(@Param("userId") String userId,@Param("reason") String reason);
 
-	public void insertUserPolicy(UserVO userVO);
+	public int insertUserPolicy(UserVO userVO);
+
+	public UserPolicyVO getUserPolicyById(String userId);
+
+	
+	
+	
 	
 }

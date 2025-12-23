@@ -25,6 +25,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.ubintis.board.service.LogService;
 import com.ubintis.board.service.MemberService;
+import com.ubintis.board.vo.UserPolicyVO;
 import com.ubintis.board.vo.UserVO;
 
 @Controller
@@ -79,7 +80,7 @@ public class MemberController {
 	}
 
 	@RequestMapping(value = "/joinProcess", method = RequestMethod.POST)
-	public ModelAndView joinProcess(UserVO userVO, HttpServletRequest request) {
+	public ModelAndView joinProcess(UserVO userVO, HttpServletRequest request) throws Exception {
 	    ModelAndView mav = new ModelAndView();
 	    String userIp = request.getRemoteAddr();
 	    
@@ -231,8 +232,11 @@ public class MemberController {
 	                return new ResponseEntity<>(result, HttpStatus.OK); 
 	            }
 	            // last_agreement 날짜를 조회해서 1년이 넘었으면 re-agree로 넘기는 로직이 들어갈 자리
-	         
-	            LocalDateTime lastAgreed = authUser.getLastAgreement().toInstant()
+	            // 여기서 정책 조회가 들어가야함. 
+	            UserPolicyVO userpolicyVO = memberService.getUserPolicyById(authUser.getUserId());
+	        
+	            
+	            LocalDateTime lastAgreed = userpolicyVO.getLastAgreement().toInstant()
 	            	    .atZone(ZoneId.systemDefault())
 	            	    .toLocalDateTime();
 	            // 현재시간으로부터 1년전

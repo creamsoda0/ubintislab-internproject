@@ -29,6 +29,10 @@
 		SELECT *
 		FROM users
 	</select>
+	
+	<select id="getUserPolicyById" parameterType="UserPolicyVO" resultType="UserPolicyVO">
+	SELECT * FROM user_policy WHERE user_id = #{userId}
+	</select>
 
 	<insert id="insertMember" parameterType="UserVO">
 		INSERT INTO users (
@@ -66,7 +70,7 @@
 		withdraw_date,
 		withdraw_reason
 		) VALUES (
-		#{userId}
+		#{userId},
 		NULL,
 		NOW(),
 		NOW(),
@@ -239,7 +243,7 @@
 		user_id = #{userId}
 	</update>
 	
-	<update id="updateDormantUserPolicy">
+	<update id="updateDormantToActivateUserPolicy">
 	UPDATE user_policy
 	SET
 	last_agreement = NOW(),

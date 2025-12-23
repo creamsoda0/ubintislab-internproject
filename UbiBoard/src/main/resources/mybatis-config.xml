@@ -13,7 +13,8 @@
             <typeAlias alias="PageVO" type="com.ubintis.board.vo.PageVO"/>   
             <typeAlias alias="PagingVO" type="com.ubintis.board.vo.PagingVO"/>   
             <typeAlias alias="FileVO" type="com.ubintis.board.vo.FileVO"/>
-            <typeAlias alias="UserLogVO" type="com.ubintis.board.vo.UserLogVO"/>                  
+            <typeAlias alias="UserLogVO" type="com.ubintis.board.vo.UserLogVO"/>
+            <typeAlias alias="UserLogVO" type="com.ubintis.board.vo.UserPolicyVO"/>                       
         </typeAliases>
 </configuration>
 

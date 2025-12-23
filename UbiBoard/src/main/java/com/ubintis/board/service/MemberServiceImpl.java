@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ubintis.board.mapper.MemberMapper;
 import com.ubintis.board.vo.UserDormantVO;
+import com.ubintis.board.vo.UserPolicyVO;
 import com.ubintis.board.vo.UserVO;
 
 @Service
@@ -40,7 +41,7 @@ public class MemberServiceImpl implements MemberService {
 	
 	@Override
 	@Transactional
-	public void insertMember(UserVO userVO) {
+	public void insertMember(UserVO userVO) throws Exception {
 		
 		// 아이디가 중복일시 예외 던지는 로직
 		int count = mapper.idCheck(userVO.getUserId());
@@ -71,8 +72,12 @@ public class MemberServiceImpl implements MemberService {
         // 암호화된 비번을 다시 VO에 담아서 DB로 보냄
         userVO.setPassword(encodePw);
         
-		mapper.insertMember(userVO);
-		mapper.insertUserPolicy(userVO);
+		int mResult = mapper.insertMember(userVO);
+		int uResult = mapper.insertUserPolicy(userVO);
+		
+		if (mResult==0 && uResult == 0) {
+			throw new Exception ("User Insert Fail");
+		}
 	}
 	
 	/*
@@ -223,7 +228,7 @@ public class MemberServiceImpl implements MemberService {
 		
 		mapper.ActivateDormantUser(userVO);
 		mapper.migrateDormantUser(userId);
-		mapper.updateDormantUserPolicy(userId);
+		mapper.updateDormantToActivateUserPolicy(userId);
 		
 	}
 
@@ -257,6 +262,12 @@ public class MemberServiceImpl implements MemberService {
 	public void updateLastAgreement(String userId) {
 		// TODO Auto-generated method stub
 		mapper.updateLastAgreement(userId);
+	}
+
+	@Override
+	public UserPolicyVO getUserPolicyById(String userId) {
+		// TODO Auto-generated method stub
+		return mapper.getUserPolicyById(userId);
 	}
 	
 	
