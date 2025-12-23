@@ -33,7 +33,7 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
         if (reAgreeRequired != null && reAgreeRequired) {
             String uri = request.getRequestURI();
             
-            // [수정] 재동의 페이지 뿐만 아니라, 동의 처리를 하는 URL(/updateReAgree)도 허용해야 합니다.
+            // 재동의 페이지 뿐만 아니라, 동의 처리를 하는 URL(/updateReAgree)도 허용해야 합니다.
             if (uri.contains("/member/goReAgreePage") || 
                 uri.contains("/member/updateReAgree") || // 이 부분이 핵심!
                 uri.contains("/member/logout")) {

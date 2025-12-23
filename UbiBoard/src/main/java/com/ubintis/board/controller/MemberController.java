@@ -223,8 +223,6 @@ public class MemberController {
 	        UserVO authUser = memberService.login(loginUser); 
 
 	        if (authUser != null) {
-	            
-	            
 	            // 비밀번호는 맞지만 휴면 계정인 경우 체크
 	            if (authUser.getDormantId() != null && authUser.getDormantId() != 0) {
 	                logService.saveLog(userId, "DORMANT_ACCESS", "휴면 계정 접속 시도", userIp);
@@ -450,32 +448,28 @@ public class MemberController {
 	public ResponseEntity<String> sendAuthCode(@RequestParam("name") String name, @RequestParam("email") String email,
 			HttpSession session) {
 
-		// 1. [유효성 검사] 입력값 누락 체크 (서버단 더블 체크)
+		// 입력값 누락 체크 (서버단 더블 체크)
 		if (name == null || name.trim().isEmpty() || email == null || email.trim().isEmpty()) {
 			return new ResponseEntity<>("이름과 이메일을 입력해주세요.", HttpStatus.BAD_REQUEST); // 400
 		}
 
 		try {
-			// 2. [회원 조회] 이메일로 회원 정보 찾기
+			//이메일로 회원 정보 찾기
 			UserVO user = memberService.findUserByEmail(email);
 
-			// 3. [회원 검증] 회원이 없거나, 입력한 '이름'과 DB의 '이름'이 다르면 실패 처리
-			// (기존 코드는 이메일만 있으면 이름을 아무거나 넣어도 통과되는 문제가 있었음)
+			// 회원이 없거나, 입력한 '이름'과 DB의 '이름'이 다르면 실패 처리
 			if (user == null || !user.getName().equals(name)) {
 				return new ResponseEntity<>("일치하는 회원이 없습니다.", HttpStatus.NOT_FOUND); // 404
 			}
 
-			// 4. [메일 발송] 인증코드 생성 및 발송
+			// 인증코드 생성 및 발송
 			String authCode = memberService.sendAuthCode(email);
 
 			if (authCode != null) {
-				// 5. [세션 저장]
+				
 				session.setAttribute("authCode", authCode);
 
-				// [주의] setMaxInactiveInterval은 세션 전체의 수명(로그인 유지 시간 등)을 바꿔버립니다.
-				// 단순히 인증번호 유효시간 체크용이라면, 차라리 '발송시간'을 세션에 같이 저장하는 것이 안전합니다.
-				// 여기서는 일단 기존 로직을 유지하되, 주석으로 남깁니다.
-				session.setMaxInactiveInterval(600); // 3분
+				session.setMaxInactiveInterval(600); 
 
 				return new ResponseEntity<>("success", HttpStatus.OK); // 200
 			} else {
