@@ -86,6 +86,12 @@ public class MemberController {
 	    // 기본 이동 경로를 가입 폼으로 설정 (실패 시 대비)
 	    // forward 시에는 redirect: 키워드 없이 JSP 경로만 적습니다.
 	    mav.setViewName("layout/join-form"); 
+	    
+	    // 아이디 중복확인 재검사
+	    int cnt = memberService.idCheck(userVO.getUserId());
+	    if (cnt >= 1) {
+	    	return mav;
+	    }
 
 	    // 아이디 정규식 (영문 소문자/숫자, 5~20자)
 	    String idRegex = "^[a-z0-9]{5,20}$";
