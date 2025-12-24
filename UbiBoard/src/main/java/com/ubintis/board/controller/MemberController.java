@@ -25,6 +25,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.ubintis.board.service.AdminService;
 import com.ubintis.board.service.LogService;
 import com.ubintis.board.service.MemberService;
+import com.ubintis.board.util.VerifyRecaptcha;
 import com.ubintis.board.vo.SiteConfigVO;
 import com.ubintis.board.vo.UserPolicyVO;
 import com.ubintis.board.vo.UserVO;
@@ -198,14 +199,15 @@ public class MemberController {
 	        @RequestParam("userId") String userId,  
 	        @RequestParam("password") String password,  
 	        HttpSession session,  
-	        HttpServletRequest request) {
+	        HttpServletRequest request,
+	        @RequestParam(value = "g-recaptcha-response", required = false) String recaptchaResponse) {
 
 	    Map<String, Object> result = new HashMap<>();
 	    String userIp = request.getRemoteAddr();
 	    LocalDateTime now = LocalDateTime.now();
 
 	    try {
-	        // 1. 사용자 존재 여부 확인 
+	        // 사용자 존재 여부 확인
 	        UserVO loginUser = memberService.getMember(userId);
 	        if (loginUser == null) {
 	            logService.saveLog(userId, "LOGIN_FAIL", "아이디 존재하지 않음", userIp);
@@ -213,52 +215,67 @@ public class MemberController {
 	            return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
 	        }
 
-	        // 2. 정책 및 설정 정보 로드
+	        // 정책 및 설정 정보 로드
 	        UserPolicyVO policy = memberService.getUserPolicyById(loginUser.getUserId());
 	        SiteConfigVO config = adminService.getSiteConfig();
-	        String tempLockSetting = config.getUseTempLock(); // "on" 또는 null/off
+	        String tempLockSetting = config.getUseTempLock();
+	        int currentFailCount = policy.getLoginFail();
 
-	        // 3. 현재 계정이 잠금 상태인지 확인 
-	        if (policy.getLoginFail() >= 5) {
+	        // 캡차 응답값 확인
+	        System.out.println("DEBUG: 수신된 캡차 응답값 -> " + recaptchaResponse);
+
+	        // 현재 계정이 이미 잠금 상태인지 최우선 확인
+	        if (currentFailCount >= 5) {
 	            if ("on".equals(tempLockSetting) && policy.getUntilLock() != null && now.isBefore(policy.getUntilLock())) {
-	                // 임시 잠금 진행 중
 	                long remainingMin = java.time.Duration.between(now, policy.getUntilLock()).toMinutes() + 1;
-	                result.put("message", "비밀번호 오류로 임시 잠금된 계정입니다. 약 " + remainingMin + "분 후 다시 시도하세요.");
-	                result.put("status", 100);
-	                return new ResponseEntity<>(result, HttpStatus.FORBIDDEN);
+	                result.put("status", 100); 
+	                result.put("failCount", currentFailCount);
+	                result.put("message", "임시 잠금 상태입니다. 약 " + remainingMin + "분 후 다시 시도하세요.");
+	                return ResponseEntity.status(100).body(result);
 	            } else if (!"on".equals(tempLockSetting)) {
-	                // 영구 잠금 상태 (관리자 확인 필요)
+	                result.put("failCount", currentFailCount);
 	                result.put("message", "비밀번호 5회 오류로 계정이 잠겼습니다. 관리자에게 문의하세요.");
 	                return new ResponseEntity<>(result, HttpStatus.FORBIDDEN);
 	            }
 	        }
 
-	        // 4. 비밀번호 검증 시도
+	        // 캡차 검증 (실패 횟수 3회 이상일 때만 수행)
+	        if (currentFailCount >= 3) {
+	            // [주의] 여기서 사용하는 키는 반드시 '비밀 키(Secret Key)'여야 합니다!
+	            boolean isCaptchaValid = VerifyRecaptcha.verify(recaptchaResponse, "6LcWdTUsAAAAADdtUNglHTC5gfZfO-PEqB8wHU2H");
+	            if (!isCaptchaValid) {
+	                result.put("failCount", currentFailCount);
+	                result.put("message", "캡차 인증에 실패했습니다. 다시 시도해주세요.");
+	                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+	            }
+	        }
+
+	        // 비밀번호 검증 시도
 	        loginUser.setPassword(password);
 	        UserVO authUser = memberService.login(loginUser);
 
-	        // --- 로그인 실패 처리 (비밀번호 불일치) ---
 	        if (authUser == null) {
+	            // 로그인 실패 시 처리
 	            int newFailCount = memberService.increaseFailCount(userId);
-	            
+	            result.put("failCount", newFailCount);
+
 	            if (newFailCount >= 5) {
 	                if ("on".equals(tempLockSetting)) {
-	                    memberService.updateUntilLock(userId); // 현재시간 + 5분 설정
-	                    result.put("message", "비밀번호 5회 오류로 5분간 계정이 임시 잠금되었습니다.");
+	                    memberService.updateUntilLock(userId);
+	                    result.put("status", 100);
+	                    result.put("message", "비밀번호 5회 오류로 5분간 임시 잠금되었습니다.");
+	                    return ResponseEntity.status(100).body(result);
 	                } else {
 	                    result.put("message", "비밀번호 5회 오류로 계정이 잠겼습니다.");
+	                    return new ResponseEntity<>(result, HttpStatus.FORBIDDEN);
 	                }
-	                logService.saveLog(userId, "LOGIN_LOCK", "비밀번호 5회 오류로 잠금 적용", userIp);
-	                return new ResponseEntity<>(result, HttpStatus.FORBIDDEN);
 	            }
-	            
-	            logService.saveLog(userId, "LOGIN_FAIL", "비밀번호 불일치 (" + newFailCount + "회)", userIp);
-	            result.put("message", "아이디 또는 비밀번호가 맞지 않습니다. (실패 횟수: " + newFailCount + "/5)");
+	            result.put("message", "아이디 또는 비밀번호가 맞지 않습니다. (" + newFailCount + "/5)");
 	            return new ResponseEntity<>(result, HttpStatus.UNAUTHORIZED);
 	        }
 
-	        // --- 로그인 성공 처리 ---
-	        // 5. 휴면 계정 체크
+	        // 로그인 성공 처리 
+	        // 휴면 계정 체크
 	        if (authUser.getDormantId() != null && authUser.getDormantId() != 0) {
 	            logService.saveLog(userId, "DORMANT_ACCESS", "휴면 계정 접속 시도", userIp);
 	            result.put("status", "DORMANT");
@@ -266,7 +283,7 @@ public class MemberController {
 	            return new ResponseEntity<>(result, HttpStatus.OK);
 	        }
 
-	        // 6. 개인정보 재동의 체크 (1년 주기)
+	        // 개인정보 재동의 체크 (1년 주기)
 	        LocalDateTime lastAgreed = policy.getLastAgreement().toInstant()
 	                .atZone(ZoneId.systemDefault()).toLocalDateTime();
 	        
@@ -279,7 +296,7 @@ public class MemberController {
 	            result.put("message", "로그인 성공");
 	        }
 
-	        // 7. 성공 시 공통 처리 (실패 횟수 초기화, 세션 저장)
+	        // 성공 시 공통 처리 (실패 횟수 초기화, 세션 저장)
 	        memberService.resetFailCount(userId);
 	        session.setAttribute("loginUser", authUser);
 	        logService.saveLog(userId, "LOGIN", "로그인 성공", userIp);

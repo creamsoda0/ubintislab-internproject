@@ -19,7 +19,7 @@
 	href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap"
 	rel="stylesheet">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/static/member/css/login-page.css">
-
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 <script>
 
 $(document).ready(function() {
@@ -61,10 +61,20 @@ function loginCheck() {
         return false;
     }
 
+    var captchaResponse = "";
+    if (typeof grecaptcha !== 'undefined') {
+        captchaResponse = grecaptcha.getResponse();
+    }
+
+    if ($('#captchaContainer').is(':visible') && captchaResponse === "") {
+        showStatus('warning', '🤖 로봇이 아닙니다를 체크해주세요.');
+        return false;
+    }
+    
     // 로그인 버튼 비활성화 (중복 클릭 방지)
     var $btn = $(".btn-login");
     $btn.prop("disabled", true).text("로그인 중...");
-
+   
     // AJAX 로그인 요청
     $.ajax({
         url: "${pageContext.request.contextPath}/member/loginProcess",
@@ -72,6 +82,7 @@ function loginCheck() {
         data: {
             userId: userId,
             password: password
+            "g-recaptcha-response": (typeof grecaptcha !== 'undefined') ? grecaptcha.getResponse() : ""
         },
         dataType: "json", // 서버에서 JSON 응답을 기대함
         success: function(data) {
@@ -92,26 +103,45 @@ function loginCheck() {
             var response = xhr.responseJSON;
             var message = (response && response.message) ? response.message : "로그인 중 오류가 발생했습니다.";
 
-            if (status === 404) {
+ 
+            if (failCount >= 3) {
+                $('#captchaContainer').fadeIn();
+                if (typeof grecaptcha !== 'undefined') {
+                    grecaptcha.reset();
+                }
+            }
+
+            // 2. 상태 코드별 상세 처리
+            if (status === 400) {
+                // 케이스: 캡차 인증 실패
+                showStatus('error', '🤖 ' + message);
+            } 
+            else if (status === 404) {
                 // 케이스: 등록되지 않은 계정
                 showStatus('error', '⚠️ ' + message);
                 $("#userId").focus();
             } 
             else if (status === 401) {
-                // 케이스: 아이디/비번 불일치 (실패 횟수 포함)
+                // 케이스: 아이디/비번 불일치
                 showStatus('error', '❌ ' + message);
                 $("#password").val("").focus();
             } 
             else if (status === 403) {
-                // 케이스: 계정 잠김 (잠금 해제 링크 포함)
+                // 케이스: 영구 계정 잠김 (잠금 해제 링크 포함)
                 var unlockLink = '<a href="${pageContext.request.contextPath}/member/goUnlockAuth" class="unlock-link">잠금해제(이메일 인증)</a>';
-                showStatus('lock', '🔒 ' + message + unlockLink);
-            } else if (status === 100) {
-            	// 케이스 : 계정 임시 잠김 
-            	showStatus('lock', '🔒 ' + message)
-            }
+                showStatus('lock', '🔒 ' + message + '<br>' + unlockLink);
+            } 
+            else if (status === 100) {
+                // 케이스: 계정 임시 잠금 (5분 잠금 등)
+                showStatus('lock', '⏳ ' + message);
+            } 
             else {
                 showStatus('error', '🚫 서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+            }
+            if (xhr.status === 400 || xhr.status === 401) {
+                if (typeof grecaptcha !== 'undefined') {
+                    grecaptcha.reset(); // 실패 시 캡차 초기화 필수
+                }
             }
         }
     });
@@ -153,6 +183,11 @@ function loginCheck() {
 				</div>
 
 				<button type="button" class="btn-login" onclick="loginCheck()">로그인</button>
+				
+				<div id="captchaContainer" style="display: none; margin-bottom: 10px;">
+    				<div class="g-recaptcha" data-sitekey="6LcWdTUsAAAAAOL6qs_MWdBIHangNYKWw6_vnJMX"></div>
+				</div>
+				
 			</form>
 
 			<div class="login-links">
