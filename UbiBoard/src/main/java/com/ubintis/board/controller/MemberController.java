@@ -261,6 +261,7 @@ public class MemberController {
 	            int admin = memberService.selectAdminById(userId);
 	            if (admin >= 1) {
 	            	result.put("status", "admin");
+	            	session.setAttribute("admin", true);
 	            	new ResponseEntity<>(result, HttpStatus.OK);
 	            }
 	            

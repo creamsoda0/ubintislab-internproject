@@ -53,7 +53,7 @@ public class MainController {
 		SiteConfigVO config = adminService.getSiteConfig();
 		
 		int total = boardservice.getTotalCount(paging);
-		paging.setAmount(config.getPostsPerPage());		
+		paging.setAmount(config.getPostsPerPage());		// DB 환경세팅값대로 설정
 		List<MainBoardVO> list = boardservice.getClipList(paging);
 
 		mav.addObject("clipList", list);
