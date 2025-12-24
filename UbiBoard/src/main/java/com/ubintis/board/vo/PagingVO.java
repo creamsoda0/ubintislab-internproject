@@ -1,5 +1,6 @@
 package com.ubintis.board.vo; // 패키지명 확인
 
+
 public class PagingVO {
     private int pageNum = 1;  // 현재 페이지 번호
     private int amount = 10;   // 페이지당 보여줄 개수
