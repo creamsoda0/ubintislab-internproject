@@ -12,7 +12,7 @@
 		UPDATE site_config
 		SET
 		posts_per_page = #{postsPerPage},
-		use_temp_lock = #{useTempLock},
+		use_temp_lock = #{tempLockEnabled},
 		<!-- lock_minutes = #{lockMinutes}, -->
 		session_timeout = #{sessionTimeOut}
 		WHERE config_id = 1

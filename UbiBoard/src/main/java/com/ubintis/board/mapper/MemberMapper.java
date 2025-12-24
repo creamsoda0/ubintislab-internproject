@@ -66,6 +66,8 @@ public interface MemberMapper {
 
 	public int selectAdminById(String userId);
 
+	public void updateUntilLock(String userId);
+
 	
 	
 	

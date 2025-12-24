@@ -106,7 +106,10 @@ function loginCheck() {
                 // 케이스: 계정 잠김 (잠금 해제 링크 포함)
                 var unlockLink = '<a href="${pageContext.request.contextPath}/member/goUnlockAuth" class="unlock-link">잠금해제(이메일 인증)</a>';
                 showStatus('lock', '🔒 ' + message + unlockLink);
-            } 
+            } else if (status === 100) {
+            	// 케이스 : 계정 임시 잠김 
+            	showStatus('lock', '🔒 ' + message)
+            }
             else {
                 showStatus('error', '🚫 서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
             }

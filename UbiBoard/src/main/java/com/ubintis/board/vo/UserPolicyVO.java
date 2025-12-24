@@ -1,5 +1,6 @@
 package com.ubintis.board.vo;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 public class UserPolicyVO {
@@ -14,8 +15,15 @@ public class UserPolicyVO {
 	private String dormantReason;
 	private Date withdrawDate;
 	private String withdrawReason;
+	private LocalDateTime untilLock;
 	
 	
+	public LocalDateTime getUntilLock() {
+		return untilLock;
+	}
+	public void setUntilLock(LocalDateTime untilLock) {
+		this.untilLock = untilLock;
+	}
 	public int getPolicyId() {
 		return policyId;
 	}

@@ -18,7 +18,7 @@
 	
 	<update id="resetFailCount" parameterType="String">
 	UPDATE user_policy
-	SET login_fail = 0 WHERE user_id = #{userId}
+	SET login_fail = 0, until_lock= NULL WHERE user_id = #{userId}
 	</update>
 	
 	<update id="increaseFailCount" parameterType="String">
@@ -85,6 +85,12 @@
 		NULL,
 		NULL)
 	</insert>
+	
+	<update id="updateUntilLock" parameterType="String">
+    UPDATE user_policy 
+    SET until_lock = DATE_ADD(NOW(), INTERVAL 5 MINUTE)
+    WHERE user_id = #{userId}
+	</update>
 
 	<select id="getMemberById" parameterType="String"
 		resultType="UserVO">

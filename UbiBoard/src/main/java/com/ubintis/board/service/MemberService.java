@@ -49,5 +49,7 @@ public interface MemberService {
 
 	public int selectAdminById(String userId);
 
+	public void updateUntilLock(String userId);
+
 	
 }
