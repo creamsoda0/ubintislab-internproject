@@ -120,7 +120,7 @@ function loginCheck() {
 		<div class="login-card">
 
 			<div class="logo-area">
-				<h1>UBNTIS LAB</h1>
+				<h1>UBINTISLAB</h1>
 				<p>유비앤티스랩 서비스 이용을 환영합니다.</p>
 			</div>
 
