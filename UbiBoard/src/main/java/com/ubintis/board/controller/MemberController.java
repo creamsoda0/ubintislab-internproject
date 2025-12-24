@@ -447,6 +447,8 @@ public class MemberController {
 		return mav;
 	}
 
+	
+
 	// 아이디 찾기 구현
 	@RequestMapping("/goFindId")
 	public ModelAndView goFindId() {

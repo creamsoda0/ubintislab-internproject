@@ -55,7 +55,7 @@ public class MainController {
 		int total = boardservice.getTotalCount(paging);
 		paging.setAmount(config.getPostsPerPage());		// DB 환경세팅값대로 설정
 		List<MainBoardVO> list = boardservice.getClipList(paging);
-
+		mav.addObject("config", config);
 		mav.addObject("clipList", list);
 	    mav.addObject("pageMaker", new PageVO(paging, total)); // 페이징 정보 전달
 	    mav.addObject("totalCount", total); // 총 게시물 수 전달

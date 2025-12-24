@@ -18,7 +18,7 @@
                        <%-- 로그인 연장 타이머 (디자인 개선됨) --%>
                         <li class="no-line">
                             <div class="timer-wrap">
-                                <span class="timer-text" id="sessionTimer">30:00</span>
+                                <span class="timer-text" id="sessionTimer">${config.sessionTimeOut}:00</span>
                                 <button type="button" class="btn-extend" onclick="alert('로그인 시간이 연장되었습니다.');">연장</button>
                             </div>
                         </li>
@@ -75,6 +75,58 @@
     </div>
 
 </header>
+
+<script>
+var timerInterval;
+var defaultTimeout= ${config.sessionTimeOut * 60}; // 30분 (1800초)
+var timeLeft = defaultTimeout;
+
+function startTimer() {
+    // 기존 타이머가 있다면 중지
+    if(timerInterval) clearInterval(timerInterval);
+
+    timerInterval = setInterval(function() {
+        var minutes = Math.floor(timeLeft / 60);
+        var seconds = timeLeft % 60;
+        seconds = seconds < 10 ? '0' + seconds : seconds;
+
+        // 화면에 남은 시간 표시
+        document.getElementById('sessionTimer').innerHTML = minutes + ":" + seconds;
+
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            alert("세션이 만료되어 로그아웃됩니다.");
+            location.href = "${pageContext.request.contextPath}/member/logout"; // 로그아웃 처리
+        }
+        timeLeft--;
+    }, 1000);
+}
+
+// [연장] 버튼 클릭 시 실행될 함수
+function extendLogin() {
+    $.ajax({
+        url: "${pageContext.request.contextPath}/admin/extendSession",
+        type: "GET",
+        success: function(data) {
+            if(data === "success") {
+                alert("로그인 시간이 연장되었습니다.");
+                timeLeft = defaultTimeout; // DB에서 온 값으로 리셋
+                startTimer();    // 타이머 재시작
+            }
+        },
+        error: function() {
+            alert("연장에 실패했습니다. 다시 시도해주세요.");
+        }
+    });
+}
+
+// 페이지 로드 시 타이머 시작
+$(document).ready(function() {
+    startTimer();
+});
+
+</script>
+
 
 <%-- 
     [참고] 타이머 스크립트는 common.js 등에 있거나 

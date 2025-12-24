@@ -5,6 +5,8 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.ubintis.board.service.AdminService;
@@ -59,4 +61,16 @@ public class AdminController {
 		
 		return mav;
 	}
+	
+	@RequestMapping(value = "/extendSession", method = RequestMethod.GET)
+	@ResponseBody
+	public String extendSession(HttpSession session) {
+		SiteConfigVO config = adminService.getSiteConfig();
+	    int timeoutMinutes = config.getSessionTimeOut();
+
+		session.setMaxInactiveInterval(timeoutMinutes * 60);
+	    return "success";
+	}
+
+	
 }

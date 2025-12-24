@@ -1,13 +1,22 @@
 package com.ubintis.board.interceptor; // 패키지명은 본인 프로젝트에 맞게 수정
 
+import java.io.PrintWriter;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
+import com.ubintis.board.service.AdminService;
+import com.ubintis.board.vo.SiteConfigVO;
 
 public class LoginInterceptor extends HandlerInterceptorAdapter {
 
+	@Autowired
+	private AdminService adminService;
+	
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
@@ -24,6 +33,8 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
             // [중요] 경로는 본인의 로그인 페이지 URL로 수정하세요
             response.sendRedirect(request.getContextPath() + "/member/goLoginPage");
             
+            response.setContentType("text/html; charset=UTF-8");
+                      
             // 더 이상 컨트롤러로 진입하지 못하게 false 리턴
             return false;
         }
@@ -44,6 +55,14 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
             response.sendRedirect(request.getContextPath() + "/member/goReAgreePage");
             return false;
         }
+        
+     // 1. DB에서 관리자가 설정한 최신 세션 타임아웃 값을 가져옵니다.
+        SiteConfigVO config = adminService.getSiteConfig();
+        int timeoutMinutes = config.getSessionTimeOut();
+
+        // 2. 서버의 세션 만료 시간을 초 단위로 동적 설정합니다.
+        // web.xml의 설정보다 이 코드가 우선순위가 높습니다.
+        session.setMaxInactiveInterval(timeoutMinutes * 60);
         
         // 4. 로그인이 되어 있다면 통과(true)
         return true;
