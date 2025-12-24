@@ -53,6 +53,14 @@ public class MainController {
 		mav.setViewName("layout/default");
 		return mav;
 	}
+	
+	@RequestMapping("/goAdminGateway")
+	public ModelAndView goAdminGateway () {
+		ModelAndView mav = new ModelAndView();
+		mav.setViewName("layout/admin-gateway");
+		
+		return mav;
+	}
 
 	
 }

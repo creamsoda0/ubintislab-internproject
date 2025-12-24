@@ -57,6 +57,7 @@
             <mvc:exclude-mapping path="/member/unlockAccount" />
             <mvc:exclude-mapping path="/static/**" />
             <mvc:exclude-mapping path="/resources/**" />
+            <mvc:exclude-mapping path="/goAdminGateway" />
 
             <bean class="com.ubintis.board.interceptor.LoginInterceptor" />
         </mvc:interceptor>

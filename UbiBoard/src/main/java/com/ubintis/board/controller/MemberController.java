@@ -257,6 +257,13 @@ public class MemberController {
 	            logService.saveLog(userId, "LOGIN", "로그인 성공", userIp);
 	            result.put("status", "success");
 	            result.put("message", "로그인 성공");
+	            
+	            int admin = memberService.selectAdminById(userId);
+	            if (admin >= 1) {
+	            	result.put("status", "admin");
+	            	new ResponseEntity<>(result, HttpStatus.OK);
+	            }
+	            
 	            return new ResponseEntity<>(result, HttpStatus.OK);
 
 	        } else {

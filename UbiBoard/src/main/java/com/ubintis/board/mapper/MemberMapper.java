@@ -64,6 +64,8 @@ public interface MemberMapper {
 
 	public UserPolicyVO getUserPolicyById(String userId);
 
+	public int selectAdminById(String userId);
+
 	
 	
 	

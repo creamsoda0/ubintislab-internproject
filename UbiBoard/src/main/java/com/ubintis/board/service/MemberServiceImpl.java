@@ -269,6 +269,12 @@ public class MemberServiceImpl implements MemberService {
 		// TODO Auto-generated method stub
 		return mapper.getUserPolicyById(userId);
 	}
+
+	@Override
+	public int selectAdminById(String userId) {
+		// TODO Auto-generated method stub
+		return mapper.selectAdminById(userId);
+	}
 	
 	
 

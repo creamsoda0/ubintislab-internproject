@@ -47,5 +47,7 @@ public interface MemberService {
 
 	public UserPolicyVO getUserPolicyById(String userId);
 
+	public int selectAdminById(String userId);
+
 	
 }

@@ -81,6 +81,8 @@ function loginCheck() {
             } else if (data.status === "needReAgree"){
             	alert("개인정보 이용 재동의가 필요합니다. 동의 페이지로 이동합니다.")
             	location.href = "${contextPath}/member/goReAgreePage";
+            } else if (data.status == "admin") {
+            	location.href = "${pageContext.request.contextPath}/goAdminGateway";
             }
         },
         error: function(xhr) {
