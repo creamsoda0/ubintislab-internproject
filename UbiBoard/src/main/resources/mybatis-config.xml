@@ -14,7 +14,8 @@
             <typeAlias alias="PagingVO" type="com.ubintis.board.vo.PagingVO"/>   
             <typeAlias alias="FileVO" type="com.ubintis.board.vo.FileVO"/>
             <typeAlias alias="UserLogVO" type="com.ubintis.board.vo.UserLogVO"/>
-            <typeAlias alias="UserLogVO" type="com.ubintis.board.vo.UserPolicyVO"/>                       
+            <typeAlias alias="UserPolicy" type="com.ubintis.board.vo.UserPolicyVO"/> 
+            <typeAlias alias="SiteConfigVO" type="com.ubintis.board.vo.SiteConfigVO"/>                       
         </typeAliases>
 </configuration>
 

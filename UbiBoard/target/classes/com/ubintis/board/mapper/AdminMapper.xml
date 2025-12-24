@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ubintis.board.mapper.AdminMapper">
+
+	<select id="getSiteConfig" resultType="SiteConfigVO">
+		SELECT * FROM site_config
+	</select>
+
+	<update id="updateSiteConfig" parameterType="SiteConfigVO">
+		UPDATE site_config
+		SET
+		posts_per_page = #{postsPerPage},
+		use_temp_lock = #{useTempLock},
+		<!-- lock_minutes = #{lockMinutes}, -->
+		session_timeout = #{sessionTimeOut}
+		WHERE config_id = 1
+	</update>
+
+</mapper>

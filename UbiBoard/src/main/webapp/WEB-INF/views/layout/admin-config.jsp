@@ -87,10 +87,10 @@
 <div class="admin-wrapper">
     <div class="header">
         <h1>⚙️ 시스템 환경설정</h1>
-        <button onclick="location.href='${pageContext.request.contextPath}/goMain" style="background:none; border:none; color:#858796; cursor:pointer;">🏠 메인으로 돌아가기</button>
+        <button onclick="location.href='${pageContext.request.contextPath}/goMain'" style="background:none; border:none; color:#858796; cursor:pointer;">🏠 메인으로 돌아가기</button>
     </div>
 
-    <form action="updateConfig" method="post">
+    <form action="${pageContext.request.contextPath}/admin/updateConfig" method="post">
         
         <div class="config-section">
             <div class="section-title">🛡️ 로그인 및 보안 정책</div>
@@ -101,7 +101,7 @@
                     <span class="desc">5회 실패 시 영구잠금 대신 5분간 접속을 차단합니다.</span>
                 </div>
                 <label class="switch">
-                    <input type="checkbox" name="temp_lock_enabled" checked>
+                    <input type="checkbox" name="tempLockEnabled" ${config.useTempLock == 'on' ? 'checked' : ''}>
                     <span class="slider"></span>
                 </label>
             </div>
@@ -112,11 +112,11 @@
                     <span class="desc">사용자가 활동이 없을 때 자동 로그아웃되는 시간입니다.</span>
                 </div>
                 <div>
-                    <input type="number" name="session_timeout" class="input-field" value="30"> <span style="font-size:0.9rem;">분</span>
+                    <input type="number" name="sessionTimeOut" class="input-field" value="${config.sessionTimeOut}"> <span style="font-size:0.9rem;">분</span>
                 </div>
             </div>
 
-            <div class="config-row">
+<!--             <div class="config-row">
                 <div class="config-info">
                     <span class="label">강력한 비밀번호 정책</span>
                     <span class="desc">영문, 숫자, 특수문자 조합을 강제합니다.</span>
@@ -125,7 +125,7 @@
                     <input type="checkbox" name="strong_pw_policy">
                     <span class="slider"></span>
                 </label>
-            </div>
+            </div> -->
         </div>
 
         <div class="config-section">
@@ -136,7 +136,7 @@
                     <span class="label">페이지당 게시물 수</span>
                     <span class="desc">목록 한 페이지에 보여줄 게시글의 개수입니다.</span>
                 </div>
-                <input type="number" name="posts_per_page" class="input-field" value="10">
+                <input type="number" name="postsPerPage" class="input-field" value="${config.postsPerPage}">
             </div>
 
 <!--             <div class="config-row">
