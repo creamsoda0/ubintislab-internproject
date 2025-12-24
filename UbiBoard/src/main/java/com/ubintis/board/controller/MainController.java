@@ -2,6 +2,8 @@ package com.ubintis.board.controller;
 
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,10 +11,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.ubintis.board.service.BoardService;
-import com.ubintis.board.util.MaskingUtil;
+import com.ubintis.board.service.MemberService;
 import com.ubintis.board.vo.MainBoardVO;
 import com.ubintis.board.vo.PageVO;
 import com.ubintis.board.vo.PagingVO;
+import com.ubintis.board.vo.UserVO;
 
 
 @Controller
@@ -21,6 +24,7 @@ public class MainController {
 	@Autowired
 	private BoardService boardservice;
 	
+	@Autowired MemberService memberService;
 	
 	@RequestMapping(value = "/default")
 	public ModelAndView loginpage(Model model) {
@@ -55,9 +59,14 @@ public class MainController {
 	}
 	
 	@RequestMapping("/goAdminGateway")
-	public ModelAndView goAdminGateway () {
+	public ModelAndView goAdminGateway (HttpSession session) throws Exception {
 		ModelAndView mav = new ModelAndView();
 		mav.setViewName("layout/admin-gateway");
+		UserVO loginUser = (UserVO) session.getAttribute("loginUser");
+		int count = memberService.selectAdminById(loginUser.getUserId());
+		if (count == 0) {
+			throw new Exception("관리자가 아닙니다.");
+		}
 		
 		return mav;
 	}
