@@ -12,9 +12,9 @@
     <div class="utility-bar">
         <div class="utility-inner">
             <ul class="utility-menu">
-                <c:choose>
+                
                     <%-- [CASE 1] 비로그인 상태 --%>
-                    <c:when test="${sessionScope.admin}">
+                    
                        <%-- 로그인 연장 타이머 (디자인 개선됨) --%>
                         <li class="no-line">
                             <div class="timer-wrap">
@@ -33,30 +33,14 @@
                         
                         <li><a href="${contextPath}/member/memberUpdate">정보수정</a></li>
                         <li class="no-line"><a href="${contextPath}/member/logout">로그아웃</a></li>
+                        
+                        
+                <c:choose>
+                	<c:when test="${sessionScope.admin}">        
                         <li><a href="${contextPath}/admin/goConfig">관리자 페이지</a></li>
                     </c:when>
-
-                    <%-- [CASE 2] 로그인 상태 --%>
-                    <c:otherwise>
-                        <%-- 로그인 연장 타이머 (디자인 개선됨) --%>
-                        <li class="no-line">
-                            <div class="timer-wrap">
-                                <span class="timer-text" id="sessionTimer">30:00</span>
-                                <button type="button" class="btn-extend" onclick="alert('로그인 시간이 연장되었습니다.');">연장</button>
-                            </div>
-                        </li>
-
-                        <%-- 사용자 정보 --%>
-                        <li>
-                            <span class="user-info">
-                                ${sessionScope.loginUser.name}
-                                <span class="user-id">(${sessionScope.loginUser.userId})</span>
-                            </span> 님
-                        </li>
-                        
-                        <li><a href="${contextPath}/member/memberUpdate">정보수정</a></li>
-                        <li class="no-line"><a href="${contextPath}/member/logout">로그아웃</a></li>
-                    </c:otherwise>
+					<c:otherwise>
+					</c:otherwise>
                 </c:choose>
             </ul>
         </div>
