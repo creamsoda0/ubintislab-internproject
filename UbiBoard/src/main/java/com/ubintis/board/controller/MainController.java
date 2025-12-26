@@ -32,15 +32,16 @@ public class MainController {
     private AdminService adminService;
 	
 	@RequestMapping(value = "/default")
-	public ModelAndView loginpage(Model model) {
+	public ModelAndView loginpage(HttpSession session) {
 		
 		ModelAndView mav = new ModelAndView();
+		UserVO loginUser = (UserVO) session.getAttribute("loginUser");
+		boolean isExisted = loginUser != null;
 		
-		//¿¹½Ã
-		/* mav.addObject("userName", "creamsoda"); */
-		
-
-		
+		if (isExisted) {
+			mav.setViewName("redirect:/goMain");
+			return mav;
+		}
 		mav.setViewName("layout/login-page");
 		
 		return mav;
