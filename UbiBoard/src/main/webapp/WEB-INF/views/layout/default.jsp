@@ -42,7 +42,7 @@
                     <option value="content">내용</option>
                     <option value="writer">작성자</option>
                 </select>
-                <input type="text" name="keyword" class="search-input" placeholder="검색어를 입력하세요">
+                <input type="text" name="keyword" class="search-input" placeholder="검색기능 미구현">
                 <button type="submit" class="btn-search">검색</button>
             </form>
         </div>

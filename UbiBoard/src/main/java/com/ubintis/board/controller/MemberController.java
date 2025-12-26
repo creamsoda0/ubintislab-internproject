@@ -283,7 +283,9 @@ public class MemberController {
 	        memberService.resetFailCount(userId);
 	        session.setAttribute("loginUser", authUser);
 	        logService.saveLog(userId, "LOGIN", "로그인 성공", userIp);
-
+	        
+	        session.setAttribute("siteConfig", config);
+	        
 	        // 관리자 권한 확인
 	        if (memberService.selectAdminById(userId) >= 1) {
 	            session.setAttribute("admin", true);

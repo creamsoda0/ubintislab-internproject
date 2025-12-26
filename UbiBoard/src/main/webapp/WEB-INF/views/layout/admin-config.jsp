@@ -85,6 +85,7 @@
 <body>
 
 <div class="admin-wrapper">
+	
     <div class="header">
         <h1>⚙️ 시스템 환경설정</h1>
         <button onclick="location.href='${pageContext.request.contextPath}/goMain'" style="background:none; border:none; color:#858796; cursor:pointer;">🏠 메인으로 돌아가기</button>

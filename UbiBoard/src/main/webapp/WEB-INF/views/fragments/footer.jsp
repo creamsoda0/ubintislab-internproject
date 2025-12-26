@@ -1,10 +1,26 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.time.LocalDate" %>
 
-<footer>
-    <div class="footer_wrap">
-        <div class="copyright_wrap" style="display: flex; justify-content: middle; align-items: middle; height: 100vh;">
-            <p class="f_red" >주의사항 : 개인정보 부정사용과 오·남용 예방을 위하여 개인정보보호 통합모니터링 시스템을 운영하고 있습니다.<br>업무시스템에서 조회하는 모든 개인정보는 업무목적으로만 이용하도록 하며, 관련법 및 규정을 위반할 경우 처벌되니 유의하시기 바랍니다.​</p>
-            <p class="mt10">Copyright (c) Korea Red Cross. All rights reserved.</p>
+<%
+    int currentYear = LocalDate.now().getYear();
+%>
+
+<footer style="background-color: #f8f9fa; padding: 40px 0; border-top: 1px solid #e9ecef; color: #6c757d; font-size: 13px;">
+    <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+        
+        <div class="warning-box" style="background-color: #f0f7ff; color: #055160; padding: 15px; border-radius: 6px; margin-bottom: 20px; text-align: center; border: 1px solid #cff4fc;">
+            <strong style="color: #d63384;">⚠️ 개인정보 보호 주의</strong> : 본 시스템의 모든 정보는 업무 목적으로만 이용해야 하며, 위반 시 관련법에 의해 처벌될 수 있습니다.
+        </div>
+
+        <div class="footer-bottom" style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e9ecef; padding-top: 20px; flex-wrap: wrap; gap: 10px;">
+            
+            <div class="left-info">
+                <span style="font-weight: bold; color: #333; font-size: 14px;">UBINTISLAB</span>
+            </div>
+
+            <div class="copyright">
+                Copyright &copy; <%= currentYear %> UBINTISLAB. All rights reserved.
+            </div>
         </div>
     </div>
 </footer>

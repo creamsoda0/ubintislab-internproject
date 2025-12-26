@@ -18,7 +18,7 @@
                        <%-- 로그인 연장 타이머 (디자인 개선됨) --%>
                         <li class="no-line">
                             <div class="timer-wrap">
-                                <span class="timer-text" id="sessionTimer">${config.sessionTimeOut}:00</span>
+                                <span class="timer-text" id="sessionTimer">${sessionScope.siteConfig.sessionTimeOut}:00</span>
                                 <button type="button" class="btn-extend" onclick="alert('로그인 시간이 연장되었습니다.');">연장</button>
                             </div>
                         </li>
@@ -61,53 +61,105 @@
 </header>
 
 <script>
+// 서버 설정값 가져오기 (초 단위)
+const SESSION_TIMEOUT_SEC = ${sessionScope.siteConfig.sessionTimeOut * 60}; 
+const SESSION_TIMEOUT_MS = SESSION_TIMEOUT_SEC * 1000;
+const KEY_LAST_ACTIVE = 'ubintis_lastActiveTime'; // 프로젝트 고유 키값
+
 var timerInterval;
-var defaultTimeout= ${config.sessionTimeOut * 60}; // 30분 (1800초)
-var timeLeft = defaultTimeout;
 
+
+const SessionManager = {
+ // 현재 시간을 localStorage에 기록 
+ updateLastActive: function() {
+     localStorage.setItem(KEY_LAST_ACTIVE, Date.now().toString());
+ },
+
+ // 저장된 마지막 활동 시간을 가져옴 (없으면 현재 시간)
+ getLastActive: function() {
+     const stored = localStorage.getItem(KEY_LAST_ACTIVE);
+     return stored ? parseInt(stored) : Date.now();
+ }
+};
+
+// 타이머 및 화면 표시 함수
 function startTimer() {
-    // 기존 타이머가 있다면 중지
-    if(timerInterval) clearInterval(timerInterval);
+ // 기존 인터벌 제거
+ if (timerInterval) clearInterval(timerInterval);
 
-    timerInterval = setInterval(function() {
-        var minutes = Math.floor(timeLeft / 60);
-        var seconds = timeLeft % 60;
-        seconds = seconds < 10 ? '0' + seconds : seconds;
+ timerInterval = setInterval(function() {
+     const now = Date.now();
+     const lastActive = SessionManager.getLastActive(); // 다른 탭에서 갱신된 시간도 가져옴
+     
+     // 경과 시간 = 현재시간 - 마지막활동시간
+     const elapsed = now - lastActive;
+     
+     // 남은 시간 계산 = 전체시간 - 경과시간
+     const remainingMS = SESSION_TIMEOUT_MS - elapsed;
+     
+     // 시간이 다 되었을 때
+     if (remainingMS <= 0) {
+         clearInterval(timerInterval);
+         document.getElementById('sessionTimer').innerHTML = "0:00";
+         
+         // 여기서 최종 로그아웃 처리
+         alert("세션이 만료되어 로그아웃됩니다.");
+         location.href = '${pageContext.request.contextPath}/member/logout';
+         return;
+     }
 
-        // 화면에 남은 시간 표시
-        document.getElementById('sessionTimer').innerHTML = minutes + ":" + seconds;
+     const remainingSec = Math.ceil(remainingMS / 1000);
+     
+     const minutes = Math.floor(remainingSec / 60);
+     let seconds = remainingSec % 60;
+     seconds = seconds < 10 ? '0' + seconds : seconds;
 
-        if (timeLeft <= 0) {
-            clearInterval(timerInterval);
-            alert("세션이 만료되어 로그아웃됩니다.");
-            location.href = "${pageContext.request.contextPath}/member/logout"; // 로그아웃 처리
-        }
-        timeLeft--;
-    }, 1000);
+     // 화면에 표시
+     const timerDisplay = document.getElementById('sessionTimer');
+     if(timerDisplay) {
+         timerDisplay.innerHTML = minutes + ":" + seconds;
+     }
+
+ }, 1000); // 1초마다 검사
 }
 
-// [연장] 버튼 클릭 시 실행될 함수
+// 버튼 클릭 시 실행될 함수
 function extendLogin() {
-    $.ajax({
-        url: "${pageContext.request.contextPath}/admin/extendSession",
-        type: "GET",
-        success: function(data) {
-            if(data === "success") {
-                alert("로그인 시간이 연장되었습니다.");
-                timeLeft = defaultTimeout; // DB에서 온 값으로 리셋
-                startTimer();    // 타이머 재시작
-            }
-        },
-        error: function() {
-            alert("연장에 실패했습니다. 다시 시도해주세요.");
-        }
-    });
+ $.ajax({
+     url: "${pageContext.request.contextPath}/admin/extendSession",
+     type: "GET",
+     success: function(data) {
+         if(data === "success") {
+             alert("로그인 시간이 연장되었습니다.");
+             
+             // [중요] localStorage에 현재 시간을 기록
+             // 이렇게 하면 startTimer가 다음 1초 틱에 이걸 감지하고
+             // 알아서 시간을 다시 30:00(설정시간)으로 계산해서 보여줍니다.
+             SessionManager.updateLastActive(); 
+         }
+     },
+     error: function() {
+         alert("연장에 실패했습니다. 다시 시도해주세요.");
+     }
+ });
 }
 
-// 페이지 로드 시 타이머 시작
+//[초기화] 페이지 로드 시 실행
 $(document).ready(function() {
-    startTimer();
+ // 페이지가 처음 열리면 '지금 활동함'으로 기록
+
+ //  보통 새 창을 열면 세션이 갱신되므로 updateLastActive()를 호출하는 게 맞습니다.)
+ SessionManager.updateLastActive();
+ 
+ // 타이머 시작
+ startTimer();
+ 
+ $(document).ajaxComplete(function() {
+     SessionManager.updateLastActive();
+ });
+
 });
+
 
 </script>
 
@@ -115,4 +167,5 @@ $(document).ready(function() {
 <%-- 
     [참고] 타이머 스크립트는 common.js 등에 있거나 
     필요하다면 이 파일 하단에 <script>로 작성해야 작동합니다. 
+    /* location.href = "${pageContext.request.contextPath}/member/logout"; */ // 로그아웃 처리
 --%>

@@ -84,7 +84,7 @@
     </style>
 </head>
 <body>
-
+	
     <div class="gateway-container">
         <a href="${pageContext.request.contextPath}/goMain" class="mode-card">
             <span class="icon">👥</span>
