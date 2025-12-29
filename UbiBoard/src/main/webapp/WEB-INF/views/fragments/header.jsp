@@ -19,7 +19,7 @@
                         <li class="no-line">
                             <div class="timer-wrap">
                                 <span class="timer-text" id="sessionTimer">${sessionScope.siteConfig.sessionTimeOut}:00</span>
-                                <button type="button" class="btn-extend" onclick="alert('로그인 시간이 연장되었습니다.');">연장</button>
+                                <button type="button" class="btn-extend" onclick="extendLogin();">연장</button>
                             </div>
                         </li>
 
