@@ -131,10 +131,6 @@ function extendLogin() {
      success: function(data) {
          if(data === "success") {
              alert("로그인 시간이 연장되었습니다.");
-             
-             // [중요] localStorage에 현재 시간을 기록
-             // 이렇게 하면 startTimer가 다음 1초 틱에 이걸 감지하고
-             // 알아서 시간을 다시 30:00(설정시간)으로 계산해서 보여줍니다.
              SessionManager.updateLastActive(); 
          }
      },
