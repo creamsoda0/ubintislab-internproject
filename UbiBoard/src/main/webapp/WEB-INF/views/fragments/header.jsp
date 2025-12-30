@@ -61,7 +61,7 @@
 </header>
 
 <script>
-// 서버 설정값 가져오기 (초 단위)
+// 서버 설정값 가져오기 
 const SESSION_TIMEOUT_SEC = ${sessionScope.siteConfig.sessionTimeOut * 60}; 
 const SESSION_TIMEOUT_MS = SESSION_TIMEOUT_SEC * 1000;
 const KEY_LAST_ACTIVE = 'ubintis_lastActiveTime'; // 프로젝트 고유 키값
@@ -75,7 +75,7 @@ const SessionManager = {
      localStorage.setItem(KEY_LAST_ACTIVE, Date.now().toString());
  },
 
- // 저장된 마지막 활동 시간을 가져옴 (없으면 현재 시간)
+ // 저장된 마지막 활동 시간을 가져옴 
  getLastActive: function() {
      const stored = localStorage.getItem(KEY_LAST_ACTIVE);
      return stored ? parseInt(stored) : Date.now();

@@ -19,6 +19,6 @@ public class DormantUserWriter implements ItemWriter<UserVO> {
 			sqlSession.insert("com.ubintis.board.mapper.MemberMapper.insertDormant", user);
 			sqlSession.update("com.ubintis.board.mapper.MemberMapper.maskDormantUser", user.getUserId());
 		}
-		System.out.println(items.size() + "명의 계정이 휴면 처리(마스킹) 되었습니다.");
+		System.out.println(items.size() + "명의 계정이 휴면 처리 되었습니다.");
 	}
 }

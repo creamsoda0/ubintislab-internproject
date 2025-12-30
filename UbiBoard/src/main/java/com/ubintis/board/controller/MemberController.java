@@ -512,13 +512,13 @@ public class MemberController {
 	@ResponseBody // 문자열만 반환
 	@RequestMapping("/checkAuthCode")
 	public ResponseEntity<String> checkAuthCode(@RequestParam("inputCode") String inputCode, 
-												@RequestParam("userId") String userId,
+												@RequestParam(value="userId", required=false) String userId ,
 												HttpSession session) {
 
 		String realCode = (String) session.getAttribute("authCode");
 		
 		if (realCode == null) {
-	        return ResponseEntity.status(HttpStatus.GONE) // 410 에러
+	        return ResponseEntity.status(HttpStatus.GONE) 
 	                             .body("인증 시간이 만료되었습니다. 인증번호를 다시 받아주세요.");
 	    }
 
@@ -526,9 +526,9 @@ public class MemberController {
 			session.setAttribute("isPwResetAuthenticated", true);
 			session.setAttribute("verifiedUserId", userId);
 			session.removeAttribute("authCode");
-			return new ResponseEntity<>("success", HttpStatus.OK); // 200
+			return new ResponseEntity<>("success", HttpStatus.OK); 
 		} else {
-			return new ResponseEntity<>("fail", HttpStatus.NOT_FOUND); // 404
+			return new ResponseEntity<>("fail", HttpStatus.NOT_FOUND);
 
 		}
 	}

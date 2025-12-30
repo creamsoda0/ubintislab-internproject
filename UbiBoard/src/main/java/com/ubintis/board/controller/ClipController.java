@@ -51,7 +51,7 @@ public class ClipController {
 		return mav;
 	}
 
-	@ResponseBody // AJAX 통신이므로 필수!
+	@ResponseBody 
     @RequestMapping(value = "/write", method = RequestMethod.POST, produces = "text/plain;charset=UTF-8")
     public String writeClip(
             HttpSession session, 
@@ -91,12 +91,12 @@ public class ClipController {
                         String originalName = file.getOriginalFilename();
                         String ext = originalName.substring(originalName.lastIndexOf(".") + 1).toLowerCase();
                         
-                        // 허용할 확장자 리스트 (화이트리스트 방식)
+                        // 허용할 확장자 리스트
                         if (!ext.matches("jpg|jpeg|png|gif|bmp|pdf|txt|hwp|xlsx|xls|ppt|pptx|doc|docx|zip")) {
                             return "업로드가 불가능한 파일이 포함되어 있습니다. (" + ext + ")";
                         }
                         
-                        // (선택) 파일 크기 제한 (예: 10MB) - 보통 web.xml에서 하지만 여기서도 가능
+                        
                         if (file.getSize() > 10 * 1024 * 1024) { 
                             return "파일 크기는 10MB를 초과할 수 없습니다.";
                         }
@@ -120,44 +120,26 @@ public class ClipController {
 	@RequestMapping("/download")
 	public void download(@RequestParam("filePath") String filePath, HttpServletResponse response) throws Exception {
 
-		// 1. DB에 저장된 경로: "/static/upload/uuid_파일명.jpg"
-		// 우리가 필요한 건 실제 파일명인 "uuid_파일명.jpg" 부분임
-		// 경로에서 파일명만 잘라냄
-		String fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
 
-		// 2. 실제 물리적 파일 경로 (아까 설정한 D드라이브 경로)
-		// 주의: filePath 전체를 쓰는 게 아니라, 폴더 경로 + 파일명을 합쳐야 함
+		String fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
 		String uploadFolder = "D:\\sung-min-upload";
 		File file = new File(uploadFolder, fileName);
-
 		if (!file.exists()) {
 			System.out.println("파일이 존재하지 않습니다.");
 			return;
 		}
-
-		// 3. 다운로드 시 보여줄 "원본 파일명" 만들기 (UUID 제거)
-		// 저장될 때 "uuid_원래이름" 형식이므로, 첫 번째 "_" 뒤를 자름
 		String originalName = fileName.substring(fileName.indexOf("_") + 1);
-
-		// 4. 한글 파일명 깨짐 방지 (브라우저 호환성 처리)
-		// 이 처리를 안 하면 한글 파일은 "___.___" 처럼 깨져서 나옴
 		String encodedOriginalName = new String(originalName.getBytes("UTF-8"), "ISO-8859-1");
-
-		// 5. 헤더 설정 (브라우저에게 "이건 다운로드 파일이야"라고 알려줌)
 		response.setContentType("application/octet-stream");
 		response.setHeader("Content-Disposition", "attachment; filename=\"" + encodedOriginalName + "\"");
 		response.setContentLength((int) file.length());
-
-		// 6. 파일 내보내기 (스트림 전송)
 		FileInputStream fis = new FileInputStream(file);
 		OutputStream os = response.getOutputStream();
-
-		byte[] b = new byte[4096]; // 버퍼 생성
+		byte[] b = new byte[4096]; 
 		int read = 0;
 		while ((read = fis.read(b)) != -1) {
 			os.write(b, 0, read);
 		}
-
 		os.flush();
 		os.close();
 		fis.close();
@@ -187,9 +169,9 @@ public class ClipController {
 	    }
 	    
 	//  화면에 데이터 전달
-	    mav.addObject("isLiked", isLiked); // 화면에 상태 전달 (true/false)
+	    mav.addObject("isLiked", isLiked); // 좋아요 전달
 	    mav.addObject("board", mainVO);           // 게시글 정보
-	    mav.addObject("fileList", fileList);      // 파일 리스트 (이름: fileList)
+	    mav.addObject("fileList", fileList);      // 파일 리스트 
 	    mav.addObject("commentList", mainCommentList);
 	    mav.addObject("subCommentList", subCommentList);
 
@@ -441,7 +423,7 @@ public class ClipController {
         }
 
         // XSS(스크립트) 공격 패턴 검사 (정규식)
-        // (?i) : 대소문자 구분 안 함 
+        //대소문자 구분 안 함 
         // <script, <iframe, <object, <embed, on...= (이벤트 핸들러) 등을 막음
         String xssRegex = "(?i).*(<script|<iframe|<object|<embed|on[a-z]+\\s*=).*";
         
