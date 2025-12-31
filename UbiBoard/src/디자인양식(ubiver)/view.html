@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<title>게시글 상세보기 | 유비앤티스랩</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+/* ================= 1. 기본 레이아웃 ================= */
+body {
+    background-color: #f5f7fa;
+    font-family: 'Noto Sans KR', sans-serif;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+/* 헤더 임시 스타일 */
+#header { border-bottom: 1px solid #dadada; text-align: center; padding: 20px 0; background: #fff; }
+#header h1 { font-size: 24px; color: #2c3e50; margin: 0; }
+#footer { border-top: 1px solid #ddd; padding: 30px 0; text-align: center; margin-top: 50px; color: #666; font-size: 13px; background: #fff; }
+
+.board-container {
+    max-width: 1000px;
+    margin: 50px auto;
+    padding: 0 20px;
+}
+
+/* ================= 2. 게시글 본문 영역 (카드 형태) ================= */
+.board-view-card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    border: 1px solid #e1e4e8;
+}
+
+/* 헤더 (제목, 정보) */
+.view-header {
+    padding: 30px;
+    border-bottom: 1px solid #eee;
+    background-color: #fff;
+}
+
+.view-title {
+    font-size: 26px;
+    font-weight: 700;
+    color: #111;
+    margin-bottom: 15px;
+    line-height: 1.4;
+    margin-top: 0;
+}
+
+.view-meta {
+    display: flex;
+    font-size: 14px;
+    color: #666;
+    gap: 20px;
+    align-items: center;
+}
+
+.view-meta span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.mask-id {
+    font-weight: 600;
+    color: #333;
+}
+
+/* ================= 토글 + 카드형 첨부파일 스타일 ================= */
+.file-toggle-wrapper {
+    margin: 0; /* 카드 내부에서 자연스럽게 붙도록 조정 */
+    border-bottom: 1px solid #e1e4e8;
+    background: #fff;
+}
+
+/* 1. 토글 버튼 (헤더) */
+.file-toggle-btn {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background: #f8f9fa; /* 헤더 배경색 */
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.2s;
+    outline: none;
+}
+
+.file-toggle-btn:hover {
+    background: #f1f3f5;
+}
+
+.toggle-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.toggle-icon {
+    font-size: 12px;
+    color: #888;
+    transition: transform 0.3s ease;
+}
+
+/* 활성화(열림) 상태일 때 화살표 회전 */
+.file-toggle-btn.active .toggle-icon {
+    transform: rotate(180deg);
+}
+
+/* 2. 파일 리스트 영역 (숨김 영역) */
+.file-list-content {
+    display: none; /* 기본 숨김 */
+    padding: 20px 30px;
+    background: #fff;
+    border-top: 1px solid #eee;
+    /* 내부 카드들 세로 정렬 */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* 3. 개별 파일 카드 디자인 (호버 효과 포함) */
+.file-download-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fff;
+    border: 1px solid #e1e4e8;
+    padding: 15px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.file-download-card:hover {
+    border-color: #4a90e2;
+    background-color: #fcfdfe;
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.15);
+    transform: translateY(-2px);
+}
+
+/* 아이콘+이름 */
+.file-info-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.file-icon {
+    width: 36px;
+    height: 36px;
+    background: #f1f3f5;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+.file-name {
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+}
+
+/* 용량+다운로드 버튼 */
+.file-info-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.file-size-badge {
+    font-size: 12px;
+    color: #666;
+    background: #f8f9fa;
+    padding: 4px 10px;
+    border-radius: 12px;
+}
+
+.download-icon {
+    color: #ccc;
+    font-size: 18px;
+    transition: 0.2s;
+}
+
+.file-download-card:hover .download-icon {
+    color: #4a90e2;
+}
+
+/* 본문 내용 */
+.view-content {
+    padding: 40px 30px;
+    min-height: 300px;
+    font-size: 16px;
+    line-height: 1.8;
+    color: #222;
+}
+
+/* ================= 3. 좋아요 버튼 (본문 하단 중앙) ================= */
+.like-section {
+    text-align: center;
+    padding: 30px 0 50px 0;
+    border-top: 1px dashed #eee; /* 본문과 구분선 */
+    margin: 0 30px; /* 좌우 여백 */
+}
+
+.btn-like {
+    background: #fff;
+    border: 1px solid #ddd;
+    padding: 12px 30px;
+    border-radius: 50px; /* 둥근 알약 모양 */
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-like:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    border-color: #ff6b6b;
+}
+
+.heart-icon {
+    font-size: 20px;
+}
+
+.like-text {
+    font-weight: 600;
+    color: #555;
+}
+
+.like-count {
+    font-weight: 800;
+    color: #ff6b6b;
+    font-size: 18px;
+}
+
+/* ================= 4. 댓글 영역 ================= */
+.comment-wrap {
+    margin-top: 30px;
+}
+
+.comment-header {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.comment-count-badge {
+    background: #eee;
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    color: #555;
+}
+
+/* 댓글 입력창 */
+.comment-form {
+    display: flex;
+    gap: 10px;
+    background: #fff;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.comment-input {
+    flex: 1;
+    height: 60px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    resize: none;
+    font-size: 14px;
+    outline: none;
+    font-family: inherit;
+}
+
+.comment-input:focus {
+    border-color: #4a90e2;
+}
+
+.btn-comment-save {
+    width: 90px;
+    background: #4a90e2;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-comment-save:hover {
+    background: #357abd;
+}
+
+/* 댓글 리스트 */
+.comment-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 8px;
+}
+
+.comment-item {
+    padding: 20px;
+    border-bottom: 1px solid #f1f1f1;
+}
+
+.comment-item:last-child {
+    border-bottom: none;
+}
+
+.comment-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 13px;
+}
+
+.meta-left strong {
+    color: #333;
+    margin-right: 8px;
+    font-size: 14px;
+}
+
+.meta-left .date {
+    color: #999;
+}
+
+.meta-right button {
+    background: none;
+    border: none;
+    font-size: 12px;
+    color: #777;
+    cursor: pointer;
+    margin-left: 5px;
+}
+
+.meta-right button:hover {
+    color: #333;
+    text-decoration: underline;
+}
+
+.comment-text {
+    font-size: 15px;
+    line-height: 1.5;
+    color: #444;
+    white-space: pre-wrap;
+}
+
+/* 대댓글 스타일 */
+.reply-item {
+    margin-top: 15px;
+    background: #f9fbfd;
+    padding: 15px;
+    border-radius: 8px;
+    position: relative;
+    margin-left: 20px;
+    border-left: 3px solid #dee2e6;
+}
+
+.reply-form-wrap {
+    display: none;
+    margin-top: 15px;
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+/* ================= 5. 하단 버튼 영역 ================= */
+.btn-area-between {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+}
+
+.btn-common {
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: 0.2s;
+    display: inline-block;
+}
+
+.btn-list {
+    background: #fff;
+    border-color: #ccc;
+    color: #555;
+}
+
+.btn-list:hover {
+    background: #f1f1f1;
+}
+
+.btn-modify {
+    background: #6c757d;
+    color: #fff;
+}
+
+.btn-modify:hover {
+    background: #5a6268;
+}
+
+.btn-delete {
+    background: #dc3545;
+    color: #fff;
+}
+
+.btn-delete:hover {
+    background: #c82333;
+}
+</style>
+</head>
+<body>
+
+    <div id="header">
+        <h1>UBINTISLAB</h1>
+    </div>
+
+    <div class="board-container">
+
+        <div class="board-view-card">
+
+            <div class="view-header">
+                <h1 class="view-title">유비앤티스랩 2025년 상반기 시스템 정기 점검 안내</h1>
+                <div class="view-meta">
+                    <span>👤 <strong class="mask-id">admin</strong></span> 
+                    <span style="color: #ddd">|</span> 
+                    <span>🕒 2025.05.20 14:00</span> 
+                    <span style="color: #ddd">|</span> 
+                    <span>👁️ 1,234</span>
+                </div>
+            </div>
+
+            <div class="file-toggle-wrapper">
+                <button type="button" class="file-toggle-btn" onclick="toggleFileArea(this);">
+                    <span class="toggle-title"> 
+                        📂 첨부파일 <span style="color: #4a90e2; margin-left: 5px;">(2)</span>
+                    </span> 
+                    <span class="toggle-icon">▼</span>
+                </button>
+
+                <div class="file-list-content">
+                    <a href="#" class="file-download-card" onclick="alert('[디자인 확인] 파일 다운로드'); return false;">
+                        <div class="file-info-left">
+                            <span class="file-icon">📄</span> 
+                            <span class="file-name">2025_상반기_점검계획.pdf</span>
+                        </div>
+                        <div class="file-info-right">
+                            <span class="file-size-badge">2.5 MB</span> 
+                            <span class="download-icon">⬇️</span>
+                        </div>
+                    </a>
+                    <a href="#" class="file-download-card" onclick="alert('[디자인 확인] 파일 다운로드'); return false;">
+                        <div class="file-info-left">
+                            <span class="file-icon">🖼️</span> 
+                            <span class="file-name">system_architecture.png</span>
+                        </div>
+                        <div class="file-info-right">
+                            <span class="file-size-badge">500.0 KB</span> 
+                            <span class="download-icon">⬇️</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="view-content">
+                <div style="white-space: pre-wrap;">안녕하세요, 유비앤티스랩 관리자입니다.
+
+보다 안정적인 서비스 제공을 위해 아래와 같이 시스템 정기 점검이 진행될 예정입니다.
+점검 시간 동안에는 서비스 이용이 일시적으로 중단되오니 양해 부탁드립니다.
+
+[점검 일정]
+- 일시: 2025년 5월 25일(일) 02:00 ~ 06:00 (4시간)
+- 대상: 전체 서비스 (PC/Mobile 웹)
+
+[점검 내용]
+- 서버 보안 패치 적용
+- 데이터베이스 최적화 작업
+
+작업이 조기에 완료될 경우 예정보다 일찍 서비스가 재개될 수 있습니다.
+이용에 불편을 드려 대단히 죄송합니다.
+
+감사합니다.</div>
+            </div>
+
+            <div class="like-section">
+                <button type="button" id="btnLike" class="btn-like" onclick="toggleLike();">
+                    <span id="heartIcon" class="heart-icon">🤍</span> 
+                    <span class="like-text">좋아요</span> 
+                    <span id="likeCount" class="like-count">10</span>
+                </button>
+            </div>
+
+        </div>
+
+        <div class="comment-wrap">
+            <div class="comment-header">
+                💬 댓글 <span class="comment-count-badge">2</span>
+            </div>
+
+            <form action="#" class="comment-form" onsubmit="alert('[디자인 확인] 댓글 등록'); return false;">
+                <textarea class="comment-input" placeholder="댓글을 남겨보세요." required></textarea>
+                <button type="submit" class="btn-comment-save">등록</button>
+            </form>
+
+            <ul class="comment-list">
+                <li class="comment-item">
+                    <div class="main-comment-box">
+                        <div class="comment-meta">
+                            <div class="meta-left">
+                                <strong class="mask-id">user1234</strong> 
+                                <span class="date">05.20 14:10</span>
+                            </div>
+                            <div class="meta-right">
+                                <button type="button" onclick="toggleReplyForm('c1')">답글</button>
+                                <button type="button" onclick="deleteMock()">삭제</button>
+                            </div>
+                        </div>
+                        <div class="comment-text">확인했습니다. 점검 시간 피해서 작업해야겠네요.</div>
+                    </div>
+
+                    <div id="replyForm_c1" class="reply-form-wrap">
+                        <form action="#" style="display: flex; gap: 10px;" onsubmit="alert('[디자인 확인] 답글 등록'); return false;">
+                            <textarea class="comment-input" style="height: 40px;" placeholder="답글을 입력하세요." required></textarea>
+                            <button type="submit" class="btn-comment-save" style="width: 70px;">등록</button>
+                        </form>
+                    </div>
+                    
+                    <div class="reply-item">
+                        <div class="comment-meta">
+                            <div class="meta-left">
+                                <span style="color: #aaa; margin-right: 5px;">↳</span> 
+                                <strong class="mask-id">admin</strong> 
+                                <span class="date">05.20 14:15</span>
+                            </div>
+                            <div class="meta-right">
+                                <button type="button" onclick="deleteMock()">삭제</button>
+                            </div>
+                        </div>
+                        <div class="comment-text">네, 불편을 드려 죄송합니다. 최대한 빨리 완료하겠습니다.</div>
+                    </div>
+                </li>
+
+                <li class="comment-item">
+                    <div class="main-comment-box">
+                        <div class="comment-meta">
+                            <div class="meta-left">
+                                <strong class="mask-id">tester99</strong> 
+                                <span class="date">05.20 15:30</span>
+                            </div>
+                            <div class="meta-right">
+                                <button type="button" onclick="toggleReplyForm('c2')">답글</button>
+                            </div>
+                        </div>
+                        <div class="comment-text">수고 많으십니다!</div>
+                    </div>
+                    <div id="replyForm_c2" class="reply-form-wrap">
+                        <form action="#" style="display: flex; gap: 10px;" onsubmit="alert('[디자인 확인] 답글 등록'); return false;">
+                            <textarea class="comment-input" style="height: 40px;" placeholder="답글을 입력하세요." required></textarea>
+                            <button type="submit" class="btn-comment-save" style="width: 70px;">등록</button>
+                        </form>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="btn-area-between">
+            <div class="left">
+                <a href="#" class="btn-common btn-list" onclick="alert('[디자인 확인] 목록으로 이동')">목록으로</a>
+            </div>
+            <div class="right">
+                <a href="#" class="btn-common btn-modify" onclick="alert('[디자인 확인] 수정 페이지로 이동')">수정</a>
+                <button type="button" class="btn-common btn-delete" onclick="deleteClip()">삭제</button>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="footer">
+        &copy; 2025 UBNTIS LAB Corp. All Rights Reserved.
+    </div>
+
+    <script>
+        // 게시글 삭제 시뮬레이션
+        function deleteClip() {
+            if(confirm("정말로 이 게시글을 삭제하시겠습니까?\n삭제 후에는 복구할 수 없습니다.")) {
+                alert("[디자인 확인용] 게시글이 삭제되었습니다.");
+            }
+        }
+
+        // 댓글/답글 삭제 시뮬레이션
+        function deleteMock() {
+            if(confirm("삭제하시겠습니까?")) {
+                alert("[디자인 확인용] 삭제되었습니다.");
+            }
+        }
+
+        // 답글(대댓글) 폼 토글 기능
+        function toggleReplyForm(commentId) {
+            var formId = "replyForm_" + commentId;
+            var form = document.getElementById(formId);
+            
+            if (form.style.display === "none" || form.style.display === "") {
+                form.style.display = "block"; // 보이기
+                form.querySelector('textarea').focus();
+            } else {
+                form.style.display = "none"; // 숨기기
+            }
+        }
+
+        // 좋아요 토글 기능 (시각적 효과만)
+        function toggleLike() {
+            var heartSpan = $("#heartIcon");
+            var countSpan = $("#likeCount");
+            var currentCount = parseInt(countSpan.text());
+
+            // 현재 하트 모양에 따라 토글
+            if (heartSpan.text() === "🤍") {
+                heartSpan.text("❤️");
+                countSpan.text(currentCount + 1);
+                alert("[디자인 확인용] 좋아요가 반영되었습니다.");
+            } else {
+                heartSpan.text("🤍");
+                countSpan.text(currentCount - 1);
+                alert("[디자인 확인용] 좋아요가 취소되었습니다.");
+            }
+        }
+        
+        // 첨부파일 토글 기능
+        function toggleFileArea(btn) {
+            // 1. 버튼에 active 클래스 토글 (화살표 회전용)
+            $(btn).toggleClass("active");
+            
+            // 2. 바로 다음 형제 요소(.file-list-content)를 슬라이드 토글
+            $(btn).next(".file-list-content").slideToggle(300);
+        }
+    </script>
+</body>
+</html>

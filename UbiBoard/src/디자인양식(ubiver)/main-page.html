@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>공지사항 | 유비앤티스랩</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<style>
+    @charset "UTF-8";
+
+    /* [기본 리셋 - base.css 대체] */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Noto Sans KR', sans-serif; color: #333; }
+    li { list-style: none; }
+    a { text-decoration: none; color: inherit; }
+    input, select, button { font-family: inherit; }
+
+    /* [헤더/푸터 임시 스타일] */
+    #header { border-bottom: 1px solid #dadada; text-align: center; padding: 20px 0; margin-bottom: 20px; }
+    #header h1 { font-size: 24px; color: #333; }
+    #header nav ul li { display: inline-block; margin: 0 15px; font-size: 16px; font-weight: 500; }
+    
+    #footer { border-top: 1px solid #ddd; padding: 30px 0; text-align: center; margin-top: 50px; color: #666; font-size: 13px; }
+
+
+    /* =========================================
+       게시판 전용 스타일 (주신 board.css 통합)
+       ========================================= */
+
+    .board-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 20px;
+        font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+        color: #333;
+    }
+
+    /* 상단 타이틀 영역 */
+    .board-header { margin-bottom: 40px; text-align: center; }
+    .board-header h2 { font-size: 32px; font-weight: 700; color: #111; margin-bottom: 10px; letter-spacing: -1px; }
+    .board-header p { font-size: 16px; color: #666; font-weight: 400; }
+
+    /* 검색 및 유틸리티 영역 */
+    .board-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        padding: 15px 20px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+    }
+    .board-total { font-size: 14px; color: #555; }
+    .board-total strong { color: #d32f2f; font-weight: 700; }
+
+    .search-form { display: flex; gap: 8px; }
+    .search-select, .search-input {
+        height: 40px;
+        padding: 0 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+        transition: all 0.2s;
+    }
+    .search-input { width: 250px; }
+    .search-select:focus, .search-input:focus { border-color: #333; outline: none; }
+    .btn-search {
+        height: 40px;
+        padding: 0 20px;
+        background: #333;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    .btn-search:hover { background: #111; }
+
+    /* 게시판 테이블 디자인 */
+    .board-table-wrap { width: 100%; overflow-x: auto; border-top: 2px solid #333; }
+    .board-table { width: 100%; border-collapse: collapse; min-width: 800px; }
+
+    .board-table th {
+        background: #fbfbfb;
+        padding: 18px 0;
+        font-size: 15px;
+        font-weight: 600;
+        color: #333;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .board-table td {
+        padding: 18px 10px;
+        text-align: center;
+        border-bottom: 1px solid #eee;
+        font-size: 14px;
+        color: #555;
+    }
+
+    /* 제목 컬럼 스타일 */
+    .board-table td.td-subject { text-align: left; padding-left: 20px; }
+    .board-table td.td-subject a {
+        color: #333;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 15px;
+        transition: color 0.2s;
+    }
+    .board-table td.td-subject a:hover { color: #d32f2f; text-decoration: underline; }
+
+    /* 뱃지 및 아이콘 */
+    .ico-new {
+        display: inline-block;
+        width: 16px; height: 16px;
+        line-height: 16px;
+        text-align: center;
+        background: #d32f2f;
+        color: #fff;
+        font-size: 10px;
+        border-radius: 50%;
+        margin-left: 6px;
+        vertical-align: middle;
+    }
+    /* 아이콘 이미지 경로가 없으므로 CSS로 대체 표기 */
+    .ico-file { 
+        display: inline-block; width: 14px; height: 14px; 
+        background: #ccc; border-radius: 2px; vertical-align: middle;
+    }
+
+    /* 하단 영역 (페이징 + 버튼) */
+    .board-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 40px;
+        position: relative;
+    }
+
+    /* 페이징 */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 4px;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    .page-link {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 36px; height: 36px;
+        border: 1px solid #eee;
+        background: #fff;
+        color: #666;
+        text-decoration: none;
+        font-size: 14px;
+        border-radius: 4px;
+        transition: all 0.2s;
+    }
+    .page-link:hover, .page-link.active {
+        background: #333;
+        color: #fff;
+        border-color: #333;
+        font-weight: bold;
+    }
+
+    /* 글쓰기 버튼 */
+    .btn-area { margin-left: auto; }
+    .btn-write {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: 42px;
+        padding: 0 25px;
+        background-color: #d32f2f;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        border-radius: 4px;
+        transition: background 0.3s;
+    }
+    .btn-write:hover { background-color: #b71c1c; }
+
+    /* 모바일 반응형 처리 */
+    @media screen and (max-width: 768px) {
+        .board-toolbar { flex-direction: column; align-items: flex-start; gap: 10px; }
+        .search-form { width: 100%; }
+        .search-input { flex: 1; width: auto; }
+        
+        .board-header h2 { font-size: 24px; }
+        .board-table th, .board-table td { font-size: 13px; padding: 12px 5px; }
+        
+        .board-footer { flex-direction: column; gap: 20px; }
+        .pagination { position: static; transform: none; margin-bottom: 10px; }
+        .btn-area { margin-left: 0; width: 100%; }
+        .btn-write { width: 100%; }
+        
+        .mobile-hide { display: none; }
+    }
+</style>
+</head>
+<body>
+
+
+
+    <div class="board-container">
+        
+        <header class="board-header">
+            <h2>공지사항</h2>
+            <p>유비앤티스랩의 주요 소식과 안내사항을 확인하세요.</p>
+        </header>
+
+        <div class="board-toolbar">
+            <div class="board-total">
+                총 <strong>42</strong>건의 게시물이 있습니다.
+            </div>
+            <form action="#" method="get" class="search-form" onsubmit="return false;">
+                <select name="searchType" class="search-select">
+                    <option value="title">제목</option>
+                    <option value="content">내용</option>
+                    <option value="writer">작성자</option>
+                </select>
+                <input type="text" name="keyword" class="search-input" placeholder="검색어를 입력하세요">
+                <button type="button" class="btn-search">검색</button>
+            </form>
+        </div>
+
+        <div class="board-table-wrap">
+            <table class="board-table">
+                <colgroup>
+                    <col style="width: 80px;" class="mobile-hide"> 
+                    <col style="width: auto;">  
+                    <col style="width: 100px;" class="mobile-hide"> 
+                    <col style="width: 120px;"> 
+                    <col style="width: 120px;" class="mobile-hide"> 
+                    <col style="width: 80px;" class="mobile-hide">  
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th class="mobile-hide">번호</th>
+                        <th>제목</th>
+                        <th>작성자</th>
+                        <th class="mobile-hide">작성일</th>
+                        <th class="mobile-hide">조회</th>
+                        <th class="mobile-hide">좋아요</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="mobile-hide">42</td>
+                        <td class="td-subject">
+                            <a href="#">유비앤티스랩 개인정보처리방침 변경 안내</a>
+                            <span class="ico-new">N</span>
+                        </td>
+                        <td><span class="mask-id">admin</span></td>
+                        <td class="mobile-hide">2025-05-20</td>
+                        <td class="mobile-hide">342</td>
+                        <td class="mobile-hide">12</td>
+                    </tr>
+                    <tr>
+                        <td class="mobile-hide">41</td>
+                        <td class="td-subject">
+                            <a href="#">5월 시스템 정기 점검 안내 (05/25)</a>
+                        </td>
+                        <td><span class="mask-id">manager</span></td>
+                        <td class="mobile-hide">2025-05-18</td>
+                        <td class="mobile-hide">120</td>
+                        <td class="mobile-hide">5</td>
+                    </tr>
+                    <tr>
+                        <td class="mobile-hide">40</td>
+                        <td class="td-subject">
+                            <a href="#">신규 서비스 오픈 기념 이벤트</a>
+                        </td>
+                        <td><span class="mask-id">master</span></td>
+                        <td class="mobile-hide">2025-05-15</td>
+                        <td class="mobile-hide">560</td>
+                        <td class="mobile-hide">45</td>
+                    </tr>
+                    <tr>
+                        <td class="mobile-hide">39</td>
+                        <td class="td-subject">
+                            <a href="#">[필독] 게시판 이용 수칙 안내</a>
+                        </td>
+                        <td><span class="mask-id">admin</span></td>
+                        <td class="mobile-hide">2025-05-10</td>
+                        <td class="mobile-hide">890</td>
+                        <td class="mobile-hide">110</td>
+                    </tr>
+                    <tr>
+                        <td class="mobile-hide">38</td>
+                        <td class="td-subject">
+                            <a href="#">회원 등급 조정 기준 안내</a>
+                        </td>
+                        <td><span class="mask-id">helpdesk</span></td>
+                        <td class="mobile-hide">2025-05-01</td>
+                        <td class="mobile-hide">210</td>
+                        <td class="mobile-hide">8</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="board-footer">
+            <div class="pagination">
+                <a href="#" class="page-link">&lt;</a>
+                
+                <a href="#" class="page-link active">1</a>
+                <a href="#" class="page-link">2</a>
+                <a href="#" class="page-link">3</a>
+                <a href="#" class="page-link">4</a>
+                <a href="#" class="page-link">5</a>
+
+                <a href="#" class="page-link">&gt;</a>
+            </div>
+            
+            <div class="btn-area">
+                <a href="#" class="btn-write">글쓰기</a>
+            </div>
+        </div>
+
+    </div>
+    <div id="footer">
+        <p>&copy; 2025 UBNTIS LAB Corp. All Rights Reserved.</p>
+    </div>
+
+</body>
+</html>

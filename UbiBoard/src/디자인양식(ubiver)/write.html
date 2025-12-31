@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>게시글 작성 | 유비앤티스랩</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<style>
+    @charset "UTF-8";
+
+    /* [기본 리셋] */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Noto Sans KR', sans-serif; color: #333; line-height: 1.5; }
+    li { list-style: none; }
+    a { text-decoration: none; color: inherit; }
+    
+    /* [헤더/푸터 임시 스타일] */
+    #header { border-bottom: 1px solid #dadada; text-align: center; padding: 20px 0; margin-bottom: 20px; }
+    #header h1 { font-size: 24px; color: #2c3e50; font-weight: 700; }
+    #footer { border-top: 1px solid #ddd; padding: 30px 0; text-align: center; margin-top: 50px; color: #666; font-size: 13px; }
+
+    /* =========================================
+       게시판 전용 스타일 (board.css 통합)
+       ========================================= */
+    .board-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 20px;
+    }
+
+    /* 상단 타이틀 영역 */
+    .board-header { margin-bottom: 40px; text-align: center; }
+    .board-header h2 { font-size: 32px; font-weight: 700; color: #111; margin-bottom: 10px; letter-spacing: -1px; }
+    .board-header p { font-size: 16px; color: #666; font-weight: 400; }
+
+    /* 글쓰기 폼 스타일 */
+    .board-write-wrap {
+        border-top: 2px solid #333;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .write-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .write-table th {
+        background: #fbfbfb;
+        width: 150px;
+        padding: 20px;
+        text-align: left;
+        font-weight: 600;
+        color: #333;
+        border-bottom: 1px solid #eee;
+        vertical-align: middle;
+    }
+
+    .write-table td {
+        padding: 15px 20px;
+        border-bottom: 1px solid #eee;
+    }
+
+    /* 입력 필드 공통 */
+    .ipt-text {
+        width: 100%;
+        height: 40px;
+        padding: 0 15px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+        transition: border-color 0.2s;
+        font-family: inherit;
+    }
+
+    .ipt-text:focus, .tx-area:focus {
+        border-color: #333;
+        outline: none;
+    }
+
+    .ipt-text[readonly] {
+        background-color: #f5f5f5;
+        color: #888;
+        cursor: default;
+    }
+
+    /* 텍스트 영역 (본문) */
+    .tx-area {
+        width: 100%;
+        height: 300px;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        resize: vertical;
+        font-size: 14px;
+        font-family: inherit;
+        line-height: 1.6;
+    }
+
+    /* 파일 업로드 영역 */
+    .file-box {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    /* [새로 추가된 파일 목록 스타일] */
+    .file-list-area {
+        margin-top: 10px;
+        border: 1px solid #ddd;
+        padding: 10px;
+        background: #f9f9f9;
+        min-height: 50px;
+        border-radius: 4px;
+    }
+
+    .file-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 12px;
+        background: #fff;
+        border: 1px solid #eee;
+        margin-bottom: 5px;
+        border-radius: 4px;
+    }
+
+    .file-name {
+        font-size: 14px;
+        color: #555;
+    }
+
+    .btn-delete {
+        background: #ff6b6b;
+        color: white;
+        border: none;
+        padding: 4px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+    }
+    .btn-delete:hover { background: #fa5252; }
+
+    /* 하단 버튼 영역 */
+    .btn-area.center {
+        justify-content: center;
+        gap: 10px;
+        margin-top: 40px;
+        display: flex;
+    }
+
+    .btn-cancel {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: 45px;
+        padding: 0 30px;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        color: #555;
+        font-size: 15px;
+        font-weight: 500;
+        text-decoration: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .btn-cancel:hover { background-color: #f5f5f5; color: #333; }
+
+    .btn-submit {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: 45px;
+        padding: 0 30px;
+        background-color: #d32f2f; /* 적십자 레드 */
+        border: 1px solid #d32f2f;
+        color: #fff;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+    .btn-submit:hover { background-color: #b71c1c; }
+
+    /* 모바일 반응형 */
+    @media screen and (max-width: 768px) {
+        .write-table th, .write-table td { display: block; width: 100%; }
+        .write-table th { padding: 15px 0 5px 0; background: none; border: none; }
+        .write-table td { padding: 0 0 15px 0; }
+        .btn-area.center { flex-direction: column-reverse; } 
+        .btn-cancel, .btn-submit { width: 100%; }
+    }
+</style>
+
+</head>
+<body>
+
+    <div id="header">
+        <h1>UBINTISLAB</h1>
+    </div>
+
+    <div class="board-container">
+
+        <header class="board-header">
+            <h2>게시글 작성</h2>
+            <p>새로운 소식을 등록해주세요.</p>
+        </header>
+
+        <form id="writeForm" name="writeForm" onsubmit="event.preventDefault(); validateForm();">
+
+            <div class="board-write-wrap">
+                <table class="write-table">
+                    <colgroup>
+                        <col style="width: 150px;">
+                        <col style="width: auto;">
+                    </colgroup>
+                    <tbody>
+                        <tr>
+                            <th><label for="title">제목</label></th>
+                            <td>
+                                <input type="text" id="title" name="title" class="ipt-text" placeholder="제목을 입력하세요.">
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th>작성자</th>
+                            <td>
+                                <input type="text" name="writer" class="ipt-text" value="홍길동" readonly>
+                                <input type="hidden" name="userId" id="userId" value="user1">
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th><label for="content">내용</label></th>
+                            <td>
+                                <textarea id="content" name="content" class="tx-area" placeholder="내용을 입력하세요."></textarea>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th>첨부파일</th>
+                            <td>
+                                <div class="file-box">
+                                    <input type="file" name="uploadFiles" id="uploadFiles" multiple class="form-control" onchange="addFiles(this);">
+                                </div>
+
+                                <div id="file-list-area" class="file-list-area"></div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="btn-area center">
+                <a href="#" class="btn-cancel" onclick="alert('[디자인 확인용] 목록으로 이동합니다.');">취소</a>
+                <button type="submit" class="btn-submit">등록하기</button>
+            </div>
+
+        </form>
+
+    </div>
+
+    <div id="footer">
+        &copy; 2025 UBNTIS LAB Corp. All Rights Reserved.
+    </div>
+
+    <script>
+    // 1. 선택된 파일들을 담아둘 전역 배열
+    var content_files = [];
+
+    // 유효성 검사
+    function validateForm() {
+        var title = document.getElementById("title").value;
+        var content = document.getElementById("content").value;
+
+        if (title.trim() == "") {
+            alert("제목을 입력해주세요.");
+            document.getElementById("title").focus();
+            return false;
+        }
+        if (content.trim() == "") {
+            alert("내용을 입력해주세요.");
+            document.getElementById("content").focus();
+            return false;
+        }
+        if (content.length > 255) {
+            alert("255자내로 입력해주세요.");
+            document.getElementById("content").focus();
+            return false;
+        }
+
+        if (!confirm("게시글을 등록하시겠습니까?")) {
+            return false;
+        }
+
+        submitWrite();
+    }
+
+    // 2. 파일 선택 시 호출되는 함수 (UI 구현용)
+    function addFiles(input) {
+        var files = input.files;
+        var filesArr = Array.prototype.slice.call(files);
+
+        // 최대 개수 제한 체크
+        if (content_files.length + filesArr.length > 10) {
+            alert("최대 10개까지만 업로드 가능합니다.");
+            input.value = "";
+            return;
+        }
+
+        filesArr.forEach(function(f) {
+            content_files.push(f);
+        });
+
+        input.value = ""; // 초기화해야 같은 파일 다시 선택 가능
+        renderFileList();
+    }
+
+    // 3. 화면에 파일 목록 그리기
+    function renderFileList() {
+        var listArea = $("#file-list-area");
+        listArea.empty();
+
+        if(content_files.length === 0) {
+            // listArea.html('<span style="color:#999; font-size:13px;">첨부된 파일이 없습니다.</span>');
+            return;
+        }
+
+        content_files.forEach(function(f, index) {
+            var html = '';
+            html += '<div class="file-item" id="fileItem_' + index + '">';
+            html += '   <span class="file-name">' + f.name + ' (' + (f.size / 1024).toFixed(1) + ' KB)</span>';
+            html += '   <button type="button" class="btn-delete" onclick="deleteFile(' + index + ')">삭제</button>';
+            html += '</div>';
+            listArea.append(html);
+        });
+    }
+
+    // 4. 파일 삭제
+    function deleteFile(index) {
+        content_files.splice(index, 1);
+        renderFileList();
+    }
+
+    // 5. 서버 전송 시뮬레이션
+    function submitWrite() {
+        // 실제 AJAX 전송 대신 알림창 표시
+        console.log("전송할 파일 개수: " + content_files.length);
+        
+        // 로딩 흉내 (0.5초 후 성공 메시지)
+        setTimeout(function() {
+            alert("[디자인 확인용] 게시글이 성공적으로 등록되었습니다.\n(목록 페이지로 이동합니다.)");
+            // location.href = "list.html"; // 목록 파일이 있다면 이동
+        }, 300);
+    }
+    </script>
+</body>
+</html>

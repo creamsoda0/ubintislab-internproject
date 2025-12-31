@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>푸터 디자인 확인 | 유비앤티스랩</title>
+
+<style>
+    /* =========================================
+       푸터 전용 스타일 (Inline Styles Extracted)
+       ========================================= */
+    
+    /* 기본 리셋 (디자인 확인용) */
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Noto Sans KR', sans-serif;
+    }
+
+    /* 푸터 영역 전체 */
+    .rc-footer {
+        background-color: #f8f9fa;
+        padding: 40px 0;
+        border-top: 1px solid #e9ecef;
+        color: #6c757d;
+        font-size: 13px;
+        width: 100%;
+    }
+
+    /* 컨테이너 (중앙 정렬) */
+    .footer-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    /* 경고 박스 */
+    .warning-box {
+        background-color: #f0f7ff;
+        color: #055160;
+        padding: 15px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        text-align: center;
+        border: 1px solid #cff4fc;
+    }
+
+    .warning-highlight {
+        color: #d63384;
+        font-weight: bold;
+    }
+
+    /* 하단 정보 영역 (로고, 카피라이트) */
+    .footer-bottom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid #e9ecef;
+        padding-top: 20px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .footer-logo {
+        font-weight: bold;
+        color: #333;
+        font-size: 14px;
+    }
+
+    .copyright {
+        /* 별도 스타일 없음, 부모 속성 상속 */
+    }
+</style>
+</head>
+<body>
+
+    <footer class="rc-footer">
+        <div class="footer-container">
+            
+            <div class="warning-box">
+                <span class="warning-highlight">⚠️ 개인정보 보호 주의</span> : 
+                본 시스템의 모든 정보는 업무 목적으로만 이용해야 하며, 위반 시 관련법에 의해 처벌될 수 있습니다.
+            </div>
+
+            <div class="footer-bottom">
+                
+                <div class="left-info">
+                    <span class="footer-logo">UBINTISLAB</span>
+                </div>
+
+                <div class="copyright">
+                    Copyright &copy; 2025 UBINTISLAB. All rights reserved.
+                </div>
+
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

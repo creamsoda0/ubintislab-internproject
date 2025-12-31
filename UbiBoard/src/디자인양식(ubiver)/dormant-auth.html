@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UBNTIS | 이메일 본인인증</title>
+    
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <style>
+        /* ... (기존 스타일 동일) ... */
+        body { background-color: #f4f7f9; font-family: 'Malgun Gothic', 'Dotum', sans-serif; }
+        .auth-container { max-width: 450px; margin: 100px auto; }
+        .auth-card { background: #fff; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); padding: 40px; border-top: 4px solid #1a3d6a; }
+        .auth-title { color: #1a3d6a; font-size: 20px; font-weight: bold; text-align: center; margin-bottom: 25px; }
+        .email-display { background: #f8f9fa; padding: 15px; border-radius: 4px; text-align: center; font-weight: bold; color: #555; margin-bottom: 20px; font-size: 16px; letter-spacing: 1px; }
+        .auth-input { height: 50px; font-size: 18px; text-align: center; letter-spacing: 5px; font-weight: bold; border: 2px solid #ddd; }
+        .timer-text { color: #d9534f; font-size: 13px; margin-top: 10px; text-align: right; font-weight: 600; }
+        .btn-verify { background: #1a3d6a; color: white; height: 50px; font-size: 16px; font-weight: bold; margin-top: 20px; transition: background 0.3s; border: none; }
+        .btn-verify:hover { background: #132c4e; color: #fff; }
+        .btn-resend { background: #fff; color: #666; border: 1px solid #ccc; margin-top: 10px; height: 40px; font-weight: 600; transition: all 0.3s; }
+        .btn-resend:hover { background: #f1f1f1; }
+    </style>
+</head>
+<body>
+
+<div class="auth-container">
+    <div class="auth-card">
+        <h2 class="auth-title">이메일 본인인증</h2>
+        
+        <div class="email-display">hong***@ubntis.com</div>
+
+        <form onsubmit="return false;">
+            <div class="form-group">
+                <input type="text" name="authCode" class="form-control auth-input" placeholder="000000" maxlength="6" required autocomplete="off">
+                <div class="timer-text" id="timer">유효시간 03:00</div>
+            </div>
+            <button type="submit" class="btn btn-block btn-verify">인증 확인</button>
+        </form>
+        
+        <button type="button" id="btnResend" class="btn btn-block btn-resend btn-sm">인증번호 재발송</button>
+    </div>
+</div>
+
+<script>
+var countdown;
+
+function startTimer() {
+    // 3분(180초)으로 설정 (화면 텍스트와 일치시킴)
+    var timeLeft = 180; 
+    var timerElement = document.getElementById('timer');
+
+    if (countdown) clearInterval(countdown);
+    timerElement.style.color = "#d9534f";
+
+    // 초기 표시
+    updateTimerDisplay(timeLeft, timerElement);
+
+    countdown = setInterval(function() {
+        timeLeft--;
+        updateTimerDisplay(timeLeft, timerElement);
+
+        if (timeLeft <= 0) {
+            clearInterval(countdown);
+            timerElement.innerHTML = "인증 시간이 만료되었습니다.";
+            timerElement.style.color = "red";
+        }
+    }, 1000);
+}
+
+function updateTimerDisplay(timeLeft, element) {
+    var minutes = Math.floor(timeLeft / 60);
+    var seconds = timeLeft % 60;
+    seconds = seconds < 10 ? '0' + seconds : seconds;
+    element.innerHTML = "유효시간 " + "0" + minutes + ":" + seconds;
+}
+
+$(document).ready(function() {
+    // 페이지 로드 시 타이머 시작
+    startTimer();
+
+    // 재발송 버튼 클릭 (AJAX 제거됨)
+    $('#btnResend').click(function() {
+        var $btn = $(this);
+        
+        // 버튼 잠시 비활성화 효과
+        $btn.prop('disabled', true).text('발송 중...');
+        
+        setTimeout(function() {
+            alert("[디자인 확인용] 인증번호가 재발송되었습니다.");
+            startTimer(); // 타이머 리셋
+            $btn.prop('disabled', false).text('인증번호 재발송');
+        }, 500); // 0.5초 딜레이 흉내
+    });
+
+    // 인증 확인 버튼 클릭
+    $(".btn-verify").click(function() {
+        var code = $(".auth-input").val();
+        if(code.length < 6) {
+            alert("인증번호 6자리를 입력해주세요.");
+            return;
+        }
+        alert("[디자인 확인용] 인증 확인 로직이 실행됩니다.");
+    });
+});
+</script>
+</body>
+</html>
