@@ -249,7 +249,11 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public UserVO findLoginFailUser(UserVO userVO) {
 		// TODO Auto-generated method stub
+		String email = userVO.getEmail();
+		UserVO realuser = mapper.findUserByEmail(email);
+		if (realuser != null && realuser.getUserId() == userVO.getEmail()) {
 		return mapper.findLoginFailUser(userVO);
+		} else return null;
 	}
 
 	@Override
