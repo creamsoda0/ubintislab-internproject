@@ -140,11 +140,10 @@ function extendLogin() {
  });
 }
 
-//[초기화] 페이지 로드 시 실행
+//페이지 로드 시 실행
 $(document).ready(function() {
  // 페이지가 처음 열리면 '지금 활동함'으로 기록
 
- //  보통 새 창을 열면 세션이 갱신되므로 updateLastActive()를 호출하는 게 맞습니다.)
  SessionManager.updateLastActive();
  
  // 타이머 시작

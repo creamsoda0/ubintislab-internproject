@@ -89,11 +89,11 @@
                         </tr>
                         <tr>
                             <th><span class="req">*</span>생년월일</th>
-                            <td><input type="text" name="birth" style="width: 200px;" value="1973-08-23" placeholder="YYYY-MM-DD" readonly></td>
+                            <td><input type="text" name="birth" style="width: 200px;" placeholder="YYYY-MM-DD" readonly></td>
                         </tr>
                         <tr>
                             <th><span class="req">*</span>휴대전화</th>
-                            <td><input type="text" name="phone" maxlength="13" style="width: 200px;" value="010-1234-5678" placeholder="'-' 없이 입력"></td>
+                            <td><input type="text" name="phone" maxlength="13" style="width: 200px;" placeholder="'-' 없이 입력"></td>
                         </tr>
                         <tr>
                             <th><span class="req">*</span>주소</th>
